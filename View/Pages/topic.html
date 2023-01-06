@@ -1,0 +1,300 @@
+<style>
+    button i,
+    button b {
+        pointer-events: none;
+    }
+</style>
+
+
+<div class="side-app" onload="setup()">
+    <div>
+        <h1 class="page-title mb-6" style="font-size: 30px;">Topic</h1>
+    </div>
+
+    <!-- ROW-table -->
+    <div class="row">
+
+        <!-- topik -->
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <div class="row">
+
+                <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                    <div class="form-group">
+                        <label class="form-label">Subject Code</label>
+                        <select class="form-control select2-show-search" id="selSubjectCode" onchange="subjectChange(event);">
+                            <optgroup>
+                                
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-7 col-lg-7 col-xl-7 p-0">
+                    <div class="form-group">
+                        <label class="form-label">Topic Title</label>
+                        <input type="text" class="form-control" id="txtTopicTitle"
+                            placeholder="Insert Topic Title">
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-1 col-lg-1 col-xl-1 p-0" style="text-align: right;">
+                    <label class="form-label"><br></label>
+                    <a class="btn btn-primary" onclick="register()" id="btnRegister"><b><i class="fa fa-plus"></i>&nbsp;Topik</b></a>
+                    <a class="btn btn-success text-white" onclick="updateTopic()" id="btnUpdate" style="display: none;"><b><i class="fa fa-floppy-o"></i>&nbsp;Topik</b></a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Topic List</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover text-nowrap mb-0" id="topicTable">
+                                <thead class="bg-primary">
+                                    <tr>
+                                        <th width="20%" class="text-white">Subject Code</th>
+                                        <th width="70%" class="text-white">Topic Name</th>
+                                        <th width="10%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="myTopic_tbd">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /topik -->
+    </div>
+
+</div>
+
+<script>
+
+    var selectedTopicId;
+    var tableTopic;
+
+    function setup(){
+        tableTopic = new DataTable("#topicTable", {
+            // options 
+            "columnDefs":
+                [
+                    { "targets": [0, 2], "className": "text-center" }
+                ]
+        });
+        loadSubject();
+        loadTopic();
+    }
+
+
+    // Register topic
+    async function register()
+    {
+        var action = await Swal.fire({
+            type : 'question',
+            title: 'Confirm Registration',
+            text : 'Register new topic into the system?',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+
+        var subjectCode  = document.getElementById("selSubjectCode").value;
+        var topicTitle   = document.getElementById("txtTopicTitle").value;
+
+        var data = {
+            "subjectCode"  : subjectCode,
+            "topicTitle"   : topicTitle
+        }
+
+        Server.request("POST", "/api/topic/register", data, false).then(async function (value) {
+            document.getElementById("txtTopicTitle").value = "";
+
+            var action = await Swal.fire({
+                type : 'success',
+                title: 'Register Successfully!',
+                text : '',
+                showCancelButton: false
+            })
+
+            loadTopic(document.getElementById("selSubjectCode").value);
+        }).catch(async function (value) {
+            var action = await Swal.fire({
+                type : 'error',
+                title: 'Cannot Register!',
+                text : 'An Error has occured',
+                showCancelButton: false
+            })
+        })
+    }
+
+
+    // Load list of topics
+    function loadTopic(subjectCode) {
+        console.log("load")
+
+        var data = {
+            "subjectCode" : subjectCode
+        }
+
+        Server.request("POST", "/api/topic/getTopicBySubject", data, false).then(function (value) {
+            var data = JSON.parse(value);
+            tableTopic.clear();
+            var tmpRow;
+
+            data.forEach(qTopic => {
+                tmpRow = tableTopic.row.add([
+                    '<a class="text-center">' + qTopic.subjectCode + '</a>',
+                    '<button style="vertical-align: middle;" onclick="getTopic(event);" id="' + qTopic.topicId + '"><b>' + qTopic.title + '</b></button>',
+                    '<button class="btn btn-danger text-center" style="vertical-align: middle;" onclick="deleteTopic(event);" id="' + qTopic.topicId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>'
+                ]).node()
+                tmpRow.id = qTopic.topicId; //letak id
+            });
+            tableTopic .draw();
+            console.log(data)
+        }
+        ).catch(function (value) {
+            console.log(value);
+        });
+    }
+
+
+    function loadSubject(){
+        Server.request("GET", "/api/subject/allSubject", null, false).then(function (value) {
+            var data = JSON.parse(value);
+            var strHtmlRads = "";
+            strHtmlRads += '<option value="-1" selected>Select Subject Code</option>'
+
+            data.forEach(qSubject=>{
+                strHtmlRads += '<option value="' + qSubject.subjectCode + '">' + qSubject.subjectCode + '</option>'
+            })
+
+            document.getElementById("selSubjectCode").innerHTML = strHtmlRads;
+        })
+    }
+
+
+    function subjectChange(event){
+        var subjectCode = event.target.value;
+
+        loadTopic(subjectCode);
+    }
+
+
+    //get topic id when click
+    async function getTopic(event) {
+        var action = await Swal.fire({
+            type : 'question',
+            title: 'Update this topic?',
+            text : 'Directing to update form',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+
+        var data = {
+            "topicId": event.target.id
+        }
+
+        document.getElementById("txtTopicTitle").value       = event.target.children[0].innerHTML;
+        document.getElementById("selSubjectCode").disabled   = true;
+        document.getElementById("btnUpdate").style.display   = "inline-block";
+        document.getElementById("btnRegister").style.display = "none";
+
+        selectedTopicId = event.target.id;
+    }
+
+
+    //update topic
+    async function updateTopic() {
+        var action = await Swal.fire({
+            type : 'question',
+            title: 'Confirm Update?',
+            text : 'This topic will be updated into the system',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+
+        var topicTitle = document.getElementById("txtTopicTitle").value;
+
+        var data = {
+            "topicId"     : selectedTopicId,
+            "topicTitle"  : topicTitle
+        }
+
+        Server.request("POST", "/api/topic/update", data, false).then(async function (value) {
+            console.log('Updated');
+
+            document.getElementById("txtTopicTitle").value       = "";
+            document.getElementById("selSubjectCode").disabled   = false;
+            document.getElementById("btnUpdate").style.display   = "none";
+            document.getElementById("btnRegister").style.display = "inline-block";
+
+            var action = await Swal.fire({
+                type : 'success',
+                title: 'Updated Successfully!',
+                text : '',
+                showCancelButton: false
+            })
+            
+            loadTopic(document.getElementById("selSubjectCode").value);
+
+        }).catch(async function (value) {
+            var action = await Swal.fire({
+                type : 'error',
+                title: 'Cannot Updated!',
+                text : 'An Error has occured',
+                showCancelButton: false
+            })
+        })
+    }
+
+
+    // Delete topic
+    async function deleteTopic(event){
+
+        var action = await Swal.fire({
+            type : 'question',
+            title: 'Confirm Delete?',
+            text : 'This topic will be removed from the system',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+
+        var data = {
+            "topicId":event.target.id
+        }
+
+        Server.request("POST", "/api/topic/delete", data, false).then(async function(value){
+            var action = await Swal.fire({
+                type : 'success',
+                title: 'Deleted Successfully!',
+                text : '',
+                showCancelButton: false
+            })
+
+            tableTopic.row("#" + event.target.parentElement.parentElement.id).remove();
+            tableTopic.draw();
+
+        }).catch(async function(value){
+            var action = await Swal.fire({
+                type : 'error',
+                title: 'Cannot Deleted!',
+                text : 'An Error has occured',
+                showCancelButton: false
+            })
+        })
+
+    }
+
+</script>

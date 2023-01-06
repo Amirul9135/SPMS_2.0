@@ -1,0 +1,124 @@
+<!--app-content open-->
+<style>
+  #homePageName {
+    padding-left: 1vw;
+  }
+</style>
+<div class="side-app" onload="setup()">
+  <!-- ROW-1 -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card banner">
+        <div class="card-body">
+          <div class="row">
+
+            <div class="col-xl-9 col-lg-10 pl-lg-0">
+              <div class="row">
+                <div class="col-xl-12 col-lg-12">
+                  <div class="text-left text-white mt-xl-4">
+                    <h3 class="font-weight-semibold">
+                      WELCOME TO STUDENTS PERFORMANCE MONITORING SYSTEM
+                    </h3>
+                    <h4 class="font-weight-normal" id="homePageName">NURUL AISYAH BINTI ARIS</h4>
+                    <!-- <p class="mb-lg-0 text-white-50">
+                      SEKOLAH KEBANGSAAN PERINGGIT
+                    </p>
+                    <p class="mb-lg-0 text-white-50">5 ARIF</p>-->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ROW-1 End-->
+  <!-- ROW-4 -->
+  <div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Ongoing Assessments</h3>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+
+            <table class="table table-bordered table-hover text-nowrap mb-0" id="dtbOnAssessment">
+              <thead class="bg-primary">
+                <tr>
+                  <th width="30%" class="text-white">Assessment Title</th>
+                  <th width="15%" class=" text-white">
+                    Subject
+                  </th>
+                  <th width="40%" class="text-center text-white">Date & Time</th>
+                </tr>
+              </thead>
+              <tbody class="mycustom_tbd">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ROW-4 END -->
+</div>
+<script>
+  var dtbOnAssessment;
+  function setup() {
+    dtbOnAssessment = new DataTable('#dtbOnAssessment')
+    loadOngoingAssessment()
+    document.getElementById('homePageName').innerHTML = localStorage.getItem('uname')
+  }
+
+  function loadOngoingAssessment() {
+    Server.request("GET", "/api/assessment/?status=ongoing", null, true).then(function (result) {
+      result = JSON.parse(result)
+      console.log(result)
+      dtbOnAssessment.clear();
+      var tmpRow;
+      result.forEach(assm => {
+        tmpRow = dtbOnAssessment.row.add([
+          assm.title,
+          assm.subject,
+          '<i class="fa fa-calendar text-info"></i> ' + new Date(assm.open).toLocaleDateString("en-GB") + '  <i class="fa fa-clock-o text-info"></i> ' + new Date(assm.open).toLocaleTimeString() + '<br>'
+          + '<i class="fa fa-calendar text-danger"></i> ' + new Date(assm.close).toLocaleDateString("en-GB") + '  <i class="fa fa-clock-o text-danger"></i> ' + new Date(assm.close).toLocaleTimeString() + '<br>'
+        ]).node()
+        tmpRow.id = assm.assessmentId;
+        tmpRow.dataset.description = assm.description
+        tmpRow.dataset.duration = assm.duration
+        tmpRow.onclick = clickAssessment
+      })
+      dtbOnAssessment.draw();
+    }).catch(function (err) {
+      console.log(err)
+    })
+  }
+
+  function clickAssessment(e) {
+    startAttempt(e.target.parentElement.id)
+  }
+
+  function startAttempt(asId) {
+    Server.request("POST", "/api/assessment/startAttempt", { "assessmentId": asId }, true).then(function (result) {
+      navigate('/assessment_attempt?asId=' + asId)
+    }).catch(function (err) {
+      console.log(err)
+      var msg = ""
+      try {
+        err = JSON.parse(err.replace("unauthorized: ", ''))
+        msg = err.error
+      }
+      catch (e) {
+
+      }
+      Swal.fire({
+        type: "error",
+        title: "unable to start attempt",
+        text: msg
+      })
+    })
+  }
+
+</script>

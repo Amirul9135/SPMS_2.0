@@ -1,0 +1,474 @@
+<style>
+    .modal-xl {
+        max-width: 80%;
+    }
+
+    .card-header>span {
+        cursor: pointer;
+    }
+
+    .btn-normal {
+        background-color: gainsboro;
+    }
+
+    .btn-normal:hover {
+        background-color: white;
+        border: solid 1px cyan;
+    }
+
+    .prevent-select {
+        -webkit-user-select: none;
+        /* Safari */
+        -ms-user-select: none;
+        /* IE 10 and IE 11 */
+        user-select: none;
+        /* Standard syntax */
+    }
+
+    .my-tab-show {
+        transform: scaleX(1);
+        visibility: visible;
+        max-height: fit-content;
+    }
+
+
+    .my-tab {
+        transition: all .4s ease-in-out;
+        transform-origin: left;
+    }
+
+    .my-tab-hide {
+        position: absolute;
+        transform: scaleX(0);
+        height: 0px;
+        max-height: 0px;
+        overflow: hidden;
+    }
+
+    .btn-answered {
+        background-color: rgb(200, 239, 253);
+    }
+
+    .btn-active {
+        background-color: #2f89f5;
+        color: white;
+    }
+
+    .btn-active:hover {
+        background-color: white;
+        border: solid 1px cyan;
+    }
+</style>
+
+<div class="side-app" onload="setup()">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <span onclick="$('#ModalAssessmentDetail').modal('show');">Assessment Information <i
+                            class="fa fa-info-circle"></i></span>
+                    <div class="card-options ">
+                        </button><i class="fe fe-chevron-up text-white" onclick="toggle_card(event)"></i>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <% var count=1 %>
+                        <% questions.forEach(qq=>{ %>
+                            <button title="right click to mark/flag question" onclick="btnQuestion(event)" class="btn btn-normal
+                            <% if(qq.choosenAnswerNo != null || qq.answerText != null){ %>
+                             <%=" btn-answered"%>
+                                <% } %>
+                                    " id="btn<%=count%>" data-questionId="<%= qq.questionId %> ">
+                                            <%= count %>
+                            </button>
+                            <% count++ %>
+                                <%}) %>
+                </div>
+                <div class="card-footer text-center">
+                    <button class="btn btn-pill btn-outline-primary" onclick="finishAttempt()">Submit & Finish
+                        Attempt</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12" style="position: relative;">
+            <% var i=1 %>
+                <%questions.forEach(q=>{ %>
+                    <div class="card question_card my-tab my-tab-hide prevent-select" id="Q<%=i%>"
+                        data-qId="<%=q.questionId%>" data-qtype="<%= q.questionType %> ">
+                        <div class="card-header bg-info text-white">Question&nbsp;<span>
+                                <%= i %>
+                            </span></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12 QAttachment">
+                                    <div class="row">
+                                        <% if(q.attachmentIds !=null){ %>
+                                            <% var qattach=q.attachmentIds.split(',') %>
+                                                <% qattach.forEach(qat=>{ %>
+                                                    <div class="col-md-3">
+
+                                                        <img src="<%=" /res/images/attachment/" + qat +".png" %>"
+                                                        class="image-fluid" data-toggle="modal"
+                                                        onclick="zoomImage(event)"
+                                                        data-target="#ModalZoom" >
+                                                    </div>
+                                                    <% })} %>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 QText border-bottom p-2"
+                                    style="font-size: 1.2em;pointer-events: none;">
+                                    <%= q.questionText %>
+                                </div>
+                                <div class="col-md-12 QAnswer p-1">
+                                    <% if(q.questionType==1){ %>
+                                        <label class="form-label">Answer</label>
+                                        <input onkeyup="submitHandler(event)" type="text" class="form-control"
+                                            placeholder="Answer" <% if(q.answerText !=null){ %>
+                                        value="<%=q.answerText%>"
+                                            <% } %>
+                                                >
+                                                <% }else if(q.questionType==0){ %>
+                                                    <% q.answer.forEach(ans=>{ %>
+                                                        <div class="col md-12">
+                                                            <div class="row">
+                                                                <label class="custom-control custom-radio">
+                                                                    <input onchange="submitHandler(event)" type="radio"
+                                                                        value="<%=ans.answerNo%>"
+                                                                        name="rad<%= q.questionId %>"
+                                                                        class="custom-control-input" <%
+                                                                        if(q.choosenAnswerNo==ans.answerNo){ %>
+                                                                    checked
+                                                                    <%}%>
+
+                                                                        >
+                                                                        <span class="custom-control-label">
+                                                                            <%=ans.answerText%>
+                                                                        </span>
+                                                                        <% if(ans.attachmentId !=null) {%>
+
+                                                                            <img src="<%=" /res/images/attachment/" +
+                                                                                ans.attachmentId +".png" %>"
+                                                                            class="image-fluid" data-toggle="modal"
+                                                                            onclick="zoomImage(event)"
+                                                                            data-target="#ModalZoom" >
+
+                                                                            <%} %>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                        <% })} %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <% i++ %>
+                            <div class="card-footer">
+                                <%if(i <=questions.length){%>
+                                    <button class="btn btn-pill btn-outline-primary" style="float: right;"
+                                        data-next="<%=i%>" onclick="btnQuestion(event)">Next</button>
+                                    <%}%>
+                                        <%if((i-2) !=0){%>
+                                            <button class="btn btn-pill btn-outline-primary" style="float: left;"
+                                                data-next="<%=i-2%>" onclick="btnQuestion(event)">Previous</button>
+                                            <%}%>
+                            </div>
+                    </div>
+                    <% })%>
+        </div>
+    </div>
+    <div class="modal fade" id="ModalAssessmentDetail" data-asid="<%= assessment.assessmentId %>" tabindex="-1"
+        aria-hidden="true" data-asId="<%= assessment.assessmentId %>">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h5 class="modal-title w-100">
+                        <%=assessment.title%>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12  border-bottom  border-top  p-2">
+                            <%=assessment.description%>
+                        </div>
+                        <div class="col-md-12  border-bottom  border-top p-2">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Subject Code</label>
+                                    <input type="text" disabled class="form-control" value="<%=assessment.subject%> ">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Allowed Attempt Duration (minutes)</label>
+                                    <input type="text" disabled class="form-control" value="<%=assessment.duration%> ">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12  border-bottom  border-top p-2">
+                            <% var dtOpen=new Date(assessment.open)%>
+                                <% var dtClose=new Date(assessment.close)%>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Open Time</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="fa fa-calendar tx-16 lh-0 op-6 text-info"></i>
+                                                    </div>
+                                                </div><!-- input-group-prepend -->
+                                                <input class="form-control " type="text" autocomplete="off" disabled
+                                                    value="<%=dtOpen.toLocaleDateString('en-GB')%>">
+                                            </div>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
+                                                    </div>
+                                                </div><!-- input-group-prepend -->
+                                                <input class="form-control" type="text" autocomplete="off" disabled
+                                                    value="<%=dtOpen.toLocaleTimeString()%>">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Close Time</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="fa fa-calendar tx-16 lh-0 op-6 text-warning"></i>
+                                                    </div>
+                                                </div><!-- input-group-prepend -->
+                                                <input class="form-control " type="text" autocomplete="off" disabled
+                                                    value="<%=dtClose.toLocaleDateString('en-GB')%>">
+                                            </div>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="fa fa-clock-o tx-16 lh-0 op-6 text-warning"></i>
+                                                    </div>
+                                                </div><!-- input-group-prepend -->
+                                                <input class="form-control" type="text" autocomplete="off" disabled
+                                                    value="<%=dtClose.toLocaleTimeString()%>">
+                                            </div>
+                                        </div>
+                                    </div>
+                        </div>
+
+                        <div class="col-md-12  border-bottom  border-top p-2">
+                            <label class="form-label">Student Details</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Student Id</label>
+                                    <input type="text" disabled class="form-control" value="<%=student.id%> ">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" disabled class="form-control" value="<%=student.name%> ">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Start Attempt</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
+                                            </div>
+                                        </div><!-- input-group-prepend -->
+                                        <input class="form-control" type="text" autocomplete="off" disabled
+                                            value="<%=atTime.startAttempt%>">
+                                    </div>
+                                    <label class="form-label">End Attempt</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <i class="fa fa-clock-o tx-16 lh-0 op-6 text-danger"></i>
+                                            </div>
+                                        </div><!-- input-group-prepend -->
+                                        <input id="dtEndAttempt" data-real="<%=atTime.realEnd%>" class="form-control"
+                                            type="text" autocomplete="off" disabled value="<%=atTime.endAttempt%>">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer text-center" style="justify-content: center;">
+                    <button class="btn btn-primary" onclick="$('#ModalAssessmentDetail').modal('hide');"> OK </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+    });
+
+    document.querySelectorAll('.btn-normal').forEach(b => {
+        b.addEventListener("contextmenu", (e) => {
+            if (e.target.classList.contains('bg-warning')) {
+                e.target.classList.remove('bg-warning')
+            }
+            else {
+                e.target.classList.add('bg-warning')
+            }
+            e.preventDefault()
+        })
+    })
+
+    var assessmentId;
+    var submitTimeouts = {}
+    var answerCache = {}
+    var mainTimeout
+    var tPrev = 0;
+    var tElapsed = 0;
+
+    window.onblur = function () {
+        console.log("focusout")
+        tElapsed = timePoint() - tPrev
+    }
+
+    window.onfocus = function () {
+        tPrev = timePoint()
+    }
+
+    function setup() {
+        var ndate = new Date(document.getElementById("dtEndAttempt").dataset.real)
+        mainTimeout = setTimeout(endAssessment, ndate.getTime() - new Date().getTime()
+        )
+
+        //timeout end assessment
+        $('#ModalAssessmentDetail').modal('show');
+        goToQuestion(1);
+        assessmentId = parseInt(document.getElementById('ModalAssessmentDetail').dataset.asid)
+        resetTimer()
+    }
+
+
+    function resetTimer() {
+        tPrev = timePoint()
+        tElapsed = 0
+    }
+
+    async function endAssessment() {
+        await Swal.fire({
+            type: 'warning',
+            title: 'Attempt Time Ended'
+        })
+        navigate('/')
+    }
+
+    function btnQuestion(e) {
+        console.log(e.target.id)
+        var num
+        if (e.target.id) {
+
+            num = parseInt(e.target.id.replace('btn', ''))
+        }
+        else {
+            num = e.target.dataset.next;
+        }
+        goToQuestion(num)
+    }
+
+    function goToQuestion(num) {
+        document.querySelectorAll('.my-tab-show').forEach(tb => {
+            tb.classList.remove('my-tab-show')
+            tb.classList.add('my-tab-hide')
+        })
+        document.querySelectorAll('.btn-active').forEach(btn => {
+            btn.classList.remove('btn-active')
+        })
+        document.getElementById('btn' + num).classList.add('btn-active')
+        document.getElementById('Q' + num).classList.add('my-tab-show')
+        document.getElementById('Q' + num).classList.remove('my-tab-hide')
+    }
+
+
+    function submitHandler(e) {
+        var card = e.target.closest(".question_card")
+        var question = card.dataset;
+        var val = e.target.value.trim()
+        if (submitTimeouts.hasOwnProperty(question.qid)) {
+            clearTimeout(submitTimeouts[question.qid])
+        }
+        submitTimeouts[question.qid] = setTimeout(function () {
+            if (answerCache[question.qid] == val) {
+                return//no change return no need to submit, reduce trafic
+            }
+            answerCache[question.qid] = val
+            submitAnswer(val, question.qid, question.qtype, card.id)
+        }, 1000)
+        //timeut 1000 ms, 1 second, minor delay to reduce trafic in case user change too much in short amount of time
+    }
+
+
+    function submitAnswer(ans, qid, type, cardId) {
+        console.log(cardId)
+        var data = {
+            "assessmentId": assessmentId,
+            "questionId": parseInt(qid),
+            "questionType": parseInt(type)
+        }
+        if (type == 0) {
+            data["ansNo"] = parseInt(ans)
+        }
+        else if (type == 1) {
+            data["ansText"] = ans
+        }
+        data["time"] = timePoint() - tPrev + tElapsed
+        if (data["time"] >= 1) {
+            data["time"] = data["time"] - 1//1000ms , 1 second delay of the request
+        }
+        resetTimer()
+        Server.request("POST", "/api/assessment/submit", data, true).then(function (result) {
+            document.getElementById("btn" + cardId.replace('Q', '')).classList.add('btn-answered')
+            console.log('submitted')
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    function timePoint() {
+        return Math.floor(new Date().getTime() / 1000)
+    }
+
+    async function finishAttempt() {
+
+        var unAns = ""
+        document.querySelectorAll('.btn-normal').forEach(btn => {
+            if (!btn.classList.contains('btn-answered')) {
+                unAns += " (" + btn.id.replace('btn', '') + ")"
+            }
+        })
+        if (unAns != "") {
+
+            var conf = await Swal.fire({
+                type: "warning",
+                title: "You may have left some question",
+                html: "Check question <br>" + unAns,
+                showCancelButton: true,
+                confirmButtonText: "proceed anyway"
+            })
+            if (conf.dismiss) {
+                return;
+            }
+        }
+        var action = await Swal.fire({
+            type: "warning",
+            title: "Submit And Finish Attempt?",
+            html: "You will no longer be able to continue attempt or edit your answer<br>Are you sure?",
+            showCancelButton: true
+        })
+        if (action.value) {
+            if (action.value == true) {
+                Server.request('POST', '/api/assessment/finishAttempt', { "assessmentId": assessmentId }, true).then(function (result) {
+                    clearTimeout(mainTimeout)
+                    navigate('/')
+                }).catch(function (err) {
+                    console.log(err)
+                })
+            }
+        }
+    }
+
+</script>

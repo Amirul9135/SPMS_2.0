@@ -1,0 +1,117 @@
+<style>
+    .btnPrint {
+        position: fixed;
+        bottom: .5vh;
+        right: .5vw;
+        z-index: 2;
+    }
+
+    .btnPrint:hover {
+        color: white;
+    }
+
+    .text-uncenter-overide {
+        text-align: left !important;
+    }
+
+    .mytb_highlight {
+        background-color: rgb(181, 207, 255);
+    }
+</style>
+<div class="side-app" onload="setup()">
+
+    <button class="btnPrint btn btn-pill btn-outline-danger" type="button" onclick="printReport(event)">
+        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp; Save PDF
+    </button>
+    <div id="ejsData" data-totalmark="<%= tMark %>" data-grading="<%=assessment.grading%>"
+        data-assigned="<%= JSON.stringify(assignedQuestion) %> "></div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card" id="Card_AssessmentDetail" data-asid="<%=assessment.assessmentId%>">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title">
+                        Assessment Detail
+                    </h3>
+
+                    <div class="card-options ">
+                        </button><i class="fe fe-chevron-up text-white" onclick="toggle_card(event)"></i>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <h2><u><strong>
+                                        <%=assessment.title%>
+                                    </strong></u>
+                            </h2>
+                        </div>
+                        <div class="col-md-12  border-bottom  border-top  p-2">
+                            <%=assessment.description%>
+                        </div>
+                        <div class="col-md-12  border-bottom  border-top p-2">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Subject Code</label>
+                                    <input type="text" disabled class="form-control" value="<%=assessment.subject%> ">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Allowed Attempt Duration (minutes)</label>
+                                    <input type="text" disabled class="form-control" value="<%=assessment.duration%> ">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12  border-bottom  border-top p-2">
+                            <% var dtOpen=new Date(assessment.open)%>
+                                <% var dtClose=new Date(assessment.close)%>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Open Time</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="fa fa-calendar tx-16 lh-0 op-6 text-info"></i>
+                                                    </div>
+                                                </div><!-- input-group-prepend -->
+                                                <input class="form-control " type="text" autocomplete="off" disabled
+                                                    value="<%=dtOpen.toLocaleDateString('en-GB')%>">
+                                            </div>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
+                                                    </div>
+                                                </div><!-- input-group-prepend -->
+                                                <input class="form-control" type="text" autocomplete="off" disabled
+                                                    value="<%=dtOpen.toLocaleTimeString()%>">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Close Time</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="fa fa-calendar tx-16 lh-0 op-6 text-warning"></i>
+                                                    </div>
+                                                </div><!-- input-group-prepend -->
+                                                <input class="form-control " type="text" autocomplete="off" disabled
+                                                    value="<%=dtClose.toLocaleDateString('en-GB')%>">
+                                            </div>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="fa fa-clock-o tx-16 lh-0 op-6 text-warning"></i>
+                                                    </div>
+                                                </div><!-- input-group-prepend -->
+                                                <input class="form-control" type="text" autocomplete="off" disabled
+                                                    value="<%=dtClose.toLocaleTimeString()%>">
+                                            </div>
+                                        </div>
+                                    </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

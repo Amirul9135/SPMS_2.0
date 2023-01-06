@@ -1,0 +1,381 @@
+<div class="side-app" onload="setup()">
+
+  <div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+      <div class="card">
+        <div class="card-header text-white bg-info">
+          <h3 class="card-title">Find Questions</h3>
+          <div class="card-options">
+            <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i
+                class="fe fe-chevron-up text-white"></i></a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-2">
+              <label class="form-label mt-0">Date Created</label> <input
+                class="form-control fc-datepicker hasDatepicker" placeholder="MM/DD/YYYY" type="text" name="daterange"
+                id="dateCreatedRange" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label mt-0">Subject</label>
+              <div class="select-search">
+                <input type="text" class="form-control" data-list="idListSubj" onkeyup="SSKeyHandler(event)"
+                  onfocus="SSFocus(event)" onblur="SSFocus(event)" onplay="changeSubject(event)">
+                <ul onclick="SSItemClick(event)" id="idListSubj" data-selected="-1">
+                  <% subjects.forEach(subj=> {%>
+                    <li id="<%= subj['subjectCode']%>">
+                      <%=subj["title"]%>
+                    </li>
+                    <%});%>
+                </ul>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label mt-0">Topic</label>
+              <select class="form-control select2-show-search" id="selectTopic">
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label mt-0">Question Type</label>
+              <select class="form-control select2-show-search" id="selectAnsType">
+                <option value="-1">All</option>
+                <% ansType.forEach(atype=> {%>
+                  <option value="<%=atype.qTypeId%>">
+                    <%=atype.label%>
+                  </option>
+                  <%});%>
+              </select>
+            </div>
+
+            <div class="col-md-2 text-left">
+              <label class="form-label mt-0"><br /></label>
+              <button onclick="searchQuestion()" class="btn btn-info"><b><i class="fa fa-search"></i> Search
+                  Question</b></button>
+              <label class="custom-control custom-checkbox text-left">
+                <input id="chkOnlyMine" type="checkbox" class="custom-control-input" name="example-checkbox2" checked>
+                <span class="custom-control-label">Only my own question</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW-table -->
+  <div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Senarai Soalan</h3>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover text-nowrap mb-0" id="tbQuestionList">
+              <thead class="bg-primary">
+                <tr>
+                  <th width="50%" class="text-white">Question</th>
+                  <th width="8%" class="text-center text-white">Type</th>
+                  <th width="15%" class="text-center text-white">
+                    Topic/ Subject
+                  </th>
+                  <th width="12%" class="text-center text-white">
+                    Date Created
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="mycustom_tbd">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ROW-4 END -->
+</div>
+
+<div class="modal fade" id="ModalQuestionDetail" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Question Detail</h5>
+        &nbsp;&nbsp;
+        <button type="button" class="btn-info-light btn-pill" id="MDQ_Editbtn" onclick="navEditQuestion(event)">
+          <i class="fa fa-edit"></i>
+          edit
+        </button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row" style="justify-content: center;">
+          <div class="row col-md-12">
+            <div class="col-md-6">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">
+                    Subject
+                  </div><!-- input-group-text -->
+                </div><!-- input-group-prepend -->
+                <input disabled class="form-control ui-timepicker-input" id="MQD_Subject" type="text">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">
+                    Topic
+                  </div><!-- input-group-text -->
+                </div><!-- input-group-prepend -->
+                <input disabled class="form-control ui-timepicker-input" id="MQD_Topic" type="text">
+              </div>
+            </div>
+          </div>
+          <div class="row col-md-12"><br></div>
+          <div id="MQD_imageContainer" class="row col-md-11"
+            style="white-space: nowrap;flex-wrap: nowrap;overflow-x: auto;">
+          </div>
+
+          <div class="col-md-12">
+            <br>
+          </div>
+          <div class="row col-md-12">
+            <div class="card">
+              <div id="MQD_QuestionText" class="card-body">asd question text</div>
+            </div>
+          </div>
+          <div class="row col-md-12">
+            <div class="card">
+              <div class="card-header" id="MQD_AnsType">Answer Type:</div>
+              <div class="card-body" id="MQD_AnswerList">
+                <table class="table table-bordered table-hover text-nowrap mb-0" id="MQD_ansTable">
+                  <thead class="bg-primary">
+                    <tr>
+                      <th width="60%" class="text-white">Answer Text</th>
+                      <th width="20%" class="text-center text-white">Mark(%)</th>
+                      <th width="20%" class="text-center text-white">
+                        Attachment
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="mycustom_tbd">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span class="text-muted" id="MQD_date">S</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/res/assets/plugins/bootstrap-daterangepicker/moment.min.js"></script>
+<script src="/res/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+
+<script src="/res/assets/js/form-elements.js"></script>
+<script id="f_bot_script">
+  var MQD_ansTable;
+
+  $('input[name="daterange"]').daterangepicker({
+    startDate: "01/01/2022", // after open picker you'll see this dates as picked
+    endDate: Date.parse('01 Jan 2000 00:00:00 GMT'),
+    locale: {
+      format: 'DD/MM/YYYY',
+    }
+  });
+
+  var datatable;
+  function setup() {
+    MQD_ansTable = new DataTable('#MQD_ansTable');
+    datatable = new DataTable('#tbQuestionList', {
+      // options 
+      "columnDefs":
+        [
+          { "targets": [1, 2, 3], "searchable": false }
+        ]
+    });
+  }
+
+  function changeSubject(e) {
+    var subjId = document.getElementById(e.target.dataset.list).dataset.selected;
+    if (e.target.value != -1) {
+      Server.request("POST", "/api/question/getTopicBySubject", { subjectId: subjId }, false).then(
+        function (value) {
+          value = JSON.parse(value)
+          var fragment = document.createDocumentFragment();
+          fragment.appendChild(createElementFromHTML('<option value="-1">All</option>'))
+          value.forEach(topic => {
+            fragment.appendChild(createElementFromHTML('<option value="' + topic.topicId + '">' + topic.title + '</option>'))
+          });
+          document.getElementById("selectTopic").innerHTML = "";
+          document.getElementById("selectTopic").appendChild(fragment);
+          document.getElementById("selectTopic").removeAttribute("disabled");
+        }
+      ).catch(function (value) {
+
+      })
+    }
+    else {
+      document.getElementById("selectTopic").setAttribute("disabled", "");
+    }
+  }
+  function searchQuestion() {
+    var subjcode = document.getElementById("idListSubj").dataset.selected;
+    if (subjcode == "-1") {
+      Message.createNew("Warning", "Please Select subject", 2);
+      return;
+    }
+    var topicId = document.getElementById("selectTopic").value;
+    var questionType = document.getElementById("selectAnsType").value;
+    var date = document.getElementById("dateCreatedRange").value;
+    date = date.split(" - ");
+    var requestUrl = "/api/question/find?dStart=" + date[0] + "&dEnd=" + date[1] + "&subjectCode=" + subjcode
+    if (topicId != "-1") {
+      requestUrl += "&topicId=" + topicId
+    }
+    if (questionType != "-1") {
+      requestUrl += "&questionType=" + questionType
+    }
+    if (document.getElementById("chkOnlyMine").checked) {
+      requestUrl += "&owner=me"
+    }
+    Server.request("GET", requestUrl, null, true).then(function (result) {
+      result = JSON.parse(result)
+      console.log(result)
+      var tmpRow;
+      datatable.clear();
+      result.forEach(question => {
+        tmpRow = datatable.row.add([
+          question.questionText,
+          question.qType,
+          question.subject + '<br><span class="text-muted">' + question.topic + '</span>',
+          question.dateCreated.substring(0, 10)
+        ]).node()
+        tmpRow.id = question.questionId;
+        tmpRow.onclick = questionDetail
+      })
+
+      datatable.draw();
+    }).catch(function (err) {
+      console.log(err)
+    })
+  }
+
+  function rowClick(e) {
+    var clicked = e.target;
+    if (e.target.tagName == "TD")
+      clicked = e.target.parentElement
+    console.log(clicked)
+  }
+
+  //question detail modal
+
+  function questionDetail(e) {
+    if (e.target.tagName == "BUTTON") {
+      return;
+    }
+    if (e.target.tagName == "TD") {
+      viewQuestionDetail(e.target.parentElement.id)
+    }
+  }
+  function viewQuestionDetail(qid) {
+    Server.request("GET", "/api/question/detail?questionId=" + qid, null, false).then(
+      function (result) {
+        result = JSON.parse(result)
+        document.getElementById("MDQ_Editbtn").dataset.questionid = qid
+        document.getElementById("MQD_Subject").value = result.subject
+        document.getElementById("MQD_Topic").value = result.topic
+        document.getElementById("MQD_QuestionText").innerHTML = result.questionText
+        document.getElementById("MQD_date").innerHTML = result.dateCreated.substring(0, 10)
+        var useracc = localStorage.getItem('uid') //temporay, later get from localstorage after login
+        if (useracc == result.creatorId) {
+          document.getElementById("MDQ_Editbtn").style.display = "initial"
+        }
+        else {
+          document.getElementById("MDQ_Editbtn").style.display = "none"
+        }
+
+        loadQuestionDetailAttachment(qid)
+        if (result.questionType != 2) {
+          //not t/f
+          document.getElementById("MQD_AnsType").innerHTML = "Answers"
+
+          document.getElementById("MQD_AnswerList").style.display = "initial"
+          loadAnswer(qid)
+        }
+        else {
+          document.getElementById("MQD_AnsType").innerHTML = "Answer Type: True or False"
+          document.getElementById("MQD_AnswerList").style.display = "none"
+        }
+      }
+    ).catch(function (err) {
+      Message.createNew("Error", "failed to load question detail: " + err, 3);
+    })
+    $('#ModalQuestionDetail').modal('show');
+    //createElementFromHTML('<img  class="image-fluid attachment-upload" data-toggle="modal" data-target="#ModalZoom" onclick="zoomImage(event)">')
+  }
+
+  function loadQuestionDetailAttachment(questionId) {
+    Server.request("GET", "/api/question/attachmentList?id=" + questionId, null, false).then(function (result) {
+      result = JSON.parse(result);
+      document.getElementById("MQD_imageContainer").innerHTML = ""
+      result.forEach(attc => {
+        var img = createElementFromHTML('<img  class="image-fluid" data-toggle="modal" data-target="#ModalZoom" onclick="zoomImage(event)">')
+        img.src = "/res/images/attachment/" + attc.attachmentId + ".png";
+        img.title = attc.label;
+        img.id = attc.attachmentId;
+        var inp = createElementFromHTML('<input type="text" class="form-control" disabled>')
+        inp.value = attc.label;
+        var dv = createElementFromHTML('<div class="col-md-3 text-center"></div')
+        dv.appendChild(inp)
+        dv.appendChild(img)
+        document.getElementById("MQD_imageContainer").appendChild(dv)
+      })
+    }).catch(function (err) {
+      console.log(err)
+    })
+  }
+
+  function loadAnswer(questionId) {
+    Server.request("GET", "/api/question/answer/?id=" + questionId, null, false).then(
+      function (result) {
+        MQD_ansTable.clear()
+        result = JSON.parse(result)
+        console.log(result)
+        result.forEach(ans => {
+          var attach = "none"
+          if (ans.attachmentId != null) {
+            attach = '<img class="image-fluid attachment-upload" data-toggle="modal" data-target="#ModalZoom" onclick="zoomImage(event)"'
+              + 'src="/res/images/attachment/' + ans.attachmentId + '.png">'
+          }
+          MQD_ansTable.row.add([
+            ans.answerText,
+            ans.relativeMark,
+            attach
+
+          ])
+        })
+        MQD_ansTable.draw()
+      }
+    ).catch(function (err) {
+      console.log(err)
+    })
+  }
+
+  function navEditQuestion(e) {
+    $('#ModalQuestionDetail').modal('hide');
+    navigate('/questionCreate?id=' + e.target.dataset.questionid)
+    navigate('/questionCreate?id=' + e.target.dataset.questionid)
+  }
+
+</script>
+<!--INTERNAL  FORMELEMENTS JS -->

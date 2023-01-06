@@ -1,0 +1,218 @@
+<style>
+  .btn-outline-info>i {
+    color: blue;
+    pointer-events: none;
+  }
+
+  .btn-outline-info:hover>i {
+    color: white;
+  }
+
+  .btn-botImage {
+    display: block;
+    position: absolute;
+    right: 2%;
+  }
+</style>
+
+<!--LOAD value hidden input-->
+<script src="/res/script/questionCreate.js"></script>
+<div class="side-app" onload="loadData()">
+  <div>
+    <h1 class="page-title mb-6" style="font-size: 30px">Create Question</h1>
+
+
+  </div>
+  <!-- ROW-1 OPEN -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header bg-primary">
+          <h3 class="card-title text-white">Question Property</h3>
+
+          <div class="card-options">
+
+            <button id="btnRmv" onclick="removeQuestion()" data-brackets-id="12627" class="btn btn-danger qUpdateMode"
+              style="display: none;">
+              <i class="fa fa-remove"></i>
+              remove
+              question</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Subject</label>
+
+
+                <div class="select-search">
+                  <input id="SSsubject" type="text" autocomplete="off" class="form-control" data-list="idList"
+                    onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)" onblur="SSFocus(event)"
+                    onplay="changeSubject(event)">
+                  <ul onclick="SSItemClick(event)" id="idList" data-selected="-1">
+                    <% subjects.forEach(subj=> {%>
+                      <li id="<%= subj['subjectCode']%>">
+                        <%=subj["title"]%>
+                      </li>
+                      <%});%>
+                  </ul>
+                </div>
+
+                <!--
+                <select onchange="changeSubject(event)" class="form-control"
+                  data-placeholder="Choose one (with optgroup)" tabindex="-1">
+                  <option value="-1">Select Subject</option> 
+                    </option> 
+                </select>-->
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Topic</label>
+                <select id="selectTopic" class="form-control" data-placeholder="Choose one (with optgroup)"
+                  tabindex="-1" disabled>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+
+              <div class="form-group form-elements">
+                <div class="form-label">Question/Answer Type</div>
+                <div class="custom-controls-stacked" id="radQuestionType">
+
+                  <% ansType.forEach(atype=> {%>
+                    <label class="custom-control custom-radio">
+                      <input type="radio" class="custom-control-input rad-qtype" name="rad_questionType"
+                        value="qtype<%=atype.qTypeId%>" onchange="ansTypeChange(event)" /><span
+                        class="custom-control-label">
+                        <%=atype.label%>
+                      </span></label>
+                    <%});%>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--Attachment-->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header bg-primary">
+          <h3 class="card-title text-white">Attachments</h3>
+        </div>
+        <div class="card-body">
+          <div class="row" id="QuestionImageRow">
+            <img class="img-fluid">
+          </div>
+          <div class="row  justify-content-center">
+            <div class="col-md-10  text-center">
+
+              <button class="btn btn-pill btn-outline-success qUpdateMode"
+                style="display: none; float: none; margin: 0 auto; " id="btnSaveAttachemnt"
+                onclick="saveAttachmentChange()"><i class=" fa
+              fa-check"></i>save attachment changes</button>
+            </div>
+            <div class="col-md-10 text-center">
+
+              <button class="btn btn-outline-info" style="float: none; margin: 0 auto;border-radius: 50%;"
+                data-toggle="modal" data-target="#ModalAttachment"><i class=" fa
+              fa-plus"></i></button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Question-->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header bg-primary">
+          <h3 class="card-title text-white">Question Details</h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12">
+
+              <div class="form-group"><label class="form-label">Question Text</label><textarea
+                  class="form-control question-text" name="example-textarea-input" rows="4" placeholder="text here.."
+                  id="txtaQuestionText"></textarea>
+                <button class="btn btn-pill btn-outline-success qUpdateMode"
+                  style="display: none; float: none; margin: 0 auto; " id="btnSaveAttachemnt"
+                  onclick="updateQuestionText()"><i class=" fa
+                    fa-check"></i>Save Question Text</button>
+              </div>
+              <div class="card card-answer-container" id="dvQuestionAnswer" style="display: none;">
+                <div class="card-header">
+                  <h4 class="card-title">Question Answers</h4>&nbsp;<a class="btn btn-outline-info"
+                    style="border-radius:50%" onclick="createAnswer(event)"><i class="fe fe-plus"></i></a>
+                  <div class="card-options">
+                    <button class="btn btn-pill btn-outline-success qUpdateMode"
+                      style="display: none; float: none; margin: 0 auto; " id="btnSaveAttachemnt"
+                      onclick="updateAnswer()"><i class=" fa
+                        fa-check"></i>Save Answers</button><i class="fe fe-chevron-up"
+                      onclick="toggle_card(event)"></i>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="row answerContainer" id="ansInnerContainer"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div data-brackets-id="12625" class="btn-list text-center">
+            <a id="btnSave" data-brackets-id="12626" onclick="submitQuestion()" class="btn btn-primary">Save changes</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="ModalAttachment" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="example-Modal3">Attachment</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input id="uploadQAttach" type="file" accept="image/png, image/jpeg" onchange="prevUpload(event)" />
+        <img id="prevTest">
+
+        <div class="form-group">
+          <label class="form-label">Image name</label>
+          <input type="text" class="form-control" id="uploadQAttachDBName"
+            placeholder="name of the image which will be saved in the system">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary" onclick="generatePreview()">Save</a>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</div>
+<!-- CONTAINER CLOSED -->
+
+<script src="/res/assets/js/form-elements.js"></script>
+
+<!-- INTERNAL  FILE UPLOADES JS -->
+<script src="/res/assets/plugins/fileuploads/js/fileupload.js"></script>
+<script src="/res/assets/plugins/fileuploads/js/file-upload.js"></script>

@@ -1,0 +1,483 @@
+<style>
+    button * {
+        pointer-events: none;
+    }
+</style>
+
+<div class="side-app" onload="setup()">
+
+    <!-- header -->
+    <div class="row">
+        <div class="col-md-10 col-xl-10">
+            <h1 class="page-title mb-6" style="font-size: 30px;">Student</h1>
+        </div>
+
+        <div class="col-md-2 col-xl-2 text-right">
+            <button type="button" class="btn btn-pill btn-secondary-light" data-toggle="modal"
+                data-target="#modal_studentForm"><i class="fa fa-plus mr-2"><b
+                        style="font-family: sans-serif;">&nbsp;Student</b></i></button>
+        </div>
+    </div>
+    <!-- /header -->
+
+    <!-- filter -->
+    <div class="row">
+        <div class="col-md-12 col-xl-12">
+            <div class="card">
+                <div class="card-header text-white bg-info">
+                    <h3 class="card-title">Find Student</h3>
+                    <div class="card-options">
+                        <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i
+                                class="fe fe-chevron-up text-white"></i></a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-md-5 col-xl-5">
+                            <label class="form-label mt-0">Choose School</label>
+                            <select id="txtschool" class="form-control select2-show-search" data-placeholder="Semua">
+                                <option value="3">SMK Telok Mas</option>
+                                <option value="4">SMK Lahad Datu</option>
+                                <option value="2">SMKA Sultan Muhammad</option>
+                                <option value="1">DUMMY school</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 col-xl-2">
+                            <label class="form-label mt-0">Choose Class</label>
+                            <select id="txtclass" class="form-control select2-show-search" data-placeholder="Semua">
+                                <option value="3">1 Bestari</option>
+                                <option value="4">1 Cemerlang</option>
+                                <option value="5">1 Arif</option>
+                                <option value="2">5 Arif</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-1 col-xl-1 text-right">
+                            <label class="form-label mt-0"><br></label>
+                            <button onclick="loadStudent()" class="btn btn-info"><b><i
+                                        class="fa fa-search"></i></b></button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /filter -->
+
+    <!-- ROW-table -->
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">List of Student</h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover text-nowrap mb-0" id="StudTable">
+                            <thead class="bg-primary">
+                                <tr>
+                                    <th width="50%" class="text-white">Student Name</th>
+                                    <th width="20%" class="text-center text-white">School</th>
+                                    <th width="20%" class="text-center text-white">Class</th>
+                                    <th width="10%" class="text-center text-white"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="mycustom_tbd">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+    <!-- ROW-4 END -->
+</div>
+
+
+<!-- MODAL -->
+<div class="modal fade" id="modal_studentForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content modal-md">
+            <div class="modal-header bg-info">
+                <h5 class="modal-title text-white" id="exampleModalLabel"><b>Student Registration</b></h5>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="exampleInputname">Name</label>
+                            <input type="text" class="form-control" id="txtname">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-12">
+                        <div class="form-group">
+                            <label for="exampleInputnumber">I/C Number</label>
+                            <input type="text" class="form-control" id="txtstudentId">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-12">
+                        <div class="form-group">
+                            <label for="exampleInputnumber1">Phone Number</label>
+                            <input type="text" class="form-control" id="txtphone">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Email</label>
+                            <input type="email" class="form-control" id="txtemail">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="exampleInputnumber">Password</label>
+                            <input type="password" class="form-control" id="txtpassword">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="sekolah">School</label>
+                            <select class="form-control select2-show-search" id="txtfullName">
+                                <optgroup>
+                                    <option value="1">SMKA Sultan Muhammad</option>
+                                    <option value="2">SMK Telok Mas</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="kelas">Class</label>
+                            <select class="form-control select2-show-search" id="txtclassName">
+                                <optgroup>
+                                    <option value="1">5 Arif</option>
+                                    <option value="2">1 Bestari</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <!-- <div class="col-lg-12 col-md-12">
+                        <hr style="width:100%;text-align:left;margin-left:0">
+                    </div> -->
+
+                    <!-- title -->
+                    <!-- <div class="col-md-12 col-xl-12">
+                        <h1 class="page-title mb-6" style="font-size: 18px;"> Maklumat Penjaga</h1>
+                    </div> -->
+                    <!-- title -->
+
+                    <!-- <div class="col-lg-2 col-md-12">
+                        <div class="form-group">
+                            <label for="exampleInputnameid">I/C Penjaga</label>
+                            <input type="text" class="form-control" id="txtguardianId">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="exampleInputname1">Nama Penjaga</label>
+                            <input type="text" class="form-control" id="txtguardianName">
+                        </div>
+                    </div> -->
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="exampleInputnumber">State</label>
+                            <select id="selectState" class="form-control select2" onchange="changeState(event)">
+                                <option value="-1">Choose State</option>
+                                <% states.forEach(state=> {%>
+                                    <option value="<%= state['state_code']%>">
+                                        <%=state["state_name"]%>
+                                    </option>
+                                    <%});%>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="exampleInputnumber">Postcode</label>
+
+                            <div class="select-search">
+                                <input id="SSPostcode" type="text" autocomplete="off" disabled class="form-control"
+                                    data-list="idListPostcode" onkeyup="SSKeyHandler(event)"
+                                    onfocus="SSFocus(event)" onblur="SSFocus(event)" onplay="changePostcode(event)">
+                                <ul onclick="SSItemClick(event)" id="idListPostcode" data-selected="-1">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="exampleInputnumber">Area</label>
+                            <div class="select-search">
+                                <input id="SSArea" type="text" autocomplete="off" disabled class="form-control"
+                                    data-list="idListArea" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                    onblur="SSFocus(event)">
+                                <ul onclick="SSItemClick(event)" id="idListArea" data-selected="-1">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="exampleInputnumber">Adress</label>
+                            <input type="text" class="form-control" id="txtalamat" placeholder="Alamat" />
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="modal-footer text-white" style="justify-content: center;">
+                <a class="btn btn-warning mt-1" data-dismiss="modal">Cancel</a>
+                <a class="btn btn-success mt-1" button onclick="registerStud()">Save</a>
+                <span id="spnMsg"></span>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MODAL CLOSED -->
+
+<script>
+    //initialize
+    var tableStud;
+    function setup() {
+        tableStud = new DataTable("#StudTable")
+    }
+
+    async function registerStud() {
+
+        var action = await Swal.fire({
+            type: 'question',
+            title: 'Confirm Registration',
+            text: 'Register new student into the system?',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+
+        //ni validation untuk check user dah pilih address
+        var areaId = document.getElementById("idListArea").dataset.selected;
+        if (areaId == "-1" || document.getElementById("txtalamat").value.length < 3) {
+            Message.createNew("Warning", "Invalid address", 2)
+            return false;
+        }
+
+        var name = document.getElementById("txtname").value;
+        var studentId = document.getElementById("txtstudentId").value;
+        var password = document.getElementById("txtpassword").value;
+        var phone = document.getElementById("txtphone").value;
+        var email = document.getElementById("txtemail").value;
+
+        var data = {
+            "name": name,
+            "accountId": studentId,
+            "password": password,
+            "phone": phone,
+            "email": email,
+            "userType": 1
+        }
+
+        Server.request("POST", "/api/account/register", data, false).then(function (value) {
+            console.log(value)
+            Message.createNew("Success", "s", 0);
+            document.getElementById("txtname").value = "";
+            document.getElementById("txtstudentId").value = "";
+            document.getElementById("txtpassword").value = "";
+            document.getElementById("txtphone").value = "";
+            document.getElementById("txtemail").value = "";
+            submitAddress(studentId)//ni panggil function ak buat yg akan insertkan address ke address table guna id die
+            $('#modal_studentForm').modal('hide');//ni auto tutup balek modal after register
+
+        }).catch(function (value) {
+            console.log(value);
+            value = JSON.parse(value);
+            if (value.hasOwnProperty("validationError")) {
+                displayValidationError(value);
+            }
+            else {
+                Message.createNew("Error", value, 3);
+            }
+
+        })
+    }
+
+    //
+    function loadStudent() {
+        console.log("load")
+
+        var school = document.getElementById("txtschool").value;
+        var classId = document.getElementById("txtclass").value;
+        console.log(school);
+
+
+        Server.request("GET", "/api/account/allStudent?schoolId=" + school + "&classId=" + classId, null, false).then(function (value) {
+            var data = JSON.parse(value);
+            tableStud.clear();
+            var tmpRow;
+            data.forEach(student => { //temporary
+                tmpRow = tableStud.row.add([
+                    student.name + '<br><span>' + student.studentId + '</span>',
+                    student.fullName,
+                    student.className,
+                    '<button onclick="deleteStud(event)" class="btn btn-danger"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button>'
+                ]).node()
+                tmpRow.id = student.studentId; //letak id
+            })
+            tableStud.draw();
+            console.log(data)
+        }
+        ).catch(function (value) {
+            console.log(value);
+        });
+    }
+
+    function showId(event) {
+        console.log(event.target);
+    }
+
+    function resetPostcode() {
+        document.getElementById("SSPostcode").disabled = true;
+        document.getElementById("SSPostcode").value = "";
+        document.getElementById("idListPostcode").innerHTML = ""
+        document.getElementById("idListPostcode").dataset.selected = "-1"
+    }
+    function resetArea() {
+        document.getElementById("SSArea").disabled = true;
+        document.getElementById("SSArea").value = "";
+        document.getElementById("idListArea").innerHTML = ""
+        document.getElementById("idListArea").dataset.selected = "-1"
+    }
+
+    function changePostcode(e) {
+        if (e.target.value == '-1') {
+            resetArea()
+            return;
+        }
+        document.getElementById("SSArea").disabled = false;
+
+        var postcode = document.getElementById(e.target.dataset.list).dataset.selected;
+        getAreaInPostcode(postcode).then(function (result) {
+            result = JSON.parse(result)
+            var strhtml = ""
+            result.forEach(area => {
+                strhtml += '<li id="' + area.areaId + '">' + area.areaName + '</li>'
+            });
+            document.getElementById("idListArea").innerHTML = strhtml
+        }).catch(function (err) {
+            console.log(err)
+        })
+        console.log(postcode)
+    }
+
+    function changeState(e) {
+        resetArea()
+        resetPostcode()
+        if (e.target.value == '-1') {
+            return;
+        }
+        document.getElementById("SSPostcode").disabled = false;
+        getPostcodes(e.target.value).then(function (result) {
+            result = JSON.parse(result)
+            var strhtml = ""
+            result.forEach(pcode => {
+                strhtml += '<li id="' + pcode.postcode + '">' + pcode.postcode + ' ' + pcode.postOffice + '</li>'
+            });
+            document.getElementById("idListPostcode").innerHTML = strhtml
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    function submitAddress(accountId) {
+        var text = document.getElementById("txtalamat").value;
+        var areaId = document.getElementById("idListArea").dataset.selected;
+        if (areaId == "-1") {
+            Message.createNew("Warning", "Invalid address", 2)
+            return false;
+        }
+        areaId = parseInt(areaId);
+        var address = {
+            "accountId": accountId,
+            "addressText": text,
+            "areaId": areaId
+        }
+        Server.request("POST", "/api/address/set", address, false).then(function (result) {
+            Message.createNew("success", "address saved", 0);
+            return;
+        }).catch(function (err) {
+            Message.createNew("err", err, 3);
+            return;
+        })
+    }
+
+    function updatestud() {
+        submitAddress()
+        var data = {
+            name: document.getElementById("txtname").value,
+            phone: document.getElementById("txtphone").value,
+            email: document.getElementById("txtEmail").value
+        }
+
+        Server.request("POST", "/api/account/update", data, false).then(
+            function (value) {
+                Message.createNew("Success", value, 0);
+            }).catch(function (value) {
+                value = JSON.parse(value);
+                if (value.hasOwnProperty("validationError")) {
+                    displayValidationError(value);
+                }
+                else {
+                    Message.createNew("Error", value, 3);
+                }
+            })
+    }
+
+    async function deleteStud(event) {
+
+        var action = await Swal.fire({
+            type: 'question',
+            title: 'Delete Student?',
+            text: 'This student will be removed from the system',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+        var data = {
+            "accountId": event.target.parentElement.parentElement.id
+        }
+
+        Server.request("POST", "/api/account/delete", data, false).then(function (value) {
+            tableStud.row("#" + event.target.parentElement.parentElement.id).remove()
+            tableStud.draw()
+            Message.createNew("Removed", "Student has been removed from database", 1);
+
+        }).catch(function (value) {
+            console.log(value)
+        })
+    }
+    //loadStudent()
+</script>

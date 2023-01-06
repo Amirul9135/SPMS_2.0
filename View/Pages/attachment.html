@@ -1,0 +1,88 @@
+<style>
+    .img-max {
+        max-height: 30vh;
+        width: 100%;
+    }
+
+    .fav-true {
+        background-color: red;
+        color: white !important;
+    }
+</style>
+<div class="side-app">
+    <div>
+        <h1 class="page-title mb-6" style="font-size: 30px">Manage Attachments</h1>
+    </div>
+    <div class="row">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <h3 class="card-title text-white">Find Attachments</h3>
+            </div>
+            <div class="card-body d-flex">
+                <div class="col-md-3">
+                    <label class="form-label">Creator</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Attachment Name</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Upload date</label>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <input class="form-control fc-datepicker" placeholder="MM/DD/YYYY" type="text">
+                            </div>
+                        </div>
+                        <span><label class="form-label">to</label> </span>
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <input class="form-control fc-datepicker" placeholder="MM/DD/YYYY" type="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 text-right">
+                    <label class="form-label"><br></label>
+                    <a href="#" class="btn btn-info"><b><i class="fa fa-search"></i></b></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <button onclick="changeTest()">test</button>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card item-card">
+                            <div class="product-grid6  card-body">
+                                <div class="product-image6">
+                                    <img id="test" class="img-fluid img-max">
+                                </div>
+                                <div class="product-content text-center">
+                                </div>
+                                <ul class="icons">
+                                    <li><a data-tip="Zoom"><i class="fa fa-search "></i></a></li>
+                                    <li><a data-tip="Add to Favorite" class="fav-true"><i class="fa fa-heart-o"></i></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function changeTest() {
+        document.getElementById("test").src = "/res/images/attachment/Sign.jpg"
+    }
+    document.getElementById("test").src = "/res/images/attachment/test2.png" 
+</script>

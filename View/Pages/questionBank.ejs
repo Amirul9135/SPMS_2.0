@@ -1,0 +1,796 @@
+<style>
+    .modal-xl {
+        max-width: 80%;
+    }
+
+    .my-tab-parent {
+        position: relative;
+    }
+
+    button * {
+        pointer-events: none;
+    }
+
+    .my-tab-parent>.my-tab {
+        transform-origin: right;
+    }
+
+    .my-tab-parent>:nth-child(2n+3),
+    .my-tab-parent>:first-child {
+        transform-origin: left;
+    }
+
+    .my-tab {
+        transition: all .4s ease-in-out;
+    }
+
+    .my-tab-show {
+        transform: scaleX(1);
+        visibility: visible;
+        max-height: fit-content;
+    }
+
+    .my-tab-hide {
+        transform: scaleX(0);
+        max-height: 0;
+        overflow: hidden;
+    }
+</style>
+
+<div class="side-app" onload="setup()">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title">Question Set</h3>
+                </div>
+                <div class="card-body my-tab-parent">
+                    <div class="row my-tab my-tab-show" id="dvSetList">
+                        <div class="col-md-12">
+                            <button class="btn btn-pill btn-outline-success" data-toggle="modal"
+                                data-target="#ModalQuestionSet" onclick="createNewModal()"><i class="fa fa-plus"></i>
+                                Create new
+                                Set</button>
+                            <div class="col-md-12">
+                                <br>
+                                <table class="table table-bordered table-hover text-nowrap mb-0" id="tbQuestionSet">
+                                    <thead class="bg-primary">
+                                        <tr>
+                                            <th width="30%" class="text-white">Set Name</th>
+                                            <th width="15%" class=" text-white">
+                                                Subject
+                                            </th>
+                                            <th width="40%" class="text-center text-white">Description</th>
+                                            <th width="15%" class="text-center text-white">Question Count</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="mycustom_tbd">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row my-tab my-tab-hide" id="dvSetDetail">
+                        <div class="col-md-12">
+
+                            <button class="btn btn-pill btn-outline-primary" onclick="toggleSetList()"><i
+                                    class="fa fa-arrow-left"></i></button>
+                            <button class="btn btn-pill btn-outline-danger" style="float: right;"
+                                onclick="deleteQuestionSet()"><i class="fa fa-trash"></i></button>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputname">Question Set Name</label>
+                                <input type="text" readonly class="form-control" id="txtQSDName" placeholder="Name"
+                                    onclick="updateSetModal()" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputname">Subject</label>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <input type="text" disabled class="form-control" id="txtQSDSubjectCode"
+                                            placeholder="Name" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" disabled class="form-control" id="txtQSDSubject"
+                                            placeholder="Name" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group"><label class="form-label">Description</label><textarea
+                                    class="form-control question-text" name="example-textarea-input" rows="4"
+                                    placeholder="text here.." id="txtQSDDesc" readonly
+                                    onclick="updateSetModal()"></textarea>
+                            </div>
+                        </div>
+                        <div class=" col-md-12 border-bottom">
+                            <label class="form-label">
+                                <h4><b>Question List</b></h4>
+                            </label>
+
+
+                        </div>
+                        <div class="col-md-12">
+                            <button class="btn btn-outline-success" style="float: right;" data-toggle="modal"
+                                data-target="#ModalQuestionBank" onclick="openQuestionBank()"><i class="fa fa-plus"></i>
+                                Add Question </button>
+
+                            <table class="table table-bordered table-hover text-nowrap mb-0" id="tbSetitems">
+                                <thead class="bg-primary">
+                                    <tr>
+                                        <th width="50%" class="text-white">Question</th>
+                                        <th width="8%" class="text-center text-white">Type</th>
+                                        <th width="15%" class="text-center text-white">
+                                            Subject/Topic
+                                        </th>
+                                        <th width="12%" class="text-center text-white">
+                                            Date Created
+                                        </th>
+                                        <th width="5%" class="text-center text-white"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="mycustom_tbd">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+<div class="modal fade" id="ModalQuestionSet" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create new Question Set</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" id="subjectfield">
+                        <label class="form-label mt-0">Subject</label>
+                        <div class="select-search">
+                            <input type="text" class="form-control" data-list="idListSubj" onkeyup="SSKeyHandler(event)"
+                                onfocus="SSFocus(event)" onblur="SSFocus(event)">
+                            <ul onclick="SSItemClick(event)" id="idListSubj" data-selected="-1">
+                                <% subjects.forEach(subj=> {%>
+                                    <li id="<%= subj['subjectCode']%>">
+                                        <%=subj["title"]%>
+                                    </li>
+                                    <%});%>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="exampleInputname">Question Set Name</label>
+                            <input type="text" class="form-control" id="txtQSetName" placeholder="Name" />
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group"><label class="form-label">Description</label><textarea
+                                class="form-control question-text" name="example-textarea-input" rows="4"
+                                placeholder="text here.." id="txtQSetDesc"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <button id="btnCreateNewSet" class="btn btn-pill btn-outline-success" onclick="createNewSet()"><i
+                        class="fa fa-plus"></i>
+                    Create new
+                    Set</button>
+                <button id="btnSaveChange" class="btn btn-pill btn-outline-success" style="display: none;"
+                    onclick="SaveSetDetailChanges()"><i class="fa fa-check"></i>
+                    Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="ModalQuestionBank" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="modal-title">Question Bank</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label mt-0">Date Created</label> <input
+                                    class="form-control fc-datepicker hasDatepicker" placeholder="MM/DD/YYYY"
+                                    type="text" name="daterange" id="dateCreatedRange" />
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label mt-0">Topic</label>
+                                <select class="form-control select2-show-search" id="selectTopic">
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mt-0">Question Type</label>
+                                <select class="form-control select2-show-search" id="selectAnsType">
+                                    <option value="-1">All</option>
+                                    <% ansType.forEach(atype=> {%>
+                                        <option value="<%=atype.qTypeId%>">
+                                            <%=atype.label%>
+                                        </option>
+                                        <%});%>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2 text-right">
+                                <label class="form-label mt-0"><br /></label>
+                                <button onclick="searchQuestion()" class="btn btn-info text-right"><b><i
+                                            class="fa fa-search"></i> Search
+                                        Question</b></button>
+
+                            </div>
+                        </div>
+
+                        <label class="custom-control custom-checkbox text-left">
+                            <input id="chkOnlyMine" type="checkbox" class="custom-control-input"
+                                name="example-checkbox2" checked>
+                            <span class="custom-control-label">Only my own question</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover text-nowrap mb-0" id="QBtable">
+                            <thead class="bg-primary">
+                                <tr>
+                                    <th width="50%" class="text-white">Soalan</th>
+                                    <th width="10%" class="text-center text-white">Jenis</th>
+                                    <th width="15%" class="text-center text-white">
+                                        Topik/ Subjek
+                                    </th>
+                                    <th width="15%" class="text-center text-white">
+                                        Tarikh Cipta
+                                    </th>
+                                    <th width="10%" class="text-center text-white"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="mycustom_tbd">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalQuestionDetail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Question Detail</h5>
+                &nbsp;&nbsp;
+                <button type="button" class="btn-info-light btn-pill" id="MDQ_Editbtn" onclick="navEditQuestion(event)">
+                    <i class="fa fa-edit"></i>
+                    edit
+                </button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="justify-content: center;">
+                    <div class="row col-md-12">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        Subject
+                                    </div><!-- input-group-text -->
+                                </div><!-- input-group-prepend -->
+                                <input disabled class="form-control ui-timepicker-input" id="MQD_Subject" type="text">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        Topic
+                                    </div><!-- input-group-text -->
+                                </div><!-- input-group-prepend -->
+                                <input disabled class="form-control ui-timepicker-input" id="MQD_Topic" type="text">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row col-md-12"><br></div>
+                    <div id="MQD_imageContainer" class="row col-md-11"
+                        style="white-space: nowrap;flex-wrap: nowrap;overflow-x: auto;">
+                    </div>
+
+                    <div class="col-md-12">
+                        <br>
+                    </div>
+                    <div class="row col-md-12">
+                        <div class="card">
+                            <div id="MQD_QuestionText" class="card-body">asd question text</div>
+                        </div>
+                    </div>
+                    <div class="row col-md-12">
+                        <div class="card">
+                            <div class="card-header" id="MQD_AnsType">Answer Type:</div>
+                            <div class="card-body" id="MQD_AnswerList">
+                                <table class="table table-bordered table-hover text-nowrap mb-0" id="MQD_ansTable">
+                                    <thead class="bg-primary">
+                                        <tr>
+                                            <th width="60%" class="text-white">Answer Text</th>
+                                            <th width="20%" class="text-center text-white">Mark(%)</th>
+                                            <th width="20%" class="text-center text-white">
+                                                Attachment
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="mycustom_tbd">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="text-muted" id="MQD_date">S</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/res/assets/plugins/bootstrap-daterangepicker/moment.min.js"></script>
+<script src="/res/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+<script>
+
+    $('input[name="daterange"]').daterangepicker({
+        startDate: "01/01/2022", // after open picker you'll see this dates as picked
+        endDate: Date.parse('01 Jan 2000 00:00:00 GMT'),
+        locale: {
+            format: 'DD/MM/YYYY',
+        }
+    });
+
+    var tableQuestionSet;
+    var tableSetItems;
+    var MQD_ansTable;
+    var QBtable;
+
+    function setup() {
+        tableQuestionSet = new DataTable('#tbQuestionSet', {
+            // options 
+            "columnDefs":
+                [
+                    { "targets": [3], "className": "text-center" }
+                ]
+        });
+        tableSetItems = new DataTable('#tbSetitems');
+        MQD_ansTable = new DataTable('#MQD_ansTable');
+        QBtable = new DataTable('#QBtable', {
+            // options 
+            "columnDefs":
+                [
+                    { "targets": [4], "className": "text-center" }
+                ]
+        }
+        );
+        loadQuestionSetList();
+
+    }
+
+    function loadQuestionSetList() {
+        Server.request("GET", "/api/questionSet/", null, true).then(function (result) {
+            result = JSON.parse(result)
+            tableQuestionSet.clear();
+            var tmpRow;
+            result.forEach(set => {
+                tmpRow = tableQuestionSet.row.add([
+                    set.name,
+                    set.subject + '<br><span class="text-muted">' + set.subjectCode + '</span>',
+                    set.description,
+                    (set.count == null) ? 0 : set.count
+                ]).node()
+                tmpRow.id = set.questionSetId;
+                tmpRow.onclick = viewSetDetail
+            })
+
+            tableQuestionSet.draw();
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    function createNewSet() {
+        var SubjCode = document.getElementById("idListSubj").dataset.selected;
+        if (SubjCode == "-1") {
+            Message.createNew("Warning", "Invalid Subject code selected", 2);
+            return;
+        }
+        var name = document.getElementById("txtQSetName").value;
+        if (name.length < 5) {
+            Message.createNew("Warning", "Question set name too short", 2);
+            return;
+        }
+        var desc = document.getElementById("txtQSetDesc").value;
+        var data = {
+            "qSetName": name,
+            "qSetDesc": desc,
+            "subjectCode": SubjCode
+        }
+        Server.request("POST", "/api/questionSet/", data, true).then(function (result) {
+            result = JSON.parse(result);
+            var nData = {
+                "qSetId": result.id,
+                "staffId": "000000000000" //later get from loca storage
+            }
+            Server.request("POST", "/api/questionSet/staff", nData, true).then(function (result) {
+                Message.createNew("Success", "created", 0);
+                $('#ModalQuestionSet').modal('hide');
+                navigate('/questionBank')
+
+            }).catch(function (err) {
+                Message.createNew("ERROR", err, 3);
+            })
+
+        }).catch(function (err) {
+            Message.createNew("ERROR", err, 3);
+        })
+    }
+
+    function toggleSetList() {
+        var setList = document.getElementById("dvSetList");
+        var setDetail = document.getElementById("dvSetDetail");
+        if (setList.classList.contains("my-tab-show")) {
+            setList.classList.remove("my-tab-show")
+            setList.classList.add("my-tab-hide")
+            setDetail.classList.add("my-tab-show")
+            setDetail.classList.remove("my-tab-hide")
+        }
+        else {
+            if (updatedSet) {
+                loadQuestionSetList()
+                updatedSet = false;
+            }
+            setList.classList.add("my-tab-show")
+            setList.classList.remove("my-tab-hide")
+            setDetail.classList.remove("my-tab-show")
+            setDetail.classList.add("my-tab-hide")
+        }
+    }
+
+    var selectedSet = null;
+
+    function viewSetDetail(e) {
+        var clicked = e.target;
+        if (e.target.tagName == "TD")
+            clicked = e.target.parentElement
+        selectedSet = clicked.id
+        var tds = clicked.children
+        var subj = tds[1].innerHTML
+        subj = subj.split("<br>")
+        document.getElementById("txtQSDName").value = tds[0].innerHTML
+        document.getElementById("txtQSDSubjectCode").value = subj[1].replace('<span class="text-muted">', "").replace('</span>', "")
+        document.getElementById("txtQSDSubject").value = subj[0]
+        document.getElementById("txtQSDDesc").value = tds[2].innerHTML
+        loadQuestionInSet(clicked.id)
+        toggleSetList();
+    }
+
+    function loadQuestionInSet(setId) {
+        Server.request("GET", "/api/question/setId?questionSetId=" + setId, null, true).then(function (result) {
+            result = JSON.parse(result)
+            var tmpRow;
+            tableSetItems.clear()
+            result.forEach(question => {
+                tmpRow = tableSetItems.row.add([
+                    question.questionText,
+                    question.qType,
+                    question.subject + '<br><span class="text-muted">' + question.topic + '</span>',
+                    question.dateCreated.substring(0, 10),
+                    '<button class="btn btn-danger" onclick="removeQuestionFromList(event)"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button>'
+                ]).node()
+                tmpRow.id = question.questionId;
+                tmpRow.onclick = questionDetail
+            })
+
+            tableSetItems.draw();
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    function createNewModal() {
+        document.getElementById("subjectfield").style.display = "initial"
+        document.getElementById("btnCreateNewSet").style.display = "inline-block"
+        document.getElementById("btnSaveChange").style.display = "none"
+        document.getElementById("txtQSetDesc").value = ""
+        document.getElementById("txtQSetName").value = ""
+
+    }
+
+    function updateSetModal() {
+        document.getElementById("subjectfield").style.display = "none"
+        document.getElementById("btnCreateNewSet").style.display = "none"
+        document.getElementById("btnSaveChange").style.display = "inline-block"
+        document.getElementById("txtQSetDesc").value = document.getElementById("txtQSDDesc").value
+        document.getElementById("txtQSetName").value = document.getElementById("txtQSDName").value
+        $('#ModalQuestionSet').modal('show');
+    }
+
+    var updatedSet = false;
+    function SaveSetDetailChanges() {
+        var name = document.getElementById("txtQSetName").value;
+        if (name.length < 5) {
+            Message.createNew("Warning", "Question set name too short", 2);
+            return;
+        }
+        var desc = document.getElementById("txtQSetDesc").value;
+        var data = {
+            "qSetId": selectedSet,
+            "qSetName": name,
+            "qSetDesc": desc
+        }
+        Server.request("PATCH", "/api/questionSet/", data, true).then(function (result) {
+            Message.createNew("Success", "Details updated", 0);
+            document.getElementById("txtQSDDesc").value = desc
+            document.getElementById("txtQSDName").value = name
+            updatedSet = true;
+            $('#ModalQuestionSet').modal('hide');
+
+        }).catch(function (err) {
+            Message.createNew("ERROR", err, 3);
+        })
+    }
+
+    async function removeQuestionFromList(e) {
+        var questionId = e.target.parentElement.parentElement.id
+
+        var action = await Swal.fire({
+            type: 'question',
+            title: 'Confirm Action',
+            text: 'Remove question from the set?',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+        var data = {
+            "qSetId": selectedSet,
+            "questionId": questionId
+        }
+        Server.request("DELETE", "/api/questionSet/question", data, true).then(function (result) {
+            tableSetItems.row("#" + questionId).remove()
+            tableSetItems.draw()
+            updatedSet = true;
+            Message.createNew("Removed", "Question removed from list", 0)
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+
+    function questionDetail(e) {
+        if (e.target.tagName == "BUTTON") {
+            return;
+        }
+        if (e.target.tagName == "TD") {
+            viewQuestionDetail(e.target.parentElement.id)
+        }
+    }
+    function viewQuestionDetail(qid) {
+        Server.request("GET", "/api/question/detail?questionId=" + qid, null, true).then(
+            function (result) {
+                result = JSON.parse(result)
+                document.getElementById("MDQ_Editbtn").dataset.questionid = qid
+                document.getElementById("MQD_Subject").value = result.subject
+                document.getElementById("MQD_Topic").value = result.topic
+                document.getElementById("MQD_QuestionText").innerHTML = result.questionText
+                document.getElementById("MQD_date").innerHTML = result.dateCreated.substring(0, 10)
+                var useracc = localStorage.getItem('uid')
+                if (useracc == result.creatorId) {
+                    document.getElementById("MDQ_Editbtn").style.display = "initial"
+                }
+                else {
+                    document.getElementById("MDQ_Editbtn").style.display = "none"
+                }
+
+                loadQuestionDetailAttachment(qid)
+                if (result.questionType != 2) {
+                    //not t/f
+                    document.getElementById("MQD_AnsType").innerHTML = "Answers"
+                    document.getElementById("MQD_AnswerList").style.display = "initial"
+                    loadAnswer(qid)
+                }
+                else {
+                    document.getElementById("MQD_AnsType").innerHTML = "Answer Type: True or False"
+                    document.getElementById("MQD_AnswerList").style.display = "none"
+                }
+            }
+        ).catch(function (err) {
+            Message.createNew("Error", "failed to load question detail: " + err, 3);
+        })
+        $('#ModalQuestionDetail').modal('show');
+        //createElementFromHTML('<img  class="image-fluid attachment-upload" data-toggle="modal" data-target="#ModalZoom" onclick="zoomImage(event)">')
+    }
+
+    function loadQuestionDetailAttachment(questionId) {
+        Server.request("GET", "/api/question/attachmentList?id=" + questionId, null, true).then(function (result) {
+            result = JSON.parse(result);
+            document.getElementById("MQD_imageContainer").innerHTML = ""
+            result.forEach(attc => {
+                var img = createElementFromHTML('<img  class="image-fluid" data-toggle="modal" data-target="#ModalZoom" onclick="zoomImage(event)">')
+                img.src = "/res/images/attachment/" + attc.attachmentId + ".png";
+                img.title = attc.label;
+                img.id = attc.attachmentId;
+                var inp = createElementFromHTML('<input type="text" class="form-control" disabled>')
+                inp.value = attc.label;
+                var dv = createElementFromHTML('<div class="col-md-3 text-center"></div')
+                dv.appendChild(inp)
+                dv.appendChild(img)
+                document.getElementById("MQD_imageContainer").appendChild(dv)
+            })
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    function loadAnswer(questionId) {
+        Server.request("GET", "/api/question/answer/?id=" + questionId, null, true).then(
+            function (result) {
+                MQD_ansTable.clear()
+                result = JSON.parse(result)
+                result.forEach(ans => {
+                    var attach = "none"
+                    if (ans.attachmentId != null) {
+                        attach = '<img class="image-fluid attachment-upload" data-toggle="modal" data-target="#ModalZoom" onclick="zoomImage(event)"'
+                            + 'src="/res/images/attachment/' + ans.attachmentId + '.png">'
+                    }
+                    MQD_ansTable.row.add([
+                        ans.answerText,
+                        ans.relativeMark,
+                        attach
+
+                    ])
+                })
+                MQD_ansTable.draw()
+            }
+        ).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    function navEditQuestion(e) {
+        $('#ModalQuestionDetail').modal('hide');
+        navigate('/questionCreate?id=' + e.target.dataset.questionid)
+        navigate('/questionCreate?id=' + e.target.dataset.questionid)
+    }
+
+    function openQuestionBank() {
+        var subjCode = document.getElementById("txtQSDSubjectCode").value;
+        loadQBTopic(subjCode)
+    }
+
+    //question bank
+    function loadQBTopic(subjectCode) {
+        Server.request("POST", "/api/question/getTopicBySubject", { subjectId: subjectCode }, true).then(
+            function (value) {
+                value = JSON.parse(value)
+                var fragment = document.createDocumentFragment();
+                fragment.appendChild(createElementFromHTML('<option value="-1">All</option>'))
+                value.forEach(topic => {
+                    fragment.appendChild(createElementFromHTML('<option value="' + topic.topicId + '">' + topic.title + '</option>'))
+                });
+                document.getElementById("selectTopic").innerHTML = "";
+                document.getElementById("selectTopic").appendChild(fragment);
+                document.getElementById("selectTopic").removeAttribute("disabled");
+            }
+        ).catch(function (value) {
+
+        })
+    }
+
+    function searchQuestion() {
+        var subjcode = document.getElementById("txtQSDSubjectCode").value;
+        var topicId = document.getElementById("selectTopic").value;
+        var questionType = document.getElementById("selectAnsType").value;
+        var date = document.getElementById("dateCreatedRange").value;
+        date = date.split(" - ");
+        var requestUrl = "/api/question/find?dStart=" + date[0] + "&dEnd=" + date[1] + "&subjectCode=" + subjcode
+        if (topicId != "-1") {
+            requestUrl += "&topicId=" + topicId
+        }
+        if (questionType != "-1") {
+            requestUrl += "&questionType=" + questionType
+        }
+        if (document.getElementById("chkOnlyMine").checked) {
+            requestUrl += "&owner=me"
+        }
+        console.log(requestUrl)
+        Server.request("GET", requestUrl, null, true).then(function (result) {
+            result = JSON.parse(result)
+            var tmpRow;
+            QBtable.clear();
+            result.forEach(question => {
+                tmpRow = QBtable.row.add([
+                    question.questionText,
+                    question.qType,
+                    question.subject + '<br><span class="text-muted">' + question.topic + '</span>',
+                    question.dateCreated.substring(0, 10),
+                    '<button onclick="addQuestionToSet(event)" class="btn btn-outline-success" style="border-radius:50%"><i class="fa fa-plus"></i></button>'
+                ]).node()
+                tmpRow.id = question.questionId;
+                tmpRow.onclick = questionDetail
+            })
+
+            QBtable.draw();
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    function addQuestionToSet(e) {
+        var data = {
+            "qSetId": selectedSet,
+            "questionId": e.target.parentElement.parentElement.id
+        }
+        Server.request("POST", "/api/questionSet/question", data, true).then(function (result) {
+            Message.createNew("Success", "Question added into set", 0)
+            updatedSet = true;
+            loadQuestionInSet(selectedSet)
+        }).catch(function (err) {
+            if (err == "duplicate") {
+                Message.createNew("Duplicate", "Question is already in the set", 1)
+            }
+            else {
+                Message.createNew("Error", err, 3)
+
+            }
+        })
+    }
+
+    async function deleteQuestionSet() {
+        var action = await Swal.fire({
+            type: 'question',
+            title: 'Confirm Action',
+            text: 'Remove this Question set?',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+        Server.request('DELETE', '/api/questionSet/?id=' + selectedSet, null, true).then(async function (result) {
+            var action = await Swal.fire({
+                type: 'info',
+                title: 'Deleted',
+                text: 'Question set removed'
+            })
+            updatedSet = true
+            toggleSetList()
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+</script>

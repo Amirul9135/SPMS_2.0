@@ -1,0 +1,248 @@
+<div class="side-app" onload="loadAccount()">
+  <div class="row">
+    <div class="col-lg-12 col-xl-12 col-md-12 col-sm-12">
+      <!-- <div class="card">
+        <div class="card-body">
+          <div class="text-center">
+            <div class="userprofile">
+              <div class="userpic brround">
+                <img src="/res/assets/images/users/10.jpg" alt="" class="userpicimg" />
+              </div>
+              <h3 class="username text-dark mb-2" id="txtlabelname"></h3>
+              <p class="mb-1 text-muted">SMKA Sultan Muhammad</p>
+              <p class="mb-1 text-muted">5 Arif</p>
+              <p class="mb-1 text-muted">2022</p>
+            </div>
+          </div>
+        </div>
+      </div>-->
+
+      <!-- profile form -->
+      <div class="col-lg-12 col-xl-12 col-md-12 col-sm-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Profile Information</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="exampleInputname">Name</label>
+              <input type="text" class="form-control" id="txtname" placeholder="Name" />
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Email</label>
+              <input type="email" class="form-control" id="txtEmail" placeholder="Email" />
+            </div>
+            <div class="form-group">
+              <label for="exampleInputnumber">Phone Number</label>
+              <input type="number" class="form-control" id="txtphone" placeholder="Phone Number" />
+            </div>
+            <div class="form-group">
+              <label for="exampleInputnumber">Address</label>
+              <input type="text" class="form-control" id="txtalamat" placeholder="Address" />
+            </div>
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-4">
+                  <label for="exampleInputnumber">Area</label>
+                  <div class="select-search">
+                    <input id="SSArea" type="text" autocomplete="off" disabled class="form-control"
+                      data-list="idListArea" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                      onblur="SSFocus(event)">
+                    <ul onclick="SSItemClick(event)" id="idListArea" data-selected="-1">
+                    </ul>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label for="exampleInputnumber">Postcode</label>
+
+                  <div class="select-search">
+                    <input id="SSPostcode" type="text" autocomplete="off" disabled class="form-control"
+                      data-list="idListPostcode" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                      onblur="SSFocus(event)" onplay="changePostcode(event)">
+                    <ul onclick="SSItemClick(event)" id="idListPostcode" data-selected="-1">
+                    </ul>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label for="exampleInputnumber">State</label>
+                  <select id="selectState" class="form-control select2" onchange="changeState(event)">
+                    <option value="-1">Choose State</option>
+                    <% states.forEach(state=> {%>
+                      <option value="<%= state['state_code']%>">
+                        <%=state["state_name"]%>
+                      </option>
+                      <%});%>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer text-right">
+            <a onclick="updateacc()" class="btn btn-primary mt-1"><i class="fa fa-floppy-o"></i> Save</a>
+          </div>
+        </div>
+      </div>
+      <!-- /profile form -->
+    </div>
+  </div>
+
+  <script>
+    function allAccount() {
+      var cacheAcc = null;
+      var data = {
+        name: "name",
+        phone: "phone",
+        email: "email",
+      }
+
+      Server.request("GET", "/api/account/allAccount", null, false).then(
+        function (value) {
+          Message.createNew("Success", value, 0);
+        }).catch(function (value) {
+          Message.createNew("Error", value, 3);
+          console.log(value);
+        })
+    }
+
+    function updateacc() {
+
+      //ni validation untuk check user dah pilih address
+      var areaId = document.getElementById("idListArea").dataset.selected;
+      if (areaId == "-1" || document.getElementById("txtalamat").value.length < 3) {
+        Message.createNew("Warning", "Invalid address", 2)
+        return false;
+      }
+      submitAddress()
+
+      var data = {
+        name: document.getElementById("txtname").value,
+        phone: document.getElementById("txtphone").value,
+        email: document.getElementById("txtEmail").value
+      }
+
+      Server.request("POST", "/api/account/update", data, true).then(
+        function (value) {
+          Message.createNew("Success", value, 0);
+        }).catch(function (value) {
+          value = JSON.parse(value);
+          if (value.hasOwnProperty("validationError")) {
+            displayValidationError(value);
+          }
+          else {
+            Message.createNew("Error", value, 3);
+          }
+        })
+    }
+
+    function loadAccount() {
+
+      Server.request("GET", "/api/account/", null, true).then(function (value) {
+        value = JSON.parse(value)
+        cacheAcc = value;
+        document.getElementById("txtname").value = value.name;
+        //document.getElementById("txtlabelname").innerHTML = value.name;
+        document.getElementById("txtEmail").value = value.email;
+        document.getElementById("txtphone").value = value.phone;
+        console.log(value)
+        loadAddress()
+      }).catch(function (value) {
+        console.log(value)
+      })
+    }
+
+    function resetPostcode() {
+      document.getElementById("SSPostcode").disabled = true;
+      document.getElementById("SSPostcode").value = "";
+      document.getElementById("idListPostcode").innerHTML = ""
+      document.getElementById("idListPostcode").dataset.selected = "-1"
+    }
+    function resetArea() {
+      document.getElementById("SSArea").disabled = true;
+      document.getElementById("SSArea").value = "";
+      document.getElementById("idListArea").innerHTML = ""
+      document.getElementById("idListArea").dataset.selected = "-1"
+    }
+
+    function changePostcode(e) {
+      if (e.target.value == '-1') {
+        resetArea()
+        return;
+      }
+      document.getElementById("SSArea").disabled = false;
+
+      var postcode = document.getElementById(e.target.dataset.list).dataset.selected;
+      getAreaInPostcode(postcode).then(function (result) {
+        result = JSON.parse(result)
+        var strhtml = ""
+        result.forEach(area => {
+          strhtml += '<li id="' + area.areaId + '">' + area.areaName + '</li>'
+        });
+        document.getElementById("idListArea").innerHTML = strhtml
+      }).catch(function (err) {
+        console.log(err)
+      })
+      console.log(postcode)
+    }
+
+    function changeState(e) {
+      resetArea()
+      resetPostcode()
+      if (e.target.value == '-1') {
+        return;
+      }
+      document.getElementById("SSPostcode").disabled = false;
+      getPostcodes(e.target.value).then(function (result) {
+        result = JSON.parse(result)
+        var strhtml = ""
+        result.forEach(pcode => {
+          strhtml += '<li id="' + pcode.postcode + '">' + pcode.postcode + ' ' + pcode.postOffice + '</li>'
+        });
+        document.getElementById("idListPostcode").innerHTML = strhtml
+      }).catch(function (err) {
+        console.log(err)
+      })
+    }
+
+    function loadAddress() {
+      if (!cacheAcc)
+        return;
+      Server.request("GET", "/api/address/?accountId=" + cacheAcc.accountId, null, false).then(
+        function (result) {
+          result = JSON.parse(result)
+          console.log(result)
+          document.getElementById("SSPostcode").value = result.postcode + " " + result.postOffice;
+          document.getElementById("idListPostcode").dataset.selected = result.postOffice
+          document.getElementById("SSArea").value = result.areaName;
+          document.getElementById("idListArea").dataset.selected = result.areaId;
+          document.getElementById("txtalamat").value = result.addressText;
+          document.getElementById("selectState").value = result.state_code
+        }
+      ).catch(function (err) {
+        console.log(err)
+      })
+
+    }
+
+    function submitAddress() {
+      var text = document.getElementById("txtalamat").value;
+      var areaId = document.getElementById("idListArea").dataset.selected;
+      if (areaId == "-1") {
+        Message.createNew("Warning", "Invalid address", 2)
+        return false;
+      }
+
+      areaId = parseInt(areaId);
+      var address = {
+        "accountId": cacheAcc.accountId,
+        "addressText": text,
+        "areaId": areaId
+      }
+      Server.request("POST", "/api/address/set", address, false).then(function (result) {
+        Message.createNew("success", "address saved", 0);
+        return;
+      }).catch(function (err) {
+        Message.createNew("err", err, 3);
+        return;
+      })
+    }
+  </script>

@@ -1,0 +1,1743 @@
+<style>
+    .modal-xl {
+        max-width: 80%;
+    }
+
+    .my-tab-parent {
+        position: relative;
+    }
+
+    button * {
+        pointer-events: none;
+    }
+
+    .my-tab-parent>.my-tab {
+        transform-origin: right;
+    }
+
+    .my-tab-parent>:nth-child(2n+3),
+    .my-tab-parent>:first-child {
+        transform-origin: left;
+    }
+
+    .my-tab {
+        transition: all .4s ease-in-out;
+    }
+
+    .my-tab-show {
+        transform: scaleX(1);
+        visibility: visible;
+        max-height: fit-content;
+    }
+
+    .my-tab-hide {
+        transform: scaleX(0);
+        max-height: 0;
+        overflow: hidden;
+    }
+
+    .mycustom_tbd i {
+        pointer-events: none;
+    }
+
+    .mycustom_tbd span {
+        pointer-events: none;
+    }
+</style>
+<link rel="stylesheet" href="/res/assets/plugins/tabs/tabs.css">
+
+<div class="side-app" onload="setup()">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title">Assessment</h3>
+                </div>
+                <!--parent holder-->
+                <div class="card-body my-tab-parent">
+                    <div class="row my-tab my-tab-show" id="dvAssessmentList">
+                        <div class="col-md-12">
+                            <button class="btn btn-pill btn-outline-success staffOnly" data-toggle="modal"
+                                data-target="#ModalAssessmentForm" onclick="resetAssessmentForm()"><i
+                                    class="fa fa-plus"></i>
+                                Create new
+                                Assessment</button>
+
+                            <div class="col-md-12">
+                                <br>
+                                <table class="table table-bordered table-hover text-nowrap mb-0" id="dtbAssessmentList">
+                                    <thead class="bg-primary">
+                                        <tr>
+                                            <th width="30%" class="text-white">Assessment Title</th>
+                                            <th width="15%" class=" text-white">
+                                                Subject
+                                            </th>
+                                            <th width="40%" class="text-center text-white">Date & Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="mycustom_tbd">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row my-tab my-tab-hide staffOnly" id="dvAssessmentDetail">
+                        <div class="col-md-12">
+
+                            <button class="btn btn-pill btn-outline-primary" onclick="togglePage()"><i
+                                    class="fa fa-arrow-left"></i></button>
+
+                            <button class="btn btn-pill btn-outline-danger" onclick="deleteAssessment()"
+                                style="float: right;"><i class="fa fa-trash"></i>delete</button>
+                            &nbsp;
+                            <button class="btn btn-pill btn-outline-info" onclick="promptUpdate()"
+                                style="float: right;"><i class="fa fa-edit"></i>edit</button>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputname">Assessment Title</label>
+                                <input type="text" readonly class="form-control" id="txtASD_title" placeholder="Name" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputname">Subject</label>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <input type="text" disabled class="form-control" id="txtASD_subjcode"
+                                            placeholder="Name" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" disabled class="form-control" id="txtASD_subj"
+                                            placeholder="Name" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group"><label class="form-label">Description</label><textarea
+                                    class="form-control question-text" name="example-textarea-input" rows="4"
+                                    placeholder="text here.." id="txtASD_desc" readonly></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-6">
+
+                                    <label class="form-label">
+                                        Open
+                                    </label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <i class="fa fa-calendar tx-16 lh-0 op-6 text-info"></i>
+                                            </div>
+                                        </div><!-- input-group-prepend -->
+                                        <input class="form-control " id="txtASD_dstart" placeholder="Set time"
+                                            type="text" autocomplete="off" readonly>
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
+                                            </div>
+                                        </div><!-- input-group-prepend -->
+                                        <input class="form-control" id="txtASD_tstart" placeholder="Set time"
+                                            type="text" autocomplete="off" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        Close
+                                    </label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <i class="fa fa-calendar tx-16 lh-0 op-6 text-danger"></i>
+                                            </div>
+                                        </div><!-- input-group-prepend -->
+                                        <input class="form-control " id="txtASD_dend" placeholder="Set time" type="text"
+                                            autocomplete="off" readonly>
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <i class="fa fa-clock-o tx-16 lh-0 op-6 text-danger"></i>
+                                            </div>
+                                        </div><!-- input-group-prepend -->
+                                        <input class="form-control" id="txtASD_tend" placeholder="Set time" type="text"
+                                            autocomplete="off" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row" style="justify-content: center;">
+
+                                <div class="col-md-4" style="text-align: center;justify-content: center;">
+
+                                    <label class="form-label">
+                                        Duration Allowed (minute)
+                                    </label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <i class="fa fa-clock-o tx-16 lh-0 op-6 text-success"></i>
+                                            </div>
+                                        </div><!-- input-group-prepend -->
+                                        <input class="form-control " id="txtASD_duration" placeholder="Set time"
+                                            type="text" autocomplete="off" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!---->
+                        <div class=" col-md-12 border-bottom">
+                            <br>
+                        </div>
+                        <div class="col-md-12">
+                            <br>
+                        </div>
+                        <div class="col-md-12">
+                            <!--tab goes here-->
+                            <div class="tab_wrapper first_tab tab-style3">
+                                <ul class="tab_list">
+                                    <li class="active" rel="tab_1_1"><i class="fa fa-users"></i> Student List</li>
+                                    <li rel="tab_1_2" class=""><i class="fa fa-wpforms"></i> Question List</li>
+                                    <li rel="tab_1_3"><i class="fa fa-user"></i> Staff/Teacher List</li>
+                                </ul>
+                                <div class="content_wrapper">
+                                    <div title="student list" class="accordian_header tab_1_1 active"><i
+                                            class="fa fa-users"></i> Student list<span class="arrow"></span></div>
+                                    <div class="tab_content first tab_1_1 active" title="tab_1_1"
+                                        style="display: block;width: 100%;">
+                                        <div class="col-md-12">
+                                            <span class="tag tag-blue ">
+                                                Total number of Student
+                                                <span id="ASD_totalStudentTag" class="tag-addon tag-warning">40</span>
+                                            </span>
+                                            <button id="btnCreateNewQ" style="float: right;" onclick="btnAddStudent()"
+                                                class="btn btn-pill btn-outline-success"><i class="fa fa-plus"></i>
+                                                Add Student</button>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover text-nowrap mb-0"
+                                                id="tbASStudents">
+                                                <thead class="bg-primary">
+                                                    <tr>
+                                                        <th width="25%" class="text-white">Id</th>
+                                                        <th width="50%" class="text-center text-white">Name</th>
+                                                        <th width="20%" class="text-center text-white">
+                                                            Class & School
+                                                        </th>
+                                                        <th width="5%" class="text-center text-white"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="mycustom_tbd">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div title="Question list" class="accordian_header tab_1_2">Question
+                                        list<span class="arrow"></span></div>
+                                    <div class="tab_content first tab_1_2" title="tab_1_2" style="width: 100%;">
+                                        <div class="col-md-12">
+                                            <span class="tag tag-blue ">
+                                                Total number of question
+                                                <span id="ASD_totalQuestionTag" class="tag-addon tag-warning">40</span>
+                                            </span>
+                                            <span class="tag tag-azure ">
+                                                Total Mark
+                                                <span id="ASD_totalMarkTag" class="tag-addon tag-warning">40</span>
+                                            </span>
+                                            <button id="btnCreateNewQ" style="float: right;"
+                                                onclick="addQuestionHandler()"
+                                                class="btn btn-pill btn-outline-success"><i class="fa fa-plus"></i>
+                                                Add question</button>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover text-nowrap mb-0"
+                                                id="tbASQuestion">
+                                                <thead class="bg-primary">
+                                                    <tr>
+                                                        <th width="45%" class="text-white">Question</th>
+                                                        <th width="15%" class="text-center text-white">Type</th>
+                                                        <th width="15%" class="text-center text-white">
+                                                            Topic
+                                                        </th>
+                                                        <th width="10%" class="text-center text-white">
+                                                            Mark
+                                                        </th>
+                                                        <th width="10%" class="text-center text-white">Count</th>
+                                                        <th width="5%" class="text-center text-white"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="mycustom_tbd">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div title="staff list" class="accordian_header tab_1_3"><i
+                                            class="fa fa-user"></i>Staff list<span class="arrow"></span></div>
+                                    <div class="tab_content first tab_1_3" title="tab_1_3" style="width: 100%;">
+                                        <div class="col-md-12">
+                                            <button id="btnCreateNewQ" style="float: right;" onclick="btnAddStaff()"
+                                                class="btn btn-pill btn-outline-success"><i class="fa fa-plus"></i>
+                                                Add Staff</button>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover text-nowrap mb-0"
+                                                id="tbASStaff">
+                                                <thead class="bg-primary">
+                                                    <tr>
+                                                        <th width="30%" class="text-white">Id</th>
+                                                        <th width="60%" class="text-center text-white">Name</th>
+                                                        <th width="10%" class="text-center text-white"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="mycustom_tbd">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Assessment Form modal-->
+<div class="modal fade" id="ModalAssessmentForm" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assessment</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Assessment Title</label>
+                                    <input type="text" class="form-control" name="example-text-input"
+                                        placeholder="Name/title/label" id="txtAsTitle" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Subject</label>
+                                    <div class="select-search">
+                                        <input type="text" class="form-control" data-list="idListSubj"
+                                            onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                            onblur="SSFocus(event)" id="SSinSubj">
+                                        <ul onclick="SSItemClick(event)" id="idListSubj" data-selected="-1">
+                                            <% subjects.forEach(subj=> {%>
+                                                <li id="<%= subj['subjectCode']%>">
+                                                    <%=subj["title"]%>
+                                                </li>
+                                                <%});%>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" name="example-textarea-input" rows="4" id="txtAsDesc"
+                                        placeholder="text here.."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label class="form-label">Open & Close Date/time</label> <input
+                                    class="form-control fc-datepicker hasDatepicker" placeholder="MM/DD/YYYY"
+                                    type="text" name="daterange" id="txtAsDateRange" />
+                                <label class="form-label mt-0 text-muted" id="lblDtDura"></label>
+                            </div>
+                            <div class="col-md-4">
+
+                                <label class="form-label">Allowed Attempt Duration (minute)</label> <input
+                                    class="form-control" type="number" min="1" max="9999" id="txtAsDuration"
+                                    onkeyup="enforceMinMax(this)" />
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-12"><br></div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCreateNewA" class="btn btn-pill btn-outline-success" onclick="submitNewAssessment()"><i
+                        class="fa fa-plus"></i>
+                    Create new
+                    Assessment</button>
+                <button id="btnSaveChangeA" style="display: none;" class="btn btn-pill btn-outline-success"
+                    onclick="submitAssessmentUpdate()"><i class="fa fa-check"></i>
+                    Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Question Set list Modal-->
+<div class="modal fade staffOnly" id="ModalQuestionSets" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="modal-title">Question Sets</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover text-nowrap mb-0" id="tbQuestionSet">
+                            <thead class="bg-primary">
+                                <tr>
+                                    <th width="30%" class="text-white">Set Name</th>
+                                    <th width="15%" class=" text-white">
+                                        Subject
+                                    </th>
+                                    <th width="40%" class="text-center text-white">Description</th>
+                                    <th width="15%" class="text-center text-white">Question Count</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody class="mycustom_tbd">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Question set Detail Modal-->
+<div class="modal fade staffOnly" id="ModalQSD" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="modal-title" id="ModalQSDTitle">Question Sets</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered table-hover text-nowrap mb-0" id="tbSetitems">
+                            <thead class="bg-primary">
+                                <tr>
+                                    <th width="50%" class="text-white">Question</th>
+                                    <th width="8%" class="text-center text-white">Type</th>
+                                    <th width="15%" class="text-center text-white">
+                                        Subject/Topic
+                                    </th>
+                                    <th width="12%" class="text-center text-white">
+                                        Date Created
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="mycustom_tbd">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Question Bank Modal-->
+<div class="modal fade staffOnly" id="ModalQuestionBank" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="modal-title">Question Bank</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label mt-0">Date Created</label> <input
+                                    class="form-control fc-datepicker hasDatepicker" placeholder="MM/DD/YYYY"
+                                    type="text" name="daterange" id="dateCreatedRange" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mt-0">Topic</label>
+                                <select class="form-control select2-show-search" id="selectTopic">
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mt-0">Question Type</label>
+                                <select class="form-control select2-show-search" id="selectAnsType">
+                                    <option value="-1">All</option>
+                                    <% ansType.forEach(atype=> {%>
+                                        <option value="<%=atype.qTypeId%>">
+                                            <%=atype.label%>
+                                        </option>
+                                        <%});%>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2 text-right">
+                                <label class="form-label mt-0"><br /></label>
+                                <button onclick="searchQuestion()" class="btn btn-info text-right"><b><i
+                                            class="fa fa-search"></i> Search
+                                        Question</b></button>
+
+                            </div>
+                        </div>
+                        <label class="custom-control custom-checkbox text-left">
+                            <input id="chkOnlyMine" type="checkbox" class="custom-control-input"
+                                name="example-checkbox2" checked>
+                            <span class="custom-control-label">Only my own question</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover text-nowrap mb-0" id="QBtable">
+                            <thead class="bg-primary">
+                                <tr>
+                                    <th width="50%" class="text-white">Soalan</th>
+                                    <th width="10%" class="text-center text-white">Jenis</th>
+                                    <th width="15%" class="text-center text-white">
+                                        Topik/ Subjek
+                                    </th>
+                                    <th width="15%" class="text-center text-white">
+                                        Tarikh Cipta
+                                    </th>
+                                    <th width="10%" class="text-center text-white"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="mycustom_tbd">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Question Detail-->
+<div class="modal fade staffOnly" id="ModalQuestionDetail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Question Detail</h5>
+                &nbsp;&nbsp;
+                <button type="button" class="btn-info-light btn-pill" id="MDQ_Editbtn" onclick="navEditQuestion(event)">
+                    <i class="fa fa-edit"></i>
+                    edit
+                </button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="justify-content: center;">
+                    <div class="row col-md-12">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        Subject
+                                    </div><!-- input-group-text -->
+                                </div><!-- input-group-prepend -->
+                                <input disabled class="form-control ui-timepicker-input" id="MQD_Subject" type="text">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        Topic
+                                    </div><!-- input-group-text -->
+                                </div><!-- input-group-prepend -->
+                                <input disabled class="form-control ui-timepicker-input" id="MQD_Topic" type="text">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row col-md-12"><br></div>
+                    <div id="MQD_imageContainer" class="row col-md-11"
+                        style="white-space: nowrap;flex-wrap: nowrap;overflow-x: auto;">
+                    </div>
+
+                    <div class="col-md-12">
+                        <br>
+                    </div>
+                    <div class="row col-md-12">
+                        <div class="card">
+                            <div id="MQD_QuestionText" class="card-body">asd question text</div>
+                        </div>
+                    </div>
+                    <div class="row col-md-12">
+                        <div class="card">
+                            <div class="card-header" id="MQD_AnsType">Answer Type:</div>
+                            <div class="card-body" id="MQD_AnswerList">
+                                <table class="table table-bordered table-hover text-nowrap mb-0" id="MQD_ansTable">
+                                    <thead class="bg-primary">
+                                        <tr>
+                                            <th width="60%" class="text-white">Answer Text</th>
+                                            <th width="20%" class="text-center text-white">Mark(%)</th>
+                                            <th width="20%" class="text-center text-white">
+                                                Attachment
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="mycustom_tbd">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="text-muted" id="MQD_date">S</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/res/assets/plugins/bootstrap-daterangepicker/moment.min.js"></script>
+<script src="/res/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+<script src="/res/assets/plugins/tabs/tab-content.js"></script>
+<script src="/res/assets/plugins/tabs/jquery.multipurpose_tabcontent.js"></script>
+
+<script>
+    var dtbAssessmentList
+    var dtbASQuestion
+    var tableQuestionSet;
+    var MQD_ansTable;
+    var QBtable;
+    var tbASStudents;
+    var tbASStaff;
+
+    var tableSetItems;
+    var userType = null;
+    async function setup() {
+        var user = await verifyAccount()
+        dtbAssessmentList = new DataTable('#dtbAssessmentList');
+        loadAssessment()
+        userType = user.type
+        if (user.type == 1) {//student
+            document.querySelectorAll('.staffOnly').forEach(element => {
+                element.remove()
+            })
+            return
+        }
+        dtbASQuestion = new DataTable('#tbASQuestion')
+        tableQuestionSet = new DataTable('#tbQuestionSet', {
+            // options 
+            "columnDefs":
+                [
+                    { "targets": [3, 4], "className": "text-center" }
+                ]
+        });
+        tbASStudents = new DataTable('#tbASStudents', {
+            // options 
+            "columnDefs":
+                [
+                    { "targets": [3], "className": "text-center" }
+                ]
+        })
+        tbASStaff = new DataTable('#tbASStaff', {
+            // options 
+            "columnDefs":
+                [
+                    { "targets": [2], "className": "text-center" }
+                ]
+        })
+        tableSetItems = new DataTable('#tbSetitems');
+        MQD_ansTable = new DataTable('#MQD_ansTable');
+        QBtable = new DataTable('#QBtable', {
+            // options 
+            "columnDefs":
+                [
+                    { "targets": [4], "className": "text-center" }
+                ]
+        }
+        );
+
+        //disable focus locking in modal
+        jQuery('#ModalQuestionSets').on('shown.bs.modal', function () {
+            jQuery(document).off('focusin.modal');
+        });
+        jQuery('#ModalQuestionBank').on('shown.bs.modal', function () {
+            jQuery(document).off('focusin.modal');
+        });
+    }
+
+    function loadAssessment() {
+        Server.request("GET", "/api/assessment/?status=upcoming", null, true).then(function (result) {
+            result = JSON.parse(result)
+            dtbAssessmentList.clear();
+            var tmpRow;
+            result.forEach(assm => {
+                tmpRow = dtbAssessmentList.row.add([
+                    assm.title,
+                    document.getElementById(assm.subject).innerHTML + '<br><span class="text-muted">' + assm.subject + '</span>',
+                    '<i class="fa fa-calendar text-info"></i> ' + new Date(assm.open).toLocaleDateString("en-GB") + '  <i class="fa fa-clock-o text-info"></i> ' + new Date(assm.open).toLocaleTimeString() + '<br>'
+                    + '<i class="fa fa-calendar text-danger"></i> ' + new Date(assm.close).toLocaleDateString("en-GB") + '  <i class="fa fa-clock-o text-danger"></i> ' + new Date(assm.close).toLocaleTimeString() + '<br>'
+                ]).node()
+                tmpRow.id = assm.assessmentId;
+                tmpRow.dataset.description = assm.description
+                tmpRow.dataset.duration = assm.duration
+                tmpRow.onclick = (userType == 1) ? null : viewDetail
+            })
+            dtbAssessmentList.draw();
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+
+</script>
+<script class="staffOnly">
+    $('input[name="daterange"]').daterangepicker({
+        timePicker: true,
+        startDate: new Date(), // after open picker you'll see this dates as picked
+        endDate: new Date(),
+        minDate: new Date(),
+        locale: {
+            format: 'DD/MM/YYYY hh:mm A',
+        }
+    }, function (start, end, label) {
+        var ss = moment.duration(end.diff(start))
+        document.getElementById("lblDtDura").innerHTML = ss.days() + " day | " + ss.hours() + " hour | " + ss.minutes() + " minutes";
+        document.getElementById("txtAsDuration").max = end.diff(start, "minute");
+        document.getElementById("txtAsDuration").dispatchEvent(new Event("keyup"))
+    });
+
+    $('#dateCreatedRange').daterangepicker({
+        startDate: "01/01/2022", // after open picker you'll see this dates as picked
+        endDate: Date.parse('01 Jan 2000 00:00:00 GMT'),
+        locale: {
+            format: 'DD/MM/YYYY',
+        }
+    });
+    function submitNewAssessment() {
+        var dstart = $('#txtAsDateRange').data('daterangepicker').startDate.format("YYYY-MM-DD HH:mm:ss");
+        var dend = $('#txtAsDateRange').data('daterangepicker').endDate.format("YYYY-MM-DD HH:mm:ss");
+        var data = {
+            "title": document.getElementById("txtAsTitle").value,
+            "description": document.getElementById("txtAsDesc").value,
+            "open": dstart,
+            "close": dend,
+            "duration": document.getElementById("txtAsDuration").value,
+            "subject": document.getElementById("idListSubj").dataset.selected
+        }
+        Server.request("POST", "/api/assessment/", data, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            //createdId
+            Server.request("POST", "/api/assessment/staff", {
+                "staffId": "me",
+                "assessmentId": result.createdId
+            }, true).then(async function (res2) {
+
+                var action = await Swal.fire({
+                    type: 'success',
+                    title: 'Assessment Created',
+                    text: ''
+                })
+
+                $('#ModalAssessmentForm').modal('hide');
+                resetAssessmentForm()
+                loadAssessment()
+            }).catch(function (err2) {
+                console.log(err2)
+            })
+        }).catch(function (err) {
+            console.log(err)
+            var jsonErr = JSON.parse(err)
+            if (jsonErr.hasOwnProperty("validationError")) {
+                console.log("sini x")
+                displayValidationError(jsonErr);
+            }
+            else {
+                Message.createNew("Error", err, 3);
+            }
+        })
+    }
+
+    function togglePage() {
+        var setList = document.getElementById("dvAssessmentList");
+        var setDetail = document.getElementById("dvAssessmentDetail");
+        if (setList.classList.contains("my-tab-show")) {
+            setList.classList.remove("my-tab-show")
+            setList.classList.add("my-tab-hide")
+            setDetail.classList.add("my-tab-show")
+            setDetail.classList.remove("my-tab-hide")
+        }
+        else {
+            setList.classList.add("my-tab-show")
+            setList.classList.remove("my-tab-hide")
+            setDetail.classList.remove("my-tab-show")
+            setDetail.classList.add("my-tab-hide")
+        }
+    }
+
+    var selectedAssessmentId = null;
+
+
+    function resetAssessmentForm() {
+
+        document.getElementById("txtAsTitle").value = ""
+        document.getElementById("txtAsDesc").value = ""
+        document.getElementById("txtAsDuration").value = ""
+        document.getElementById("idListSubj").dataset.selected = "-1"
+        document.getElementById("SSinSubj").value = ""
+        document.getElementById("btnCreateNewA").style.display = "inline-block"
+
+        document.getElementById("btnSaveChangeA").style.display = "none"
+        //  $('#txtAsDateRange').daterangepicker({ startDate: new Date(), endDate: new Date() });
+
+    }
+
+    function promptUpdate() {
+        //reverse back on update later
+        document.getElementById("txtAsTitle").value = document.getElementById("txtASD_title").value
+        document.getElementById("txtAsDesc").value = document.getElementById("txtASD_desc").value
+        document.getElementById("idListSubj").dataset.selected = document.getElementById("txtASD_subjcode").value
+        document.getElementById("SSinSubj").value = document.getElementById("txtASD_subj").value
+        document.getElementById("btnSaveChangeA").style.display = "inline-block"
+        document.getElementById("btnCreateNewA").style.display = "none"
+        document.getElementById("txtAsDuration").value = document.getElementById("txtASD_duration").value
+        document.getElementById("txtAsDateRange").value = document.getElementById("txtASD_dstart").value
+            + " " + document.getElementById("txtASD_tstart").value
+            + " - " + document.getElementById("txtASD_dend").value
+            + " " + document.getElementById("txtASD_tend").value
+
+        $('#ModalAssessmentForm').modal('show');
+    }
+
+    function viewDetail(e) {
+        var clicked = e.target;
+        if (e.target.tagName == "TD")
+            clicked = e.target.parentElement
+        console.log(clicked)
+        selectedAssessmentId = clicked.id
+        var tds = clicked.children
+        var subjs = tds[1].innerHTML.split("<br>")
+        var time = tds[2].innerHTML.replace(/<\/?[^>]+(>|$)/g, "");
+        var timearr = time.trim().split(/\s+/)
+        console.log(timearr)
+        console.log(time)
+
+        document.getElementById("txtASD_title").value = tds[0].innerHTML
+        document.getElementById("txtASD_subjcode").value = subjs[1].replace('<span class="text-muted">', "").replace("</span>", "").trim()
+        document.getElementById("txtASD_subj").value = subjs[0].trim()
+        document.getElementById("txtASD_desc").value = clicked.dataset.description
+        document.getElementById("txtASD_dstart").value = timearr[0].trim()
+        document.getElementById("txtASD_tstart").value = timearr[1].trim() + " " + timearr[2].trim()
+        document.getElementById("txtASD_dend").value = timearr[3].trim()
+        document.getElementById("txtASD_tend").value = timearr[4].trim() + " " + timearr[5].trim()
+        document.getElementById("txtASD_duration").value = clicked.dataset.duration
+        togglePage();
+        loadQuestionList();
+        loadStudentList();
+        loadStaffList();
+    }
+
+    function submitAssessmentUpdate() {
+        if (selectedAssessmentId == null) {
+            return;
+        }
+        var dstart = $('#txtAsDateRange').data('daterangepicker').startDate.format("YYYY-MM-DD HH:mm:ss");
+        var dend = $('#txtAsDateRange').data('daterangepicker').endDate.format("YYYY-MM-DD HH:mm:ss");
+        var data = {
+            "assessmentId": selectedAssessmentId,
+            "title": document.getElementById("txtAsTitle").value,
+            "description": document.getElementById("txtAsDesc").value,
+            "open": dstart,
+            "close": dend,
+            "duration": document.getElementById("txtAsDuration").value,
+            "subject": document.getElementById("idListSubj").dataset.selected
+        }
+        Server.request("PATCH", "/api/assessment/", data, true).then(async function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            var action = await Swal.fire({
+                type: 'success',
+                title: 'Assessment Updated',
+                text: ''
+            })
+            $('#ModalAssessmentForm').modal('hide');
+            resetAssessmentForm()
+            loadAssessment()
+            togglePage()
+        }).catch(function (err) {
+            err = JSON.parse(err)
+            loading(false)
+            if (err.hasOwnProperty("validationError")) {
+                displayValidationError(err);
+            }
+            else {
+                Message.createNew("Error", err, 3);
+            }
+        })
+    }
+
+    async function deleteAssessment() {
+        var action = await Swal.fire({
+            type: 'warning',
+            title: 'Confirm Action',
+            text: 'Remove this Assessment?',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+        Server.request('DELETE', '/api/assessment/?id=' + selectedAssessmentId, null, true).then(async function (result) {
+            var action = await Swal.fire({
+                type: 'info',
+                title: 'Deleted',
+                text: 'Assessment removed'
+            })
+            loadAssessment()
+            togglePage()
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    function loadStudentList() {
+        Server.request('GET', '/api/assessment/student?asId=' + selectedAssessmentId, null, true).then(
+            function (result) {
+                tbASStudents.clear()
+                result = JSON.parse(result)
+                console.log(result)
+                var tmpRow;
+                result.forEach(student => {
+                    tmpRow = tbASStudents.row.add([
+                        student.studentId,
+                        student.name,
+                        '<span class="text-muted">' + student.school + "</span><br>" + student.className,
+                        '<button class="btn btn-danger" onclick="removeStudent(event)"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button>'
+                    ]).node()
+                    tmpRow.classList.add('assessmentStudents')
+                })
+                tbASStudents.draw()
+                countStudentList()
+            }).catch(function (err) {
+                Message.createNew('Error', 'Failed to load student List', 3)
+                console.log(err)
+            })
+    }
+
+    async function btnAddStudent(e) {
+
+        var action = await Swal.fire({
+            title: 'Add Student',
+            text: 'Select Method',
+            showCancelButton: true,
+            showCloseButton: true,
+            cancelButtonText: "ID No.",
+            confirmButtonText: "Find",
+        })
+        if (action.dismiss == "cancel") {
+            //add individual by id
+            var addByid = await Swal.fire({
+                title: 'Insert Identification No.',
+                html: '<input  class="form-control text-center" type="text"  id="swalStudentId"/>',
+                showCancelButton: true,
+                preConfirm: function () {
+                    return new Promise(function (resolve) {
+                        resolve([
+                            $('#swalStudentId').val()
+                        ])
+                    })
+                }
+            })
+            if (addByid.dismiss) {
+                return;
+            }
+            Server.request('POST', '/api/assessment/student', {
+                "assessmentId": selectedAssessmentId,
+                "studentId": addByid.value[0]
+            }, true).then(function (result) {
+                Swal.fire({
+                    type: 'success',
+                    title: 'student added'
+                })
+                loadStudentList()
+            }).catch(function (err) {
+                console.log(err)
+                var jsonErr = JSON.parse(err)
+                if (jsonErr.hasOwnProperty("validationError")) {
+                    displayValidationError(jsonErr);
+                }
+                else {
+                    Message.createNew("Error", "invalid Student Id", 3);
+                }
+            })
+        }
+        else if (action.value == true) {
+            console.log("find student")
+        }
+    }
+
+    async function removeStudent(e) {
+
+        var action = await Swal.fire({
+            type: 'warning',
+            title: 'Confirm Action',
+            text: 'Remove this Student?',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+        console.log(e.target.parentElement.parentElement.children[0].innerHTML.trim())
+        Server.request('DELETE', '/api/assessment/student', {
+            "assessmentId": selectedAssessmentId,
+            "studentId": e.target.parentElement.parentElement.children[0].innerHTML.trim()
+        }, true).then(function (result) {
+            Swal.fire({
+                type: 'success',
+                title: 'Student Removed from assessment'
+            })
+            e.target.parentElement.parentElement.remove()
+            countStudentList()
+        }).catch(function (err) {
+            console.log(err)
+            var jsonErr = JSON.parse(err)
+            if (jsonErr.hasOwnProperty("validationError")) {
+                displayValidationError(jsonErr);
+            }
+            else {
+                Message.createNew("Error", err, 3);
+            }
+        })
+
+    }
+
+    function countStudentList() {
+
+        document.getElementById('ASD_totalStudentTag').innerHTML =
+            document.getElementsByClassName('assessmentStudents').length
+    }
+
+    function loadQuestionList() {
+        Server.request("GET", "/api/assessment/questionList?asId=" + selectedAssessmentId, null, true).then(
+            function (result) {
+                dtbASQuestion.clear()
+                result = JSON.parse(result)
+                console.log(result)
+                var tmpRow;
+                result.forEach(asq => {
+                    var isSet = asq.questionType == '';
+                    tmpRow = dtbASQuestion.row.add([
+                        asq.name,
+                        (isSet) ? "Question set" : asq.questionType,
+                        asq.topic,
+                        (isSet) ? asq.mark + " each" : asq.mark,
+                        (isSet) ? asq.count : '1',
+                        '<button class="btn btn-info" onclick="UpdateQuestionButtonHandler(event)"><b><i class="fa fa-edit  text-white" style="font-size: 17px;"></i></b></button>&nbsp<button class="btn btn-danger" onclick="removeQuestionHandler(event)"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button>'
+                    ]).node()
+                    tmpRow.id = asq.id;
+                    tmpRow.classList.add("as_questions")
+                    if (isSet) {
+                        tmpRow.onclick = viewSetDetail
+                        tmpRow.classList.add("questionSet")
+
+                    }
+                    else {
+                        tmpRow.onclick = questionDetail
+                    }
+
+                })
+                dtbASQuestion.draw()
+                calculateQuestionSum()
+            }
+        )
+    }
+
+    function calculateQuestionSum() {
+        console.log("masuk")
+        var count = 0;
+        var tmark = 0;
+        document.querySelectorAll('.as_questions').forEach(asq => {
+            if (asq.classList.contains('questionSet')) {
+                var ccount = parseInt(asq.children[4].innerHTML.replace(/[^\d.]/g, ''));
+                count += ccount;
+                tmark += parseFloat(asq.children[3].innerHTML) * ccount
+            }
+            else {
+                tmark += parseFloat(asq.children[3].innerHTML)
+                count++;
+            }
+        })
+        document.getElementById('ASD_totalQuestionTag').innerHTML = count;
+        document.getElementById('ASD_totalMarkTag').innerHTML = tmark;
+    }
+
+    async function addQuestionHandler() {
+        var subjCode = document.getElementById("txtASD_subjcode").value;
+        var action = await Swal.fire({
+            title: 'Add question',
+            text: '',
+            showCancelButton: true,
+            showCloseButton: true,
+            cancelButtonText: "Question",
+            confirmButtonText: "Question Set",
+        })
+        if (action.dismiss == "cancel") {
+            console.log("go to question")
+            openQuestionBank()
+        }
+        else if (action.value == true) {
+            console.log("question set")
+            loadQuestionSetList(subjCode)
+            $('#ModalQuestionSets').modal('show')
+        }
+    }
+
+
+    async function addQuestionButtonHandler(e) {
+        if (e.target.classList.contains('qsetBtn')) {
+            var tr = e.target.parentElement.parentElement;
+            var maxcount = tr.children[3].innerHTML
+            var action = await Swal.fire({
+                type: 'info',
+                title: 'Insert number of question to be added and mark for each',
+                html: 'Number of Question to add<input onkeydown="preventDecimal(event)" title="cannot exceed number of question in the set, if selected count less than number of question in the set, random question will be assigned to students" class="form-control" step="1" type="number" min="1" max="' + maxcount + '" id="swalCount" value="1" onkeyup="enforceMinMax(this)"/>'
+                    + '<br>Mark for each Question<input class="form-control" step="0.1" type="number" min="1" max="9999" id="swalQMarkEa" value="1" onkeyup="enforceMinMax(this)"/>',
+                showCancelButton: true,
+                preConfirm: function () {
+                    return new Promise(function (resolve) {
+                        resolve([
+                            $('#swalCount').val(),
+                            $('#swalQMarkEa').val()
+                        ])
+                    })
+                }
+            })
+            if (action.dismiss) {
+                return;
+            }
+            addQuestionSetToAssessment(selectedAssessmentId, e.target.parentElement.parentElement.id, action.value[0], action.value[1])
+        }
+        else {
+            var action = await Swal.fire({
+                type: 'info',
+                title: 'Insert mark for this question',
+                html: '<input class="form-control" type="number" min="1" max="9999" id="swalQMark" value="1" onkeyup="enforceMinMax(this)"/>',
+                showCancelButton: true,
+                preConfirm: function () {
+                    return new Promise(function (resolve) {
+                        resolve([
+                            $('#swalQMark').val()
+                        ])
+                    })
+                }
+            })
+            if (action.dismiss) {
+                return;
+            }
+            addQuestionToAssessment(selectedAssessmentId, e.target.parentElement.parentElement.id, action.value[0])
+        }
+    }
+    function addQuestionToAssessment(asId, questionid, mark) {
+        console.log(asId + "  " + questionid + "mark " + mark)
+        Server.request('POST', '/api/assessment/Question', {
+            "assessmentId": asId,
+            "questionId": questionid,
+            "mark": mark
+        }, true).then(function (result) {
+            Swal.fire({
+                type: 'success',
+                title: 'Question Added'
+            })
+            loadQuestionList();
+        }).catch(function (err) {
+            console.log(err)
+            var jsonErr = JSON.parse(err)
+            if (jsonErr.hasOwnProperty("validationError")) {
+                displayValidationError(jsonErr);
+            }
+            else if (jsonErr.hasOwnProperty("duplicate")) {
+                Swal.fire({
+                    type: 'error',
+                    title: 'Duplicate Entry',
+                    text: 'The question already included in the assessment, please check again',
+                })
+            }
+            else {
+                Message.createNew("Error", err, 3);
+            }
+        })
+    }
+
+    function addQuestionSetToAssessment(asId, qsId, count, mark) {
+        console.log(asId + "  " + qsId + " count" + count + " mark " + mark);
+        Server.request('POST', '/api/assessment/QuestionSet', {
+            "assessmentId": asId,
+            "questionSetId": qsId,
+            "mark": mark,
+            "count": count
+        }, true).then(function (result) {
+            Swal.fire({
+                type: 'success',
+                title: 'Question Set Added'
+            })
+            loadQuestionList();
+        }).catch(function (err) {
+            console.log(err)
+            var jsonErr = JSON.parse(err)
+            if (jsonErr.hasOwnProperty("validationError")) {
+                displayValidationError(jsonErr);
+            }
+            else if (jsonErr.hasOwnProperty("duplicate")) {
+                Swal.fire({
+                    type: 'error',
+                    title: 'Duplicate Entry',
+                    text: 'The question set contains questions that are already included in the assessment, please check again',
+                })
+            }
+            else {
+                Message.createNew("Error", err, 3);
+            }
+        })
+    }
+
+    async function UpdateQuestionButtonHandler(e) {
+        console.log(e.target)
+        var currentMark = parseInt(e.target.parentElement.parentElement.children[3].innerHTML.replace('each', ''))
+        console.log(currentMark)
+        if (e.target.parentElement.parentElement.classList.contains('questionSet')) {
+            var currentCount = parseInt(e.target.parentElement.parentElement.children[4].innerHTML)
+            console.log(currentCount)
+            console.log("cliced question set")
+            var action = await Swal.fire({
+                type: 'info',
+                title: 'Insert new number of question to be added and mark for each',
+                html: 'Number of Question to add<input title="cannot exceed number of question in the set, if selected count less than number of question in the set, random question will be assigned to students" class="form-control" onkeydown="preventDecimal(event)" type="number" min="1" id="swalUPCount" value="' + currentCount + '" onkeyup="enforceMinMax(this)"/>'
+                    + '<br>Mark for each Question<input class="form-control" type="number" min="1" max="9999" id="swalQUPMarkEa" value="' + currentMark + '" onkeyup="enforceMinMax(this)"/>',
+                showCancelButton: true,
+                preConfirm: function () {
+                    return new Promise(function (resolve) {
+                        resolve([
+                            $('#swalUPCount').val(),
+                            $('#swalQUPMarkEa').val()
+                        ])
+                    })
+                }
+            })
+            if (action.dismiss) {
+                return;
+            }
+            if (currentCount == action.value[0] && currentMark == action.value[1]) {
+                return;
+            }
+            updateAssessmentQuestionSet(selectedAssessmentId, e.target.parentElement.parentElement.id, action.value[1], action.value[0],
+                e.target.parentElement.parentElement.children[3], e.target.parentElement.parentElement.children[4]);
+        } else {
+            var action = await Swal.fire({
+                type: 'info',
+                title: 'Insert new mark for this question',
+                html: '<input class="form-control" type="number" min="1" max="9999" id="swalQUPMark" value="' + currentMark + '" onkeyup="enforceMinMax(this)"/>',
+                showCancelButton: true,
+                preConfirm: function () {
+                    return new Promise(function (resolve) {
+                        resolve([
+                            $('#swalQUPMark').val()
+                        ])
+                    })
+                }
+            })
+            if (action.dismiss) {
+                return;
+            }
+            if (action.value[0] == currentMark) {
+                return;
+            }
+            else {
+                console.log('yes change')
+                updateAssessmentQuestion(selectedAssessmentId, e.target.parentElement.parentElement.id, action.value[0],
+                    e.target.parentElement.parentElement.children[3]
+                )
+            }
+        }
+    }
+
+
+    function updateAssessmentQuestionSet(asId, qsId, mark, count, markTd, countTd) {
+        Server.request('PATCH', '/api/assessment/QuestionSet', {
+            "assessmentId": asId,
+            "questionSetId": qsId,
+            "mark": mark,
+            "count": count
+        }, true).then(function (result) {
+            Swal.fire({
+                type: 'success',
+                title: 'Question Set Updated'
+            })
+            markTd.innerHTML = mark + " each";
+            countTd.innerHTML = count;
+            calculateQuestionSum()
+        }).catch(function (err) {
+            console.log(err)
+            var jsonErr = JSON.parse(err)
+            if (jsonErr.hasOwnProperty("validationError")) {
+                displayValidationError(jsonErr);
+            }
+            else {
+                Message.createNew("Error", err, 3);
+            }
+        })
+    }
+
+    function updateAssessmentQuestion(asId, questionId, mark, markTd) {
+        Server.request('PATCH', '/api/assessment/Question', {
+            "assessmentId": asId,
+            "questionId": questionId,
+            "mark": mark
+        }, true).then(function (result) {
+            Swal.fire({
+                type: 'success',
+                title: 'Question Updated'
+            })
+            markTd.innerHTML = mark
+            calculateQuestionSum()
+
+        }).catch(function (err) {
+            console.log(err)
+            var jsonErr = JSON.parse(err)
+            if (jsonErr.hasOwnProperty("validationError")) {
+                displayValidationError(jsonErr);
+            }
+            else {
+                Message.createNew("Error", err, 3);
+            }
+        })
+    }
+
+    async function removeQuestionHandler(e) {
+        var action = await Swal.fire({
+            type: 'warning',
+            title: 'Confirm Action',
+            text: 'Remove this question?',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+        console.log(e.target)
+        if (e.target.parentElement.parentElement.classList.contains('questionSet')) {
+            removeAsQuestionSet(selectedAssessmentId, e.target.parentElement.parentElement.id);
+        }
+        else {
+            removeAsQuestion(selectedAssessmentId, e.target.parentElement.parentElement.id);
+        }
+    }
+
+    function removeAsQuestion(asId, qId) {
+        Server.request('DELETE', '/api/assessment/Question', {
+            "assessmentId": asId,
+            "questionId": qId
+        }, true).then(async function (result) {
+            var action = await Swal.fire({
+                type: 'success',
+                title: 'Question Removed',
+                text: ''
+            })
+            loadQuestionList();
+        }).catch(function (err) {
+            console.log(err)
+            var jsonErr = JSON.parse(err)
+            if (jsonErr.hasOwnProperty("validationError")) {
+                displayValidationError(jsonErr);
+            }
+            else {
+                Message.createNew("Error", err, 3);
+            }
+        })
+    }
+
+    function removeAsQuestionSet(asId, qsId) {
+        Server.request('DELETE', '/api/assessment/QuestionSet', {
+            "assessmentId": asId,
+            "questionSetId": qsId
+        }, true).then(async function (result) {
+            var action = await Swal.fire({
+                type: 'success',
+                title: 'Question Set Removed',
+                text: ''
+            })
+            loadQuestionList();
+        }).catch(function (err) {
+            console.log(err)
+            var jsonErr = JSON.parse(err)
+            if (jsonErr.hasOwnProperty("validationError")) {
+                displayValidationError(jsonErr);
+            }
+            else {
+                Message.createNew("Error", err, 3);
+            }
+        })
+    }
+    //question set
+    function loadQuestionSetList(subjCode) {
+        if (!subjCode) {
+            return;
+        }
+        Server.request("GET", "/api/questionSet/?subjCode=" + subjCode, null, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            tableQuestionSet.clear();
+            var tmpRow;
+            result.forEach(set => {
+                if (set.count != null) {
+                    tmpRow = tableQuestionSet.row.add([
+                        set.name,
+                        set.subject + '<br><span class="text-muted">' + set.subjectCode + '</span>',
+                        set.description,
+                        set.count,
+                        '<button onclick="addQuestionButtonHandler(event)" class="btn btn-outline-success qsetBtn" style="border-radius:50%"><i class="fa fa-plus"></i></button>'
+                    ]).node()
+                    tmpRow.id = set.questionSetId;
+                    tmpRow.onclick = viewSetDetail
+                }
+            })
+            tableQuestionSet.draw();
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+
+    function viewSetDetail(e) {
+        if (e.target.tagName == "BUTTON") {
+            return;
+        }
+        var id = e.target.id;
+        var elem = e.target
+        if (e.target.tagName == "TD") {
+            id = e.target.parentElement.id
+            elem = e.target.parentElement
+        }
+        document.getElementById('ModalQSDTitle').innerHTML = elem.children[0].innerHTML
+
+        loadQuestionInSet(id);
+        $('#ModalQSD').modal('show');
+    }
+
+    function loadQuestionInSet(setId) {
+        Server.request("GET", "/api/question/setId?questionSetId=" + setId, null, true).then(function (result) {
+            result = JSON.parse(result)
+            var tmpRow;
+            tableSetItems.clear()
+            result.forEach(question => {
+                tmpRow = tableSetItems.row.add([
+                    question.questionText,
+                    question.qType,
+                    question.subject + '<br><span class="text-muted">' + question.topic + '</span>',
+                    question.dateCreated.substring(0, 10)
+                ]).node()
+                tmpRow.id = question.questionId;
+                tmpRow.onclick = questionDetail
+            })
+
+            tableSetItems.draw();
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    //question
+
+    function questionDetail(e) {
+        if (e.target.tagName == "BUTTON") {
+            return;
+        }
+        if (e.target.tagName == "TD") {
+            viewQuestionDetail(e.target.parentElement.id)
+        }
+    }
+    function viewQuestionDetail(qid) {
+        Server.request("GET", "/api/question/detail?questionId=" + qid, null, true).then(
+            function (result) {
+                result = JSON.parse(result)
+                document.getElementById("MDQ_Editbtn").dataset.questionid = qid
+                document.getElementById("MQD_Subject").value = result.subject
+                document.getElementById("MQD_Topic").value = result.topic
+                document.getElementById("MQD_QuestionText").innerHTML = result.questionText
+                document.getElementById("MQD_date").innerHTML = result.dateCreated.substring(0, 10)
+                var useracc = localStorage.getItem('uid')
+                if (useracc == result.creatorId) {
+                    document.getElementById("MDQ_Editbtn").style.display = "initial"
+                }
+                else {
+                    document.getElementById("MDQ_Editbtn").style.display = "none"
+                }
+
+                loadQuestionDetailAttachment(qid)
+                if (result.questionType != 2) {
+                    //not t/f
+                    document.getElementById("MQD_AnsType").innerHTML = "Answers"
+                    document.getElementById("MQD_AnswerList").style.display = "initial"
+                    loadAnswer(qid)
+                }
+                else {
+                    document.getElementById("MQD_AnsType").innerHTML = "Answer Type: True or False"
+                    document.getElementById("MQD_AnswerList").style.display = "none"
+                }
+            }
+        ).catch(function (err) {
+            Message.createNew("Error", "failed to load question detail: " + err, 3);
+        })
+        $('#ModalQuestionDetail').modal('show');
+        //createElementFromHTML('<img  class="image-fluid attachment-upload" data-toggle="modal" data-target="#ModalZoom" onclick="zoomImage(event)">')
+    }
+
+    function loadQuestionDetailAttachment(questionId) {
+        Server.request("GET", "/api/question/attachmentList?id=" + questionId, null, true).then(function (result) {
+            result = JSON.parse(result);
+            document.getElementById("MQD_imageContainer").innerHTML = ""
+            result.forEach(attc => {
+                var img = createElementFromHTML('<img  class="image-fluid" data-toggle="modal" data-target="#ModalZoom" onclick="zoomImage(event)">')
+                img.src = "/res/images/attachment/" + attc.attachmentId + ".png";
+                img.title = attc.label;
+                img.id = attc.attachmentId;
+                var inp = createElementFromHTML('<input type="text" class="form-control" disabled>')
+                inp.value = attc.label;
+                var dv = createElementFromHTML('<div class="col-md-3 text-center"></div')
+                dv.appendChild(inp)
+                dv.appendChild(img)
+                document.getElementById("MQD_imageContainer").appendChild(dv)
+            })
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    function loadAnswer(questionId) {
+        Server.request("GET", "/api/question/answer/?id=" + questionId, null, true).then(
+            function (result) {
+                MQD_ansTable.clear()
+                result = JSON.parse(result)
+                result.forEach(ans => {
+                    var attach = "none"
+                    if (ans.attachmentId != null) {
+                        attach = '<img class="image-fluid attachment-upload" data-toggle="modal" data-target="#ModalZoom" onclick="zoomImage(event)"'
+                            + 'src="/res/images/attachment/' + ans.attachmentId + '.png">'
+                    }
+                    MQD_ansTable.row.add([
+                        ans.answerText,
+                        ans.relativeMark,
+                        attach
+
+                    ])
+                })
+                MQD_ansTable.draw()
+            }
+        ).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+
+
+    function openQuestionBank() {
+        var subjCode = document.getElementById("txtASD_subjcode").value;
+        loadQBTopic(subjCode)
+        $("#ModalQuestionBank").modal('show')
+    }
+    //question bank
+    function loadQBTopic(subjectCode) {
+        Server.request("POST", "/api/question/getTopicBySubject", { subjectId: subjectCode }, true).then(
+            function (value) {
+                value = JSON.parse(value)
+                var fragment = document.createDocumentFragment();
+                fragment.appendChild(createElementFromHTML('<option value="-1">All</option>'))
+                value.forEach(topic => {
+                    fragment.appendChild(createElementFromHTML('<option value="' + topic.topicId + '">' + topic.title + '</option>'))
+                });
+                document.getElementById("selectTopic").innerHTML = "";
+                document.getElementById("selectTopic").appendChild(fragment);
+                document.getElementById("selectTopic").removeAttribute("disabled");
+            }
+        ).catch(function (value) {
+
+        })
+    }
+
+    function searchQuestion() {
+        var subjcode = document.getElementById("txtASD_subjcode").value;
+        var topicId = document.getElementById("selectTopic").value;
+        var questionType = document.getElementById("selectAnsType").value;
+        var date = document.getElementById("dateCreatedRange").value;
+        date = date.split(" - ");
+        var requestUrl = "/api/question/find?dStart=" + date[0] + "&dEnd=" + date[1] + "&subjectCode=" + subjcode
+        if (topicId != "-1") {
+            requestUrl += "&topicId=" + topicId
+        }
+        if (questionType != "-1") {
+            requestUrl += "&questionType=" + questionType
+        }
+        if (document.getElementById("chkOnlyMine").checked) {
+            requestUrl += "&owner=me"
+        }
+        console.log(requestUrl)
+        Server.request("GET", requestUrl, null, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            var tmpRow;
+            QBtable.clear();
+            result.forEach(question => {
+                tmpRow = QBtable.row.add([
+                    question.questionText,
+                    question.qType,
+                    question.subject + '<br><span class="text-muted">' + question.topic + '</span>',
+                    question.dateCreated.substring(0, 10),
+                    '<button onclick="addQuestionButtonHandler(event)" class="btn btn-outline-success" style="border-radius:50%"><i class="fa fa-plus"></i></button>'
+                ]).node()
+                tmpRow.id = question.questionId;
+                tmpRow.onclick = questionDetail
+            })
+
+            QBtable.draw();
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    function loadStaffList() {
+        Server.request('GET', '/api/assessment/staff?assessmentId=' + selectedAssessmentId, null, true).then(
+            function (result) {
+                tbASStaff.clear()
+                result = JSON.parse(result)
+                console.log(result)
+                result.forEach(staff => {
+                    tbASStaff.row.add([
+                        staff.staffId,
+                        staff.name,
+                        '<button class="btn btn-danger" onclick="removeStaff(event)"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button>'
+                    ]).node().classList.add('staffRow')
+                })
+                tbASStaff.draw()
+            }).catch(function (err) {
+                Message.createNew('Error', 'Failed to load staff List', 3)
+                console.log(err)
+            })
+    }
+
+    async function btnAddStaff(e) {
+        var action = await Swal.fire({
+            title: 'Insert Staff Id to add',
+            html: '<input  class="form-control text-center" type="text"  id="swalStaffId"/>',
+            showCancelButton: true,
+            preConfirm: function () {
+                return new Promise(function (resolve) {
+                    resolve([
+                        $('#swalStaffId').val()
+                    ])
+                })
+            }
+        })
+        if (action.dismiss) {
+            return;
+        }
+        console.log(action.value)
+        Server.request('POST', '/api/assessment/staff', {
+            "staffId": action.value[0],
+            "assessmentId": selectedAssessmentId
+        }, true).then(function (result) {
+            Swal.fire({
+                type: 'success',
+                text: 'Staff Added'
+            })
+            loadStaffList();
+        }).catch(function (err) {
+            console.log(err)
+            Message.createNew('Error', 'Invalid id', 3)
+        })
+    }
+
+    async function removeStaff(e) {
+        var id = e.target.parentElement.parentElement.children[0].innerHTML.trim()
+        var isSelf = (id == localStorage.getItem('uid'))
+        var isLast = false;
+        var promptText = (isSelf) ? "you will lose access to this assessment by removing yourself" : "staff Id : " + id
+        var conf = await Swal.fire({
+            type: 'warning',
+            title: 'Remove Staff',
+            text: promptText,
+            showCancelButton: true
+        })
+        if (conf.dismiss) {
+            return;
+        }
+        if (document.getElementsByClassName('staffRow').length <= 1) {
+            var conf2 = await Swal.fire({
+                type: 'warning',
+                title: 'Removing last staff will also remove the assessment from the system',
+                showCancelButton: true
+            })
+            if (conf2.dismiss) {
+                return;
+            }
+            isLast = true;
+        }
+
+        Server.request('DELETE', '/api/assessment/staff', {
+            "assessmentId": selectedAssessmentId,
+            "staffId": id
+        }, true).then(function (result) {
+            if (isSelf || isLast) {
+                navigate('/assessment')
+            }
+            else {
+                loadStaffList()
+            }
+        }).catch(function (err) {
+            console.log(err)
+            Message.createNew('Error', 'error removing staff', 3)
+        })
+
+    }
+
+
+    function navEditQuestion(e) {
+        $('#ModalQuestionDetail').modal('hide');
+        navigate('/questionCreate?id=' + e.target.dataset.questionid)
+        navigate('/questionCreate?id=' + e.target.dataset.questionid)
+    }
+
+</script>

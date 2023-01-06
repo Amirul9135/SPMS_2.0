@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPMS</title>
+  <!--Dependencise-->
+
+  <!-- BOOTSTRAP CSS -->
+  <link href="/res/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="/res/assets/datatable/datatable.min.css" rel="stylesheet" />
+
+  <!-- STYLE CSS -->
+  <link href="/res/assets/css/style.css" rel="stylesheet" />
+  <link href="/res/assets/css/skin-modes.css" rel="stylesheet" />
+  <link href="/res/assets/css/dark-style.css" rel="stylesheet" />
+
+  <!-- SIDE-MENU CSS -->
+  <link href="/res/assets/css/closed-sidemenu.css" rel="stylesheet" />
+
+  <!--PERFECT SCROLL CSS--
+  <link href="/res/assets/plugins/p-scroll/perfect-scrollbar.css" rel="stylesheet" />
+
+  <!-- INTERNAL SINGLE-PAGE CSS -->
+  <link href="/res/assets/plugins/single-page/css/main.css" rel="stylesheet" type="text/css" />
+
+  <!-- CUSTOM SCROLL BAR CSS-->
+  <link href="/res/assets/plugins/scroll-bar/jquery.mCustomScrollbar.css" rel="stylesheet" />
+
+  <!--- FONT-ICONS CSS -->
+  <link href="/res/assets/css/icons.css" rel="stylesheet" />
+
+  <!-- SIDEBAR CSS -->
+  <link href="/res/assets/plugins/sidebar/sidebar.css" rel="stylesheet" />
+
+  <!-- INTERNAL FILE UPLODE CSS -->
+  <link href="/res/assets/plugins/fileuploads/css/fileupload.css" rel="stylesheet" type="text/css" />
+
+  <!-- INTERNAL SELECT2 CSS -->
+  <link href="/res/assets/plugins/select2/select2.min.css" rel="stylesheet" />
+
+  <!-- INTERNAL BOOTSTRAP-DATERANGEPICKER CSS -->
+  <link rel="stylesheet" href="/res/assets/plugins/bootstrap-daterangepicker/daterangepicker.css" />
+
+  <!-- INTERNAL  TIME PICKER CSS --
+  <link href="/res/assets/plugins/time-picker/jquery.timepicker.css" rel="stylesheet" />
+
+  <!-- INTERNAL  DATE PICKER CSS--
+  <link href="/res/assets/plugins/date-picker/spectrum.css" rel="stylesheet" />
+
+  <!-- INTERNAL  MULTI SELECT CSS -->
+  <link rel="stylesheet" href="/res/assets/plugins/multipleselect/multiple-select.css" />
+
+  <!-- INTERNAL TELEPHONE CSS-->
+  <link rel="stylesheet" href="/res/assets/plugins/telephoneinput/telephoneinput.css" />
+
+  <!-- INTERNAL  DATA TABLE CSS-->
+  <link href="/res/assets/plugins/datatable/dataTables.bootstrap4.min.css" rel="stylesheet" />
+  <link href="/res/assets/plugins/datatable/responsivebootstrap4.min.css" rel="stylesheet" />
+  <link href="/res/assets/plugins/datatable/fileexport/buttons.bootstrap4.min.css" rel="stylesheet" />
+
+  <!-- COLOR SKIN CSS -->
+  <link id="theme" rel="stylesheet" type="text/css" media="all" href="/res/assets/colors/color1.css" />
+
+  <!--Internal Prism-->
+  <link href="/res/assets/plugins/prism/prism.css" rel="stylesheet" />
+
+  <!-- INTERNAL  ION-RANGESLIDER CSS -->
+  <link href="/res/assets/plugins/ion.rangeSlider/css/ion.rangeSlider.css" rel="stylesheet" />
+  <link href="/res/assets/plugins/ion.rangeSlider/css/ion.rangeSlider.skinSimple.css" rel="stylesheet" />
+  <link href="/res/assets/plugins/sweet-alert/sweetalert.css" rel="stylesheet">
+  <script src="/res/assets/plugins/sweet-alert/sweetalert.min.js"></script>
+
+
+  <script src="/res/script/SPA.js"></script>
+  <script src="/res/script/general.js"></script>
+  <script src="/res/script/serverRequest.js"></script>
+
+  <style>
+    .slide-menu p,
+    #drp_profile p {
+      margin-bottom: 0;
+    }
+
+    .slide-menu p:hover,
+    #drp_profile p:hover,
+    .slide>p:hover {
+      cursor: pointer;
+    }
+  </style>
+  <!--loader css-->
+  <style>
+    .fe-chevron-down,
+    .fe-chevron-up {
+      cursor: pointer;
+    }
+
+    .mycustom_tbd>:nth-child(2n + 3),
+    .mycustom_tbd>:first-child {
+      background-color: #faf8fa;
+    }
+
+    .select-search {
+      position: relative;
+    }
+
+    .select-search input {
+      position: relative;
+      width: 100%;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      z-index: 3;
+    }
+
+
+    .select-search ul::-webkit-scrollbar {
+      width: 2px;
+      height: 2px;
+    }
+
+    .select-search ul {
+      background-color: whitesmoke;
+      width: 100%;
+      margin: 0;
+      padding-top: 5px;
+      padding-left: 5px;
+      padding-right: 3px;
+      outline: 1px solid #d3dfef;
+      margin-block-start: 0;
+      padding-top: .5em;
+      transition: all 1s ease-in-out;
+      list-style: none;
+      border-bottom-left-radius: .4em;
+      border-bottom-right-radius: .4em;
+      max-height: 20vh;
+      overflow-y: scroll;
+      transform-origin: top;
+      transition: all .2s ease-in-out;
+      transform: scaleY(0);
+      position: absolute;
+      z-index: 2;
+    }
+
+    .select-search-blank>li {
+      opacity: 0;
+    }
+
+    .select-search ul>:nth-child(2n + 3),
+    .select-search ul>:first-child {
+      background-color: #e0e0e0;
+    }
+
+    .select-search li {
+      padding-top: 2.5px;
+      padding-bottom: 2.5px;
+      transition: all .1s ease-in-out;
+    }
+
+    .select-search li:hover {
+
+      padding-left: 0.3em;
+      background-color: rgba(41, 191, 255, 0.9);
+      cursor: pointer;
+    }
+
+    a>i {
+      pointer-events: none;
+    }
+
+    a {
+      cursor: pointer;
+    }
+
+    button>i {
+      pointer-events: none;
+    }
+
+
+    .sect_loader_active {
+      z-index: 999;
+      position: fixed;
+      width: 100%;
+      height: 100vh;
+      background-color: gainsboro;
+    }
+
+    .sect_loader_active>div {
+      display: block;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      aspect-ratio: 1 / 1;
+      width: 10%;
+    }
+
+    .sect_loader_active>div>div {
+      border-radius: 50%;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      transform-origin: center;
+      border: 1.5em solid whitesmoke;
+      border-top: 1.8em solid rgba(55, 55, 255, 1);
+      animation: spin 2s infinite linear;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      25% {
+        transform: rotate(90deg);
+      }
+
+      50% {
+        transform: rotate(180deg);
+      }
+
+      75% {
+        transform: rotate(270deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @-webkit-keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      25% {
+        transform: rotate(90deg);
+      }
+
+      50% {
+        transform: rotate(180deg);
+      }
+
+      75% {
+        transform: rotate(270deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    #message_div {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: auto;
+      max-height: 20vh;
+      background-color: transparent;
+      justify-content: center;
+      text-align: center;
+      overflow-y: auto;
+    }
+
+    #message_div::-webkit-scrollbar {
+      width: 1px;
+    }
+
+    #message_div>div>div {
+      margin: 0 auto;
+      float: none;
+    }
+  </style>
+  <script>
+
+    async function verification() {
+      await verifyAccount()
+    }
+    function toggle_card(e) {//from card header option
+      var card = e.target.parentElement.parentElement.parentElement;
+      if (card.classList.contains("card-collapsed")) {
+        card.classList.remove("card-collapsed");
+        e.target.classList.remove("fe-chevron-down");
+        e.target.classList.add("fe-chevron-up");
+      }
+      else {
+        card.classList.add("card-collapsed");
+        e.target.classList.remove("fe-chevron-up");
+        e.target.classList.add("fe-chevron-down");
+      }
+    }
+    function remove_card(e) {//from card header option
+      e.target.parentElement.parentElement.parentElement.remove();
+    }
+  </script>
+</head>
+
+<body class="app sidebar-mini">
+  <!-- GLOBAL-LOADER -->
+  <!-- /GLOBAL-LOADER -->
+
+  <div class="page">
+    <div class="page-main">
+      <!--APP-SIDEBAR-->
+      <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+      <aside class="app-sidebar" style="z-index: 1001">
+        <div class="side-header">
+          <a class="header-brand1" onclick="navigate('/home')">
+            <!--
+                        <img src="/res/assets/images/brand/logo.png" class="header-brand-img desktop-logo" alt="logo">
+                        <img src="/res/assets/images/brand/logo-1.png" class="header-brand-img toggle-logo" alt="logo">
+                        <img src="/res/assets/images/brand/logo-2.png" class="header-brand-img light-logo" alt="logo">-->
+            <img src="/res/images/spms.png" class="header-brand-img light-logo1" alt="logo" /> </a><!-- LOGO -->
+        </div>
+        <ul id="side_menu" class="side-menu">
+          <br />
+          <li class="slide">
+            <p class="side-menu__item" title="/home" onclick="navigate('/home')">
+              <i style="font-size: 14pt" class="fa fa-desktop"></i>
+              <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp;Papan Utama</span>
+            </p>
+          </li>
+
+          <li class="slide">
+            <a class="side-menu__item" data-toggle="slide" href="#">
+              <i style="font-size: 14pt" class="fa fa-file-text-o"></i>
+              <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assessment</span><i
+                class="angle fa fa-angle-right"></i>
+            </a>
+            <ul class="slide-menu">
+              <li>
+                <p class="slide-item" title="/assessment" onclick="navigate('/assessment')">
+                  <span>Assessment</span>
+                </p>
+              </li>
+              <!--
+              <li>
+                <p class="slide-item" title="/assessmentView" onclick="navigate('/assessmentView')">
+                  <span>List of Assessment</span>
+                </p>
+              </li>
+              <li>
+                <p class="slide-item" title="/assessmentForm" onclick="navigate('/assessmentForm')">
+                  <span>Create Assessment</span>
+                </p>
+              </li>
+              <li>
+                <p class="slide-item">
+                  <span><s>Penilaian Tugasan</s></span>
+                </p>
+              </li>
+              <li>
+                <p class="slide-item" title="/assessmentOngoings" onclick="navigate('/assessmentOngoings')">
+                  <span>Tugasan Langsung</span>
+                </p>
+              </li>-->
+            </ul>
+          </li>
+
+          <li class="slide">
+            <p class="side-menu__item" data-toggle="slide" href="#">
+              <i style="font-size: 14pt" class="fa fa-list"></i>
+              <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp;Question Bank</span><i
+                class="angle fa fa-angle-right"></i>
+            </p>
+            <ul class="slide-menu">
+              <li>
+                <p class="slide-item" title="/questionBank" onclick="navigate('/findQuestion')">
+                  <span>Find question</span>
+                </p>
+              </li>
+              <li>
+                <p class="slide-item" title="/questionBank" onclick="navigate('/questionBank')">
+                  <span>Question Bank</span>
+                </p>
+              </li>
+              <li>
+                <p class="slide-item" title="/questionCreate" onclick="navigate('/questionCreate')">
+                  <span>Create Question</span>
+                </p>
+              </li>
+              <!--
+              <li>
+                <p class="slide-item" title="/questionCreate" onclick="navigate('/attachment')">
+                  <span>Attachment</span>
+                </p>
+              </li>-->
+            </ul>
+          </li>
+
+          <li class="slide">
+            <p class="side-menu__item" class="slide-item" title="/teacher" onclick="navigate('/teacher')">
+              <i style="font-size: 16pt" class="fa fa-user"></i>
+              <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Teacher</span>
+            </p>
+          </li>
+          <!--
+          <li class="slide">
+            <p class="side-menu__item" title="/guardian" onclick="navigate('/guardian')">
+              <i style="font-size: 16pt" class="fa fa-users"></i>
+              <span class="side-menu__label">&nbsp;&nbsp;&nbsp;Guardian</span>
+            </p>
+          </li>-->
+
+          <li class="slide">
+            <p class="side-menu__item" title="/student" onclick="navigate('/student')">
+              <i style="font-size: 14pt" class="fa fa-graduation-cap"></i>
+              <span class="side-menu__label">&nbsp;&nbsp;&nbsp;Student</span>
+            </p>
+          </li>
+
+          <li class="slide">
+            <p class="side-menu__item" data-toggle="slide">
+              <i style="font-size: 14pt;" class="fa fa-book"></i>
+              <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Subjek/Topik</span><i
+                class="angle fa fa-angle-right"></i>
+            </p>
+            <ul class="slide-menu">
+              <li>
+                <p class="slide-item" title="/subject" onclick="navigate('/subject')"><span>Subject</span></p>
+              </li>
+              <li>
+                <p class="slide-item" title="/topic" onclick="navigate('/topic')"><span>Topic</span></p>
+              </li>
+            </ul>
+          </li>
+
+          <li class="slide">
+            <p class="side-menu__item" data-toggle="slide" href="#">
+              <i style="font-size: 14pt" class="fa fa-university"></i>
+              <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp;Sekolah/Kelas</span><i
+                class="angle fa fa-angle-right"></i>
+            </p>
+            <ul class="slide-menu">
+              <li>
+                <p class="slide-item" title="/school" onclick="navigate('/school')"><span>School</span></p>
+              </li>
+              <li>
+                <p class="slide-item" title="/class" onclick="navigate('/class')"><span>Class</span></p>
+              </li>
+            </ul>
+          </li>
+
+          <li class="slide">
+            <a class="side-menu__item" data-toggle="slide" href="#">
+              <i style="font-size: 14pt" class="fa fa-line-chart"></i>
+              <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp;Report</span><i
+                class="angle fa fa-angle-right"></i>
+            </a>
+            <ul class="slide-menu">
+              <li>
+                <p class="slide-item" title="/reportAssessment" onclick="navigate('/reportAssessment')">
+                  <span>Assessment Report_old</span>
+                </p>
+              </li>
+              <li>
+                <p class="slide-item" title="/pastAssessment" onclick="navigate('/pastAssessment')">
+                  <span>Past Assessments</span>
+                </p>
+              </li>
+              <li>
+                <p class="slide-item" title="/assessmentReport" onclick="navigate('/assessmentReport')">
+                  <span>new report Assessments</span>
+                </p>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </aside>
+      <!--/APP-SIDEBAR-->
+
+      <!--App-Header -->
+      <div class="app-header header" style="z-index: 1000">
+        <div class="container-fluid">
+          <div class="d-flex">
+            <a class="header-brand d-md-none" onclick="navigate('/home')">
+              <img src="/res/assets/images/brand/logo-3.png" class="header-brand-img mobile-icon" alt="logo" />
+              <img src="/res/assets/images/brand/logo.png" class="header-brand-img desktop-logo mobile-logo"
+                alt="logo" />
+            </a>
+            <a aria-label="Hide Sidebar" class="app-sidebar__toggle" data-toggle="sidebar" href="#">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                <path d="M0 0h24v24H0V0z" fill="none" />
+                <path d="M21 11.01L3 11v2h18zM3 16h12v2H3zM21 6H3v2.01L21 8z" />
+              </svg> </a><!-- sidebar-toggle-->
+
+            <div class="d-flex ml-auto header-right-icons header-search-icon">
+              <button class="navbar-toggler navresponsive-toggler d-md-none" type="button" data-toggle="collapse"
+                data-target="#navbarSupportedContent-4" aria-controls="navbarSupportedContent-4" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"
+                  class="navbar-toggler-icon">
+                  <path d="M0 0h24v24H0V0z" fill="none" />
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                </svg>
+              </button>
+
+              <!-- Notofication Bells -->
+              <div class="dropdown d-none d-md-flex notifications">
+                <a class="nav-link icon" data-toggle="dropdown">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                    <path d="M0 0h24v24H0V0z" fill="none" />
+                    <path d="M12 6.5c-2.49 0-4 2.02-4 4.5v6h8v-6c0-2.48-1.51-4.5-4-4.5z" opacity=".3" />
+                    <path
+                      d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" />
+                  </svg>
+                  <span class="pulse1 bg-success"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                  <div class="notifications-menu">
+                    <a class="dropdown-item d-flex pb-4" href="#">
+                      <span class="avatar mr-3 br-3 align-self-center avatar-md cover-image bg-primary brround">
+                        <i class="fe fe-mail"></i></span>
+                      <div>
+                        <span class="font-weight-bold">
+                          Commented on your post
+                        </span>
+                        <div class="small text-muted d-flex">3 hours ago</div>
+                      </div>
+                    </a>
+                    <a class="dropdown-item d-flex pb-4" href="#">
+                      <span class="avatar avatar-md br-3 mr-3 align-self-center cover-image bg-secondary brround">
+                        <i class="fe fe-download"></i>
+                      </span>
+                      <div>
+                        <span class="font-weight-bold">
+                          New file has been Uploaded
+                        </span>
+                        <div class="small text-muted d-flex">5 hour ago</div>
+                      </div>
+                    </a>
+                    <a class="dropdown-item d-flex pb-4" href="#">
+                      <span class="avatar avatar-md br-3 mr-3 align-self-center cover-image bg-warning brround">
+                        <i class="fe fe-user"></i>
+                      </span>
+                      <div>
+                        <span class="font-weight-bold">
+                          User account has Updated</span>
+                        <div class="small text-muted d-flex">20 mins ago</div>
+                      </div>
+                    </a>
+                    <a class="dropdown-item d-flex pb-4" href="#">
+                      <span class="avatar avatar-md br-3 mr-3 align-self-center cover-image bg-info brround">
+                        <i class="fe fe-shopping-cart"></i>
+                      </span>
+                      <div>
+                        <span class="font-weight-bold">
+                          New Order Recevied</span>
+                        <div class="small text-muted d-flex">1 hour ago</div>
+                      </div>
+                    </a>
+                    <a class="dropdown-item d-flex pb-4" href="#">
+                      <span class="avatar avatar-md br-3 mr-3 align-self-center cover-image bg-danger brround">
+                        <i class="fa fa-commenting-o"></i>
+                      </span>
+                      <div>
+                        <span class="font-weight-bold"> 3 New Comments</span>
+                        <div class="small text-muted d-flex">1 day ago</div>
+                      </div>
+                    </a>
+                    <a class="dropdown-item d-flex pb-4" href="#">
+                      <span class="avatar avatar-md br-3 mr-3 align-self-center cover-image bg-success brround">
+                        <i class="fe fe-server"></i>
+                      </span>
+                      <div>
+                        <span class="font-weight-bold">Server Rebooted</span>
+                        <div class="small text-muted d-flex">2 hour ago</div>
+                      </div>
+                    </a>
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  <a href="#" class="dropdown-item text-center">View all Notification</a>
+                </div>
+              </div>
+              <!-- Notofication Bells -->
+
+              <!-- profile -->
+              <div id="drp_profile" class="dropdown profile-1">
+                <a href="#" data-toggle="dropdown" class="nav-link pl-2 pr-2 leading-none d-flex">
+                  <span>
+                    <img src="/res/assets/images/users/10.jpg" alt="profile-user"
+                      class="avatar mr-xl-3 profile-user brround cover-image" />
+                  </span>
+                  <div class="text-center mt-1 d-none d-xl-block">
+                    <h6 id="txtUsernameDisp" class="text-dark mb-0 fs-13 font-weight-semibold">
+                      User Name
+                    </h6>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                  <p class="dropdown-item" onclick="navigate('/profile')">
+                    <i class="dropdown-icon mdi mdi-account-outline"></i>
+                    My Profile
+                  </p>
+                  <a class="dropdown-item" href="#">
+                    <i class="dropdown-icon mdi mdi-comment-outline"></i>
+                    Message
+                  </a>
+                  <a class="dropdown-item" onclick="Server.logout()">
+                    <i class="dropdown-icon mdi mdi-logout-variant"></i>
+                    Log out
+                  </a>
+                </div>
+              </div>
+              <!-- /profile -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End responsive-navbar-->
+      <!--Page Content-->
+
+      <div class="app-content">
+        <div id="dv_sectLoader" class="">
+          <div>
+            <div></div>
+          </div>
+        </div>
+        <div id="main_container" style="padding-top: 30px;"></div>
+      </div>
+
+      <div class="modal fade" id="ModalZoom" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="imageZoomTitle"></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-12 text-center">
+                  <img id="imageZoom">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="message_div" class="col-md-12" style="z-index: 99999;">
+        <div class="row" id="message_container">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ext_scripts_footer">
+    <!-- JQUERY JS -->
+    <script src="/res/assets/js/jquery-3.4.1.min.js"></script>
+
+    <!-- BOOTSTRAP JS -->
+    <script src="/res/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/res/assets/plugins/bootstrap/js/popper.min.js"></script>
+
+    <script src="/res/assets/datatable/datatable.min.js"></script>
+
+    <!-- SPARKLINE JS --
+    <script src="/res/assets/js/jquery.sparkline.min.js"></script>
+
+    <!-- CHART-CIRCLE JS --
+    <script src="/res/assets/js/circle-progress.min.js"></script>
+
+    <!-- RATING STAR JS --
+    <script src="/res/assets/plugins/rating/jquery.rating-stars.js"></script>
+
+    <!-- EVA-ICONS JS --
+    <script src="/res/assets/iconfonts/eva.min.js"></script>
+
+    <!-- INPUT MASK JS --
+    <script src="/res/assets/plugins/input-mask/jquery.mask.min.js"></script>
+
+    <!-- CUSTOM SCROLL BAR JS--
+    <script src="/res/assets/plugins/scroll-bar/jquery.mCustomScrollbar.concat.min.js"></script>
+
+    <!-- CUSTOM JS--
+    <script src="/res/assets/js/custom.js"></script>
+
+    <!-- SIDEBAR JS -->
+    <script src="/res/assets/plugins/sidebar/sidebar.js"></script>
+
+    <!-- SIDE-MENU JS-->
+    <script src="/res/assets/plugins/sidemenu/sidemenu.js"></script>
+
+
+    <!-- PERFECT SCROLL BAR js--
+    <script src="/res/assets/plugins/p-scroll/perfect-scrollbar.min.js"></script>
+    <script src="/res/assets/plugins/sidemenu/sidemenu-scroll.js"></script>
+
+    <!-- INTERNAL SELECT2 JS --
+    <script src="/res/assets/plugins/select2/select2.full.min.js"></script>
+
+    <!-- INTERNAL MULTI SELECT JS --
+    <script src="/res/assets/plugins/multipleselect/multiple-select.js"></script>
+    <script src="/res/assets/plugins/multipleselect/multi-select.js"></script>
+
+    <!--INTERNAL  FORMELEMENTS JS --
+      <script src="/res/assets/js/form-elements.js"></script>
+      <script src="/res/assets/js/select2.js"></script>
+
+      <!-- INTERNAL TELEPHONE JS --
+      <script src="/res/assets/plugins/telephoneinput/telephoneinput.js"></script>
+      <script src="/res/assets/plugins/telephoneinput/inttelephoneinput.js"></script>
+
+      <!--InternalPrism--
+    <script src="/res/assets/plugins/prism/prism.js"></script>
+
+    <!-- INTERNAL  ION-RANGESLIDER JS --
+    <script src="/res/assets/plugins/ion.rangeSlider/js/ion.rangeSlider.min.js"></script>
+    -->
+  </div>
+  <script>
+    verification()
+    if (localStorage.getItem("uname") != null) {
+      document.getElementById("txtUsernameDisp").innerHTML = localStorage.getItem("uname")
+    }
+  </script>
+</body>
+
+</html>

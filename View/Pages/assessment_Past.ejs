@@ -1,0 +1,76 @@
+<div class="side-app" onload="setup()">
+    <div class="row">
+        <div class="col-md-12" id="divPastAssessment">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title">Past Assessments</h3>
+                </div>
+                <div class="card-body">
+                    <div class="col-md-12">
+                        <br>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover text-nowrap mb-0" id="dtbPastAssessment">
+                                <thead class="bg-primary">
+                                    <tr>
+                                        <th width="30%" class="text-white">Assessment Title</th>
+                                        <th width="15%" class=" text-white">
+                                            Subject
+                                        </th>
+                                        <th width="40%" class="text-center text-white">Date & Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="mycustom_tbd">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var dtbPastAssessment;
+    function setup() {
+        dtbPastAssessment = new DataTable('#dtbPastAssessment')
+        loadPastAssessment()
+    }
+    function loadPastAssessment() {
+        Server.request("GET", "/api/assessment/?status=past", null, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            dtbPastAssessment.clear();
+            var tmpRow;
+            result.forEach(assm => {
+                tmpRow = dtbPastAssessment.row.add([
+                    assm.title,
+                    /*document.getElementById(assm.subject).innerHTML + '<br><span class="text-muted">' +*/ assm.subject /*+ '</span>'*/,
+                    '<i class="fa fa-calendar text-info"></i> ' + new Date(assm.open).toLocaleDateString("en-GB") + '  <i class="fa fa-clock-o text-info"></i> ' + new Date(assm.open).toLocaleTimeString() + '<br>'
+                    + '<i class="fa fa-calendar text-danger"></i> ' + new Date(assm.close).toLocaleDateString("en-GB") + '  <i class="fa fa-clock-o text-danger"></i> ' + new Date(assm.close).toLocaleTimeString() + '<br>'
+                ]).node()
+                tmpRow.id = assm.assessmentId;
+                tmpRow.dataset.description = assm.description
+                tmpRow.dataset.duration = assm.duration
+                tmpRow.onclick = viewReport
+                //click go to report
+            })
+            dtbPastAssessment.draw();
+        }).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    function viewReport(e) {
+        var ut = localStorage.getItem('utype');
+        if (ut == 2) {
+
+            navigate('/assessmentReport?asId=' + e.target.parentElement.id)
+        }
+        else {
+            navigate('/assessmentIReport?asid=' + e.target.parentElement.id + '&sid=me')
+        }
+
+    }
+</script>

@@ -1,0 +1,263 @@
+<style>
+    /* a i,
+    a b {
+        pointer-events: none;
+    } */
+
+    button * {
+        pointer-events: none;
+    }
+</style>
+
+<div class="side-app" onload="setup()">
+    <div>
+        <h1 class="page-title mb-6" style="font-size: 30px;">Subject</h1>
+    </div>
+
+    <!-- ROW-table -->
+    <div class="row">
+
+        <!-- subjek -->
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <div class="row">
+                <div class="col-sm-12 col-md-7 col-lg-7 col-xl-7 p-0">
+                    <div class="form-group">
+                        <label class="form-label">Subject Name</label>
+                        <input type="text" class="form-control" id="txtSubjectTitle" placeholder="Insert Subject Name">
+                    </div>
+                </div>
+                <a><b></b></a>
+
+                <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                    <div class="form-group">
+                        <label class="form-label">Subject Code</label>
+                        <input type="text" class="form-control" id="txtSubjectCode">
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-1 col-lg-1 col-xl-1 p-0" style="text-align: right;">
+                    <label class="form-label"><br></label>
+                    <a class="btn btn-primary" onclick="register()" id="btnRegister"><b><i class="fa fa-plus"></i>&nbsp;Subject</b></a>
+                    <a class="btn btn-success text-white" onclick="updateSubject()" id="btnUpdate" style="display: none;"><b><i class="fa fa-floppy-o"></i>&nbsp;Subject</b></a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Subject List</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover text-nowrap mb-0" id="subjectTable">
+                                <thead class="bg-primary">
+                                    <tr>
+                                        <th width="60%" class="text-white">Subject Name</th>
+                                        <th width="30%" class="text-center text-white">Code</th>
+                                        <th width="10%" class="text-center text-white"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="mySubject_tbd">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /subjek -->
+    </div>
+
+</div>
+
+<script>
+
+    var tableSubject;
+    function setup() {
+        tableSubject = new DataTable("#subjectTable");
+        loadSubject();
+    }
+
+    // Register subject
+    async function register() {
+        var action = await Swal.fire({
+            type : 'question',
+            title: 'Confirm Registration',
+            text : 'Register new subject into the system?',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+
+        var subjectCode  = document.getElementById("txtSubjectCode").value;
+        var subjectTitle = document.getElementById("txtSubjectTitle").value;
+
+        var data = {
+            "subjectCode" : subjectCode,
+            "subjectTitle": subjectTitle
+        }
+
+        Server.request("POST", "/api/subject/register", data, false).then(async function (value) {
+            document.getElementById("txtSubjectCode").value = "";
+            document.getElementById("txtSubjectTitle").value = "";
+
+            var action = await Swal.fire({
+                type : 'success',
+                title: 'Register Successfully!',
+                text : '',
+                showCancelButton: false
+            })
+            loadSubject(document.getElementById("txtSubjectCode").value);
+        
+        }).catch(async function (value) {
+            var action = await Swal.fire({
+                type : 'error',
+                title: 'Cannot Register!',
+                text : 'An Error has occured',
+                showCancelButton: false
+            })
+        })
+    }
+
+
+    // Load list of subjects (dataTable)
+    function loadSubject(subjectCode) {
+        console.log("load")
+
+        var data = {
+            "subjectCode" : subjectCode
+        }
+
+        Server.request("GET", "/api/subject/allSubject", data, false).then(function (value) {
+            var data = JSON.parse(value);
+            tableSubject.clear();
+            var tmpRow;
+
+            data.forEach(qSubject => { //temporary
+                tmpRow = tableSubject.row.add([
+                    '<button onclick="getSubject(event);" id="' + qSubject.subjectCode + '"><b>' + qSubject.title + '</b></button>',
+                    '<center>' + qSubject.subjectCode + '</center>',
+                    '<button onclick="deleteSubject(event);" class="btn btn-danger" id="' + qSubject.subjectCode + '"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button> '
+                ]).node()
+               tmpRow.id = qSubject.subjectCode; //letak id
+            })
+            tableSubject .draw();
+            console.log(data)
+        }
+        ).catch(function (value) {
+            console.log(value);
+        });
+    }
+
+
+    //view subject on Click 
+    async function getSubject(event) {
+        var action = await Swal.fire({
+            type : 'question',
+            title: 'Update this subject?',
+            text : 'Directing to update form',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+
+        var data = {
+            "subjectCode": event.target.id
+        }
+
+        document.getElementById("txtSubjectCode").value      = event.target.id;
+        document.getElementById("txtSubjectTitle").value     = event.target.children[0].innerHTML;
+        document.getElementById("txtSubjectCode").disabled   = true;
+        document.getElementById("btnUpdate").style.display   = "inline-block";
+        document.getElementById("btnRegister").style.display = "none";
+    }
+
+
+    // Update subject
+    async function updateSubject() {
+        var action = await Swal.fire({
+            type : 'question',
+            title: 'Confirm Update?',
+            text : 'This subject will be updated into the system',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+
+        var subjectTitle = document.getElementById("txtSubjectTitle").value;
+        var subjectCode  = document.getElementById("txtSubjectCode").value;
+
+        var data = {
+            "subjectTitle": subjectTitle,
+            "subjectCode" : subjectCode
+        }
+
+        Server.request("POST", "/api/subject/update", data, false).then(async function (value) {
+            console.log('Updated');
+
+            document.getElementById("txtSubjectCode").value      = "";
+            document.getElementById("txtSubjectTitle").value     = "";
+            document.getElementById("txtSubjectCode").disabled   = false;
+            document.getElementById("btnUpdate").style.display   = "none";
+            document.getElementById("btnRegister").style.display = "inline-block";
+
+            var action = await Swal.fire({
+                type: 'success',
+                title: 'Updated Sucessfully!',
+                text: '',
+                showCancelButton: false
+            })
+            loadSubject(document.getElementById("txtSubjectCode").value);
+
+        }).catch(async function (value) {
+            var action = await Swal.fire({
+                type : 'error',
+                title: 'Cannot Updated!',
+                text : 'An Error has occured',
+                showCancelButton: false
+            })
+        })
+    }
+
+    //Delete functioon
+    async function deleteSubject(event) {
+        var action = await Swal.fire({
+            type : 'question',
+            title: 'Delete Subject?',
+            text : 'This subject will be removed from the system',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+        var data = {
+            "subjectCode": event.target.id
+        }
+
+        Server.request("POST", "/api/subject/delete", data, false).then(async function (value) {
+            var action = await Swal.fire({
+                type : 'success',
+                title: 'Deleted Successfully!',
+                text : '',
+                showCancelButton: false
+            })
+
+            tableSubject.row("#" + event.target.parentElement.parentElement.id).remove()
+            tableSubject.draw()
+
+        }).catch(async function (value) {
+            var action = await Swal.fire({
+                type : 'error',
+                title: 'Cannot Deleted!',
+                text : 'An Error has occured',
+                showCancelButton: false
+            })
+        })
+
+    }
+
+</script>
