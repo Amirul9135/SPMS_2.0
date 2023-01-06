@@ -64,12 +64,14 @@ async function navigate(page, push) {
                 }
             }
             else if (xhr.status == 400) {
+                console.log(xhr.responseText)
                 await Swal.fire({
                     type: 'error',
                     title: 'failed to load page'
                 })
             }
             else if (xhr.status == 401) {
+                console.log(xhr.responseText)
                 var msg = ""
                 var jsonRes = {}
                 try {

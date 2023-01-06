@@ -1,5 +1,5 @@
 
-function viewQuestionDetail(qid) {
+function viewQuestionDetail(qid, sans = null) {
     Server.request("GET", "/api/question/detail?questionId=" + qid, null, true).then(
         function (result) {
             result = JSON.parse(result)
@@ -21,7 +21,8 @@ function viewQuestionDetail(qid) {
                 //not t/f
                 document.getElementById("MQD_AnsType").innerHTML = "Answers"
                 document.getElementById("MQD_AnswerList").style.display = "initial"
-                loadAnswer(qid)
+
+                loadAnswer(qid, result.questionType, sans)
             }
             else {
                 document.getElementById("MQD_AnsType").innerHTML = "Answer Type: True or False"
@@ -56,7 +57,7 @@ function loadQuestionDetailAttachment(questionId) {
     })
 }
 
-function loadAnswer(questionId) {
+function loadAnswer(questionId, type = null, sans = null) {
     Server.request("GET", "/api/question/answer/?id=" + questionId, null, true).then(
         function (result) {
             MQD_ansTable.clear()
@@ -67,12 +68,28 @@ function loadAnswer(questionId) {
                     attach = '<img class="image-fluid attachment-upload" data-toggle="modal" data-target="#ModalZoom" onclick="zoomImage(event)"'
                         + 'src="/res/images/attachment/' + ans.attachmentId + '.png">'
                 }
-                MQD_ansTable.row.add([
+                var tmp = MQD_ansTable.row.add([
                     ans.answerText,
                     ans.relativeMark,
                     attach
-
-                ])
+                ]).node()
+                if (sans) {
+                    if (type == 0) {
+                        if (sans == ans.answerNo) {
+                            if (ans.relativeMark != 0) {
+                                tmp.classList.add('ans_highlight_correct');
+                            }
+                            else {
+                                tmp.classList.add('ans_highlight_selected');
+                            }
+                        }
+                    }
+                    else if (type == 1) {
+                        if (sans == ans.answerText) {
+                            tmp.classList.add('ans_highlight_correct');
+                        }
+                    }
+                }
             })
             MQD_ansTable.draw()
         }

@@ -17,6 +17,15 @@
     .mytb_highlight {
         background-color: rgb(181, 207, 255);
     }
+
+    .ans_highlight_correct {
+        background-color: rgba(148, 255, 143, 0.854) !important;
+    }
+
+
+    .ans_highlight_selected {
+        background-color: rgba(248, 244, 130, 0.8) !important;
+    }
 </style>
 <div class="side-app" onload="setup()">
 
@@ -24,7 +33,7 @@
         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp; Save PDF
     </button>
     <div id="ejsData" data-totalmark="<%= tMark %>" data-grading="<%=assessment.grading%>"
-        data-assigned="<%= JSON.stringify(assignedQuestion) %> "></div>
+        data-assessmentid="<%= assessment.assessmentId %>"></div>
     <div class="row">
         <div class="col-md-12">
             <div class="card" id="Card_AssessmentDetail" data-asid="<%=assessment.assessmentId%>">
@@ -108,10 +117,251 @@
                                         </div>
                                     </div>
                         </div>
+                        <div class="col-md-12 mt-1 pt-2 ">
+                            <div class="row text-center" style="justify-content: center;">
+
+                                <h4><u>Student Information</u></h4>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Identificatin No.</label>
+                                    <input type="text" disabled class="form-control" value="<%=student.accountId%> ">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" disabled class="form-control" value="<%=student.name%> ">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Mark Attained</label>
+                                    <input type="text" id="txtMark" disabled class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Grade</label>
+                                    <input type="text" id="txtGrade" disabled class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
+                </div>
+            </div>
+
+            <div class="card" id="Card_PerformanceDetail">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title">
+                        Performance Report
+                    </h3>
+                    <div class="card-options ">
+                        </button><i class="fe fe-chevron-up text-white" onclick="toggle_card(event)"></i>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover text-nowrap mb-0" id="tbQMarks">
+                                    <thead class="bg-primary">
+                                        <tr>
+                                            <th width="30%" class="text-white">Question Id</th>
+                                            <th width="35%" class="text-center text-white">
+                                                Mark
+                                            </th>
+                                            <th width="35%" class="text-center text-white">Time Spent</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="mycustom_tbd">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="ModalQuestionDetail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Question Detail</h5>
+                &nbsp;&nbsp;
+                <button type="button" class="btn-info-light btn-pill" id="MDQ_Editbtn" onclick="navEditQuestion(event)">
+                    <i class="fa fa-edit"></i>
+                    edit
+                </button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="justify-content: center;">
+                    <div class="row col-md-12">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        Subject
+                                    </div><!-- input-group-text -->
+                                </div><!-- input-group-prepend -->
+                                <input disabled class="form-control ui-timepicker-input" id="MQD_Subject" type="text">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        Topic
+                                    </div><!-- input-group-text -->
+                                </div><!-- input-group-prepend -->
+                                <input disabled class="form-control ui-timepicker-input" id="MQD_Topic" type="text">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row col-md-12"><br></div>
+                    <div id="MQD_imageContainer" class="row col-md-11"
+                        style="white-space: nowrap;flex-wrap: nowrap;overflow-x: auto;">
+                    </div>
+
+                    <div class="col-md-12">
+                        <br>
+                    </div>
+                    <div class="row col-md-12">
+                        <div class="card">
+                            <div id="MQD_QuestionText" class="card-body">asd question text</div>
+                        </div>
+                    </div>
+                    <div class="row col-md-12">
+                        <div class="card">
+                            <div class="card-header" id="MQD_AnsType">Answer Type:</div>
+                            <div class="card-body" id="MQD_AnswerList">
+                                <table class="table table-bordered table-hover text-nowrap mb-0" id="MQD_ansTable">
+                                    <thead class="bg-primary">
+                                        <tr>
+                                            <th width="60%" class="text-white">Answer Text</th>
+                                            <th width="20%" class="text-center text-white">Mark(%)</th>
+                                            <th width="20%" class="text-center text-white">
+                                                Attachment
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="mycustom_tbd">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="text-muted" id="MQD_date">S</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/res/script/questiondetail.js"></script>
+<script>
+    var ejsData
+    var tbQMarks
+    var MQD_ansTable
+    async function setup() {
+        tbQMarks = new DataTable('#tbQMarks', {
+            "columnDefs": {
+                "targets": "_all",
+                "type": "html-num"
+            }
+        })
+        MQD_ansTable = new DataTable('#MQD_ansTable');
+
+        ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
+
+        document.getElementById("ejsData").remove()
+        console.log(ejsData)
+
+        var questionDetails = await Server.request('GET', '/api/assessment/assignedQuestion?sid=me&asid=' + ejsData.assessmentid, null, true).catch(function (err) {
+            Message.createNew('Error', 'Failed to load question details', 3);
+        })
+        if (!questionDetails) {
+            await Swal.fire({
+                type: 'error',
+                title: 'failed to load assessment report'
+            })
+            navigate('/pastAssessment')
+            return
+        }
+
+        questionDetails = JSON.parse(questionDetails)
+        console.log(questionDetails)
+        var totalMark = 0;
+        var totalTime = 0;
+        questionDetails.forEach(q => {
+            var tmp = tbQMarks.row.add([
+                q.questionId,
+                q.mark + "/" + q.fullMark + " (" + q.mark / q.fullMark * 100 + "%)",
+                '<span style="display:none">' + q.time + '</span>' + timeString(q.time * 1000)
+            ]).node()
+            tmp.id = q.questionId
+            tmp.onclick = viewQuestion
+            console.log(q.mark)
+            tmp.dataset.ans = (q.choosenAnswerNo) ? q.choosenAnswerNo : q.answerText
+            totalMark += q.mark
+            totalTime += q.time
+        });
+        tbQMarks.draw()
+        console.log(totalMark)
+        var percentage = totalMark / parseFloat(ejsData.totalmark) * 100
+        console.log(totalTime)
+        document.getElementById('txtMark').value = totalMark + "/" + ejsData.totalmark + " [" + percentage + "%]"
+
+        if (ejsData.grading) {
+
+            var gradeAttain
+            var grading = JSON.parse(ejsData.grading)
+            console.log(grading)
+            grading.forEach(g => {
+                console.log(g)
+                if (percentage >= g.start && percentage <= g.end) {
+                    gradeAttain = g.label
+                }
+            })
+            console.log(gradeAttain)
+
+            document.getElementById('txtGrade').value = gradeAttain
+
+        }
+        else {
+            document.getElementById('txtGrade').value = "ungraded"
+
+        }
+    }
+    function viewQuestion(e) {
+        if (e.target.tagName == "TD") {
+            viewQuestionDetail(e.target.parentElement.id, e.target.parentElement.dataset.ans)
+        }
+    }
+    function printReport() {
+        PrintMode(true)
+        window.print()
+        PrintMode(false)
+    }
+    function PrintMode(mode) {
+        if (mode) {
+            $(".dataTables_filter").hide();
+            $(".dataTables_length").hide();
+            $(".dataTables_paginate").hide();
+            $(".card-footer").hide();
+        }
+        else {
+            $(".dataTables_filter").show();
+            $(".dataTables_length").show();
+            $(".dataTables_paginate").show();
+            $(".card-footer").show();
+        }
+    }
+</script>

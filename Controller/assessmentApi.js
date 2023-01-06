@@ -451,6 +451,26 @@ router.post('/grade', [
 
 })
 
+router.get('/assignedQuestion', [
+    Auth.userType()
+], function (req, res) {
+    if (!req.query.sid || !req.query.asid) {
+        return res.status(400).send()
+    }
+    if (req.query.sid == "me") {
+        req.query.sid = req.user.id
+    }
+    console.log(req.query.sid)
+    console.log(req.query.asid)
+    Assessment.checkAssignedQuestion(req.query.asid, req.query.sid, false).then(function (result) {
+        return res.status(200).send(result)
+    }).catch(function (err) {
+        console.log(err)
+        return res.status(500).send({ error: err })
+    })
+
+})
+
 
 function validateGrade(r) {
     var tmpArr = []
