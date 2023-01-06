@@ -170,19 +170,18 @@ router.get('/assessmentIReport', Auth.userType([1, 2]), async function (req, res
     if (!dataAs) {
         return res.status(400).send({ error: errormsg })
     }
-    console.log('sni')
     var totalMark = await As.totalFullMark().catch(function (err) {
         errormsg = err
     })
     if (!totalMark) {
         return res.status(400).send({ error: errormsg })
     }
-    console.log('sni')
 
     var asq = await As.getAllAssignedQuestion(studentId).catch(function (err) {
         console.log(err)
         errormsg = err
     })
+    console.log(asq)
     if (!asq) {
         return res.status(400).send({ error: errormsg })
     }

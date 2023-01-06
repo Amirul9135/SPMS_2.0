@@ -26,7 +26,7 @@ function loadData() {
             title: 'Error',
             text: 'question not found',
         })
-        navigate('/questionBank');
+        navigate('/findQuestion');
     })
 
 }
@@ -38,7 +38,7 @@ function setupUpdateMode(questionJson) {
         }
         rad.disabled = true;
     })
-    Server.request("GET", "/api/topic/?id=" + questionJson.intTopicId, null, false).then(function (value) {
+    Server.request("GET", "/api/topic/?id=" + questionJson.intTopicId, null, true).then(function (value) {
         value = JSON.parse(value)
         var subjectSS = document.getElementById("SSsubject");
         subjectSS.disabled = true;
@@ -66,7 +66,7 @@ function setupUpdateMode(questionJson) {
         noAnsAttachment = true;
     }
 
-    Server.request("GET", "/api/question/attachmentList?id=" + questionJson.intQuestionId, null, false).then(function (result) {
+    Server.request("GET", "/api/question/attachmentList?id=" + questionJson.intQuestionId, null, true).then(function (result) {
         result = JSON.parse(result);
         result.forEach(attc => {
             var img = createElementFromHTML('<img  class="image-fluid attachment-upload" data-toggle="modal" data-target="#ModalZoom" onclick="zoomImage(event)">')
@@ -87,7 +87,7 @@ function setupUpdateMode(questionJson) {
     })
 
 
-    Server.request("GET", "/api/question/answer/?id=" + questionJson.intQuestionId, null, false).then(function (value) {
+    Server.request("GET", "/api/question/answer/?id=" + questionJson.intQuestionId, null, true).then(function (value) {
         value = JSON.parse(value)
         var tgt = document.getElementById("ansInnerContainer");
         value.forEach(ans => {
@@ -156,7 +156,7 @@ async function remove_ans_card(e) {//from card header option
     var ansNo = e.target.parentElement.parentElement.parentElement.id;
     if (ansNo != "ansNo-1") {//not default
         ansNo = parseInt(ansNo.replace("ansNo", ""))
-        Server.request("DELETE", "/api/question/answer?questionId=" + cacheQuestion.intQuestionId + "&answerNo=" + ansNo, null, false).then(
+        Server.request("DELETE", "/api/question/answer?questionId=" + cacheQuestion.intQuestionId + "&answerNo=" + ansNo, null, true).then(
             function (value) {
 
                 e.target.parentElement.parentElement.parentElement.remove();
@@ -189,7 +189,7 @@ async function updateQuestionText() {
         return;
     }
 
-    Server.request("PATCH", "/api/question/?id=" + cacheQuestion.intQuestionId, { "strQuestionText": cur }, false).then(
+    Server.request("PATCH", "/api/question/?id=" + cacheQuestion.intQuestionId, { "strQuestionText": cur }, true).then(
         function (value) {
             Message.createNew("Updated", "Question Text Updated", 0)
         }
@@ -204,7 +204,7 @@ var noAnsAttachment = false;
 function changeSubject(e) {
     var subjId = document.getElementById(e.target.dataset.list).dataset.selected;
     if (e.target.value != -1) {
-        Server.request("POST", "/api/question/getTopicBySubject", { subjectId: subjId }, false).then(
+        Server.request("POST", "/api/question/getTopicBySubject", { subjectId: subjId }, true).then(
             function (value) {
                 value = JSON.parse(value)
                 var fragment = document.createDocumentFragment();
@@ -246,7 +246,7 @@ function linkQuestionAttachment(questionId = -1) {
             return reject("no change");
 
         }
-        Server.request("POST", "/api/question/addQuestionAttachment", attachLinkObj, false).then(function (value) {
+        Server.request("POST", "/api/question/addQuestionAttachment", attachLinkObj, true).then(function (value) {
             resolve(value);
         }).catch(function (value) {
             reject(value);
@@ -317,7 +317,7 @@ function submitAnswer(questionId = -1) {
             answerArr.push(answer)
         })
         if (UpdateMode) {
-            Server.request("PATCH", "/api/question/answer", answerArr, false).then(function (value) {
+            Server.request("PATCH", "/api/question/answer", answerArr, true).then(function (value) {
                 Message.createNew("Saved", "Answer information saved", 0)
                 navigate('/questionCreate?id=' + cacheQuestion.intQuestionId)
                 resolve(value);
@@ -326,7 +326,7 @@ function submitAnswer(questionId = -1) {
             })
         }
         else {
-            Server.request("POST", "/api/question/answer", answerArr, false).then(function (value) {
+            Server.request("POST", "/api/question/answer", answerArr, true).then(function (value) {
                 resolve(value);
             }).catch(function (value) {
                 reject(value);
@@ -345,11 +345,11 @@ async function removeQuestion() {
         if (action.dismiss) {
             return;
         }
-        Server.request("DELETE", "/api/question/?id=" + cacheQuestion.intQuestionId, null, false).then(
+        Server.request("DELETE", "/api/question/?id=" + cacheQuestion.intQuestionId, null, true).then(
             function (value) {
                 Message.createNew("Deleted", "Question deleted successfully", 0);
 
-                navigate('/questionBank');
+                navigate('/findQuestion');
 
             }
         ).catch(function (value) {
@@ -581,7 +581,7 @@ function removeAttachment(event) {
 
 function removeAttachmentFromServer(fId, element) {
     //later add unlink here , nk delete go to manage attachment
-    Server.request("GET", "/api/question/attachment/delete?intAttachmentId=" + fId, null, false).then(function (value) {
+    Server.request("GET", "/api/question/attachment/delete?intAttachmentId=" + fId, null, true).then(function (value) {
         element.remove();
     }).catch(function (value) {
         Message.createNew("Error", value, 3);
@@ -592,9 +592,13 @@ function uploadAttachment(file, name) {
     return new Promise(async function (resolve, reject) {
         var fdata = new FormData();
         fdata.append(name, file)
-
         const response = await fetch("/api/question/attachment/upload", {
             method: 'POST',
+            headers: {
+                'jwtT': localStorage.getItem("jwtT"),
+                'jwtP': localStorage.getItem("jwtP"),
+                'uid': localStorage.getItem("uid")
+            },
             body: fdata
         })
 

@@ -16,6 +16,7 @@ router.post('/test'
 
 
 router.post('/', [
+    Auth.userType([2, 3]),
     Validator.checkString("title", { min: 5 }),
     Validator.checkString("description", { min: 5 }),
     Validator.checkString("open"),
@@ -39,7 +40,7 @@ router.post('/', [
 })
 
 router.post('/staff', [
-    Auth.userType(),
+    Auth.userType([2, 3]),
     Validator.checkNumber("assessmentId", { min: 0 }),
     Validator.checkString("staffId"),
     Validator.validate()
@@ -62,19 +63,22 @@ router.post('/staff', [
         })
     })
 
-router.get('/staff', function (req, res) {
-    var assessmentId = req.query.assessmentId;
-    if (!assessmentId || assessmentId < 0) {
-        return res.status(400).send("invalid assessment id");
-    }
-    Assessment.fetchStaffList(assessmentId).then(function (result) {
-        return res.status(200).send(result)
-    }).catch(function (err) {
-        return res.status(500).send({ error: err })
+router.get('/staff',
+    [Auth.userType([1, 2, 3])
+    ], function (req, res) {
+        var assessmentId = req.query.assessmentId;
+        if (!assessmentId || assessmentId < 0) {
+            return res.status(400).send("invalid assessment id");
+        }
+        Assessment.fetchStaffList(assessmentId).then(function (result) {
+            return res.status(200).send(result)
+        }).catch(function (err) {
+            return res.status(500).send({ error: err })
+        })
     })
-})
 
 router.delete('/staff', [
+    Auth.userType(Auth.userType([2, 3])),
     Validator.checkNumber("assessmentId", { min: 0 }),
     Validator.checkString("staffId"),
     Validator.validate()],
@@ -127,6 +131,7 @@ router.get('/',
     })
 
 router.patch('/', [
+    Auth.userType([2, 3]),
     Validator.checkNumber("assessmentId", { min: 1 }),
     Validator.checkString("title", { min: 5 }),
     Validator.checkString("description", { min: 5 }),
@@ -144,7 +149,9 @@ router.patch('/', [
 })
 
 
-router.delete('/', function (req, res) {
+router.delete('/', [
+    Auth.userType([2, 3])
+], function (req, res) {
     var id = req.query.id;
     if (!id || id < 0) {
         return res.status(400).send("invalid id");
@@ -158,19 +165,22 @@ router.delete('/', function (req, res) {
     })
 })
 
-router.get('/questionList', function (req, res) {
-    if (!req.query.asId) {
-        return res.status(400).send()
-    }
-    Assessment.getQuestionList(req.query.asId).then(function (result) {
-        return res.status(200).send(result)
-    }).catch(function (err) {
-        return res.status(500).send(err)
+router.get('/questionList',
+    Auth.userType()
+    , function (req, res) {
+        if (!req.query.asId) {
+            return res.status(400).send()
+        }
+        Assessment.getQuestionList(req.query.asId).then(function (result) {
+            return res.status(200).send(result)
+        }).catch(function (err) {
+            return res.status(500).send(err)
+        })
     })
-})
 
 //listings
 router.post('/Question', [
+    Auth.userType([2, 3]),
     Validator.checkNumber("assessmentId", { min: 0 }),
     Validator.checkNumber("questionId", { min: 0 }),
     Validator.checkNumber("mark", { min: 1 }, "must be at least 1"),
@@ -191,6 +201,7 @@ router.post('/Question', [
 })
 
 router.patch('/Question', [
+    Auth.userType([2, 3]),
     Validator.checkNumber("assessmentId", { min: 0 }),
     Validator.checkNumber("questionId", { min: 0 }),
     Validator.checkNumber("mark", { min: 1 }, "must be at least 1"),
@@ -204,6 +215,7 @@ router.patch('/Question', [
 })
 
 router.delete('/Question', [
+    Auth.userType([2, 3]),
     Validator.checkNumber("assessmentId", { min: 0 }),
     Validator.checkNumber("questionId", { min: 0 }),
     Validator.validate()
@@ -217,6 +229,7 @@ router.delete('/Question', [
 
 //question set 
 router.post('/QuestionSet', [
+    Auth.userType([2, 3]),
     Validator.checkNumber("assessmentId", { min: 0 }),
     Validator.checkNumber("questionSetId", { min: 0 }),
     Validator.checkNumber("mark", { min: 1 }, "must be at least 1"),
@@ -245,6 +258,7 @@ router.post('/QuestionSet', [
 })
 
 router.patch('/QuestionSet', [
+    Auth.userType([2, 3]),
     Validator.checkNumber("assessmentId", { min: 0 }),
     Validator.checkNumber("questionSetId", { min: 0 }),
     Validator.checkNumber("mark", { min: 1 }, "must be at least 1"),
@@ -265,6 +279,7 @@ router.patch('/QuestionSet', [
 })
 
 router.delete('/QuestionSet', [
+    Auth.userType([2, 3]),
     Validator.checkNumber("assessmentId", { min: 0 }),
     Validator.checkNumber("questionSetId", { min: 0 }),
     Validator.validate()
@@ -276,19 +291,22 @@ router.delete('/QuestionSet', [
     })
 })
 
-router.get('/student', function (req, res) {
-    if (!req.query.asId) {
-        return res.status(400).send()
-    }
-    console.log(req.query.asId)
-    Assessment.fetchStudentList(req.query.asId).then(function (result) {
-        return res.status(200).send(result)
-    }).catch(function (err) {
-        return res.status(500).send(err)
+router.get('/student',
+    Auth.userType()
+    , function (req, res) {
+        if (!req.query.asId) {
+            return res.status(400).send()
+        }
+        console.log(req.query.asId)
+        Assessment.fetchStudentList(req.query.asId).then(function (result) {
+            return res.status(200).send(result)
+        }).catch(function (err) {
+            return res.status(500).send(err)
+        })
     })
-})
 
 router.post('/student', [
+    Auth.userType([2, 3]),
     Validator.checkNumber('assessmentId', { min: 0 }),
     Validator.checkString('studentId', { min: 12, max: 12 }),
     Validator.validate()
@@ -302,6 +320,7 @@ router.post('/student', [
 })
 
 router.delete('/student', [
+    Auth.userType([2, 3]),
     Validator.checkNumber('assessmentId', { min: 0 }),
     Validator.checkString('studentId', { min: 12, max: 12 }),
     Validator.validate()
@@ -392,7 +411,7 @@ router.post('/finishAttempt', [
 })
 
 router.get('/summary', [
-    Auth.userType([2])
+    Auth.userType([2, 3])
 ], function (req, res) {
     if (!req.query.id) {
         return res.status(400).send()
@@ -406,6 +425,7 @@ router.get('/summary', [
 })
 
 router.post('/grade', [
+    Auth.userType([2, 3]),
     Validator.checkNumber("assessmentId", { min: 0 }),
     Validator.checkNumber("fullMark", { min: 1 }),
     Validator.validate()
@@ -460,7 +480,7 @@ function validateGrade(r) {
 }
 
 router.get('/QAanalysis',
-    Auth.userType([2])
+    Auth.userType([2, 3])
     , function (req, res) {
         if (!req.query.asId) {
             return res.status(400).send()

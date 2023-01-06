@@ -16,13 +16,14 @@ const Auth = require("./Middleware/Authenticate")
 const bcrypt = require("bcryptjs")
 
 router.post('/register',
-
     [
+        Auth.userType([2, 3]),
         Validator.checkString("accountId", { min: 12, max: 12 }),
         Validator.checkString("name", "nama is required"),
         Validator.checkString("email", "email required"),
         Validator.checkString("password", { min: 6 }),
         Validator.checkString("phone", { min: 10, max: 11 }),
+        Validator.checkNumber("userType", { min: 1, max: 3 }),
         Validator.validate()
     ]
     , async function controller(req, res) {
@@ -31,7 +32,6 @@ router.post('/register',
         newAcc.setStrName(req.body.name);
         const salt = await bcrypt.genSalt(10);
         var hashed = await bcrypt.hash(req.body.password, salt)
-        console.log(hashed)
         newAcc.setStrPassword(hashed);
         newAcc.setStrEmail(req.body.email);
         //  newAcc.setIntEmailVerified(req.body.emailVerified);
@@ -94,6 +94,7 @@ router.post('/update',
 
 
 router.post('/delete',
+    Auth.userType(2, 3),
     Validator.checkString("accountId"),
     Validator.validate(),
     function (req, res) {
@@ -110,7 +111,6 @@ router.post('/delete',
 router.get('/',
     Auth.userType()
     , function (req, res) {
-
         var accountId = req.user.id;
         var promiseAll = Account.getAccount(accountId);
         promiseAll.then(function (value) {
@@ -224,6 +224,38 @@ router.get('/logout',
         console.log(req.user.id + " logged out")
         return res.cookie("token", "").status(200).send();
     })
+
+router.post('/password', [
+    Auth.userType(),
+    Validator.checkString("password", { min: 6 }),
+    Validator.checkString("newPassword", { min: 6 })
+], function (req, res) {
+    if (req.user.id == 3) {
+        if (req.body.accountId) {
+            //kalau ada accountId dlm body mesti nk ubahkan password account lain
+        }
+    }
+    //normal tukar pass sendiri
+    var acc = new Account({
+        "straccountId": req.user.id
+    });
+    acc.login().then(async function (result) {
+        var ismatch = await bcrypt.compare(req.body.password, result.password)
+        if (!ismatch) {
+            return res.status(401).send('invalid current password')
+        }
+        else {
+            const salt = await bcrypt.genSalt(10);
+            var hashed = await bcrypt.hash(req.body.newPassword, salt)
+            acc.saveNewPassword(hashed).then(function (result) {
+                return res.status(200).send()
+            }).catch(function (err) {
+                return res.status(500).send({ error: err })
+            })
+
+        }
+    })
+})
 
 router.get('/verify',
     Auth.userType(),
