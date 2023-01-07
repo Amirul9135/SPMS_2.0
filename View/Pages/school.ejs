@@ -13,7 +13,8 @@
         </div>
 
         <div class="col-md-2 col-xl-2 text-right">
-            <button type="button" class="btn btn-pill btn-secondary-light" data-toggle="modal" data-target="#modal_schoolForm">
+            <button type="button" class="btn btn-pill btn-secondary-light" data-toggle="modal"
+                data-target="#modal_schoolForm">
                 <i class="fa fa-plus mr-2"><b style="font-family: sans-serif;">&nbsp;School</b></i>
             </button>
         </div>
@@ -155,8 +156,8 @@
 
                             <div class="select-search">
                                 <input id="SSPostcode" type="text" autocomplete="off" disabled class="form-control"
-                                    data-list="idListPostcode" onkeyup="SSKeyHandler(event)"
-                                    onfocus="SSFocus(event)" onblur="SSFocus(event)" onplay="changePostcode(event)">
+                                    data-list="idListPostcode" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                    onblur="SSFocus(event)" onplay="changePostcode(event)">
                                 <ul onclick="SSItemClick(event)" id="idListPostcode" data-selected="-1">
                                 </ul>
                             </div>
@@ -181,7 +182,8 @@
             <div class="modal-footer text-white" style="justify-content: center;">
                 <a class="btn btn-warning mt-1" data-dismiss="modal">Cancel</a>
                 <a class="btn btn-success mt-1" id="btnRegister" onclick="registerSchool();">Save</a>
-                <a class="btn btn-success mt-1" id="btnUpdate" onClick="updateSchool();" style="display: none;">Update</a>
+                <a class="btn btn-success mt-1" id="btnUpdate" onClick="updateSchool();"
+                    style="display: none;">Update</a>
             </div>
         </div>
     </div>
@@ -199,7 +201,7 @@
             // options 
             "columnDefs":
                 [
-                    { "targets": [1,3,4], "className": "text-center" }
+                    { "targets": [1, 3, 4], "className": "text-center" }
                 ]
         });
 
@@ -225,13 +227,13 @@
         //     return false;
         // }
 
-        var fullName    = document.getElementById("txtSchoolName").value;
-        var abbrv       = document.getElementById("txtSchoolAbbrv").value;
+        var fullName = document.getElementById("txtSchoolName").value;
+        var abbrv = document.getElementById("txtSchoolAbbrv").value;
         var description = document.getElementById("txtDescription").value;
 
         var data = {
-            "fullName"   : fullName,
-            "abbrv"      : abbrv,
+            "fullName": fullName,
+            "abbrv": abbrv,
             "description": description
         }
 
@@ -242,9 +244,9 @@
             document.getElementById("txtDescription").value = "";
 
             var action = await Swal.fire({
-                type : 'success',
+                type: 'success',
                 title: 'Register Successfully!',
-                text : '',
+                text: '',
                 showCancelButton: false
             })
 
@@ -266,7 +268,7 @@
         })
     }
 
-    
+
     // Load list of subjects (dataTable)
     function loadSchool() {
         console.log("load");
@@ -282,16 +284,20 @@
                     qSchool.abbrv,
                     qSchool.description,
                     '<button class="btn btn-danger" style="vertical-align: middle;" onclick="deleteSchool(event);" id="' + qSchool.schoolId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>',
-                    '<button class="btn btn-secondary" style="vertical-align: middle;" onclick="#" id="' + qSchool.schoolId + '"><b><i class="fa fa-list-ul" style="font-size: 17px;"></i></b></button>'
+                    '<button class="btn btn-secondary" style="vertical-align: middle;" onclick="goToClassList(event)" id="' + qSchool.schoolId + '"><b><i class="fa fa-list-ul" style="font-size: 17px;"></i></b></button>'
                 ]).node()
-               tmpRow.id = qSchool.subjectCode; //letak id
+                tmpRow.id = qSchool.subjectCode; //letak id
             })
-            tableSchool .draw();
+            tableSchool.draw();
             console.log(data)
         }
         ).catch(function (value) {
             console.log(value);
         });
+    }
+
+    function goToClassList(e) {
+        navigate('/classList?scid=' + e.target.id)
     }
 
     // With filter
@@ -334,7 +340,7 @@
         document.getElementById("idListPostcode").innerHTML = ""
         document.getElementById("idListPostcode").dataset.selected = "-1"
     }
-    
+
     function resetArea() {
         document.getElementById("SSArea").disabled = true;
         document.getElementById("SSArea").value = "";
@@ -407,9 +413,9 @@
     //view subject on Click 
     async function getSchool(event) {
         var action = await Swal.fire({
-            type : 'question',
+            type: 'question',
             title: 'Update this school?',
-            text : 'Directing to update form',
+            text: 'Directing to update form',
             showCancelButton: true
         })
         if (action.dismiss) {
@@ -419,38 +425,38 @@
         var data = {
             "schoolId": event.target.id
         }
-        
+
         $('#modal_schoolForm').modal('show');
 
-        document.getElementById("txtSchoolName").value       = event.target.children[0].innerHTML;
+        document.getElementById("txtSchoolName").value = event.target.children[0].innerHTML;
 
         var row = event.target.parentElement.parentElement;
         console.log(row);
-        document.getElementById("txtSchoolAbbrv").value      = row.children[1].innerHTML;
-        document.getElementById("txtDescription").value      = row.children[2].innerHTML;
-        document.getElementById("btnUpdate").style.display   = "inline-block";
+        document.getElementById("txtSchoolAbbrv").value = row.children[1].innerHTML;
+        document.getElementById("txtDescription").value = row.children[2].innerHTML;
+        document.getElementById("btnUpdate").style.display = "inline-block";
         document.getElementById("btnRegister").style.display = "none";
 
         selectedSchoolId = event.target.id;
     }
-    
+
     async function updateSchool() {
         //submitAddress()
-        var fullName    = document.getElementById("txtSchoolName").value;
-        var abbrv       = document.getElementById("txtSchoolAbbrv").value;
+        var fullName = document.getElementById("txtSchoolName").value;
+        var abbrv = document.getElementById("txtSchoolAbbrv").value;
         var description = document.getElementById("txtDescription").value;
 
         var data = {
-            "schoolId"   : selectedSchoolId,
-            "fullName"   : fullName,
-            "abbrv"      : abbrv,
+            "schoolId": selectedSchoolId,
+            "fullName": fullName,
+            "abbrv": abbrv,
             "description": description
         }
 
         var action = await Swal.fire({
-            type : 'question',
+            type: 'question',
             title: 'Confirm Update?',
-            text : 'This school will be updated into the system',
+            text: 'This school will be updated into the system',
             showCancelButton: true
         })
         if (action.dismiss) {
@@ -458,32 +464,32 @@
         }
 
         Server.request("POST", "/api/school/update", data, false).then(async function (value) {
-                Message.createNew("Success", value, 0);
+            Message.createNew("Success", value, 0);
 
-                document.getElementById("txtSchoolName").value       = "";
-                document.getElementById("txtSchoolAbbrv").value      = "";
-                document.getElementById("txtDescription").value      = "";
-                document.getElementById("btnUpdate").style.display   = "none";
-                document.getElementById("btnRegister").style.display = "inline-block";
-                
-                var action = await Swal.fire({
-                type : 'success',
+            document.getElementById("txtSchoolName").value = "";
+            document.getElementById("txtSchoolAbbrv").value = "";
+            document.getElementById("txtDescription").value = "";
+            document.getElementById("btnUpdate").style.display = "none";
+            document.getElementById("btnRegister").style.display = "inline-block";
+
+            var action = await Swal.fire({
+                type: 'success',
                 title: 'Updated Successfully!',
-                text : '',
+                text: '',
                 showCancelButton: false
-                })
-
-                $('#modal_schoolForm').modal('hide');
-
-            }).catch(function (value) {
-                value = JSON.parse(value);
-                if (value.hasOwnProperty("validationError")) {
-                    displayValidationError(value);
-                }
-                else {
-                    Message.createNew("Error", value, 3);
-                }
             })
+
+            $('#modal_schoolForm').modal('hide');
+
+        }).catch(function (value) {
+            value = JSON.parse(value);
+            if (value.hasOwnProperty("validationError")) {
+                displayValidationError(value);
+            }
+            else {
+                Message.createNew("Error", value, 3);
+            }
+        })
     }
 
     async function deleteSchool(event) {
@@ -506,9 +512,9 @@
 
         Server.request("POST", "/api/school/delete", data, false).then(async function (value) {
             var action = await Swal.fire({
-                type : 'success',
+                type: 'success',
                 title: 'Deleted Successfully!',
-                text : '',
+                text: '',
                 showCancelButton: false
             })
             alert('ID :' + event.target.id);

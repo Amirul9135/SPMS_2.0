@@ -1,5 +1,6 @@
-<div class="side-app">
+<div class="side-app" onload="setup()">
 
+    <div id="ejsData" data-school="<%= JSON.stringify(school) %> "></div>
     <!-- header -->
     <div class="row">
         <div class="col-md-10 col-xl-10">
@@ -263,4 +264,17 @@
         </div>
     </div>
 </div>
+
 <!-- MODAL CLOSED -->
+<script>
+    var ejsData
+    var school
+    function setup() {
+
+        ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
+
+        document.getElementById("ejsData").remove()
+        school = JSON.parse(ejsData.school)
+        console.log(school)
+    }
+</script>

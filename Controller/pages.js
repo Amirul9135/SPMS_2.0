@@ -10,6 +10,7 @@ const Assessment = require("../Model/entity/assessment/Assessment")
 const AssessmentController = require('./assessmentController');
 const QuestionAnswer = require('../Model/entity/question/QuestionAnswer');
 const Account = require('../Model/entity/Account');
+const School = require('../Model/entity/School');
 //ni folder handle routes page request
 //page kita ni in form of fragment je x full page
 //front end SPA script ak yg akan load kan ke dlm page nanti
@@ -44,11 +45,36 @@ router.get('/student', Auth.userType([2, 3]), async function (req, res) {
 })
 
 //school & class
-router.get('/school', function (req, res) {
-    return res.sendFile(ViewDir + "\\school.ejs");
+router.get('/school', async function (req, res) {
+    var statesdata = await Address.getState();
+    return res.render("school.ejs", {
+
+        states: statesdata
+    });
 })
-router.get('/class', function (req, res) {
-    return res.sendFile(ViewDir + "\\class.html");
+router.get('/classList', [
+    Auth.userType([2, 3])
+], async function (req, res) {
+    var schoolId
+    if (req.user.type == 2) {//kalau 2 = teacher= ambil dari token nanti
+        schoolId = req.query.scid //temporary amek dri ni dlu nanti dah lock baru properly
+    }
+    else {
+        if (!req.query.scid) {//kalau admin kene specify dari click kat classlist id ni
+            return res.status(400).send({ error: 'invalid school id' })
+        }
+        schoolId = req.query.scid
+    }
+    var school = await School.getSchool(schoolId).catch(function (err) {
+        console.log(err)
+    })
+    if (!school) {
+        return res.status(500).send({ error: 'failed to load school' })
+    }
+
+    return res.render('classList.ejs', {
+        school: school
+    })
 })
 
 //subject & topic

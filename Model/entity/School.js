@@ -8,11 +8,11 @@ module.exports = class School {
     #intAreaId;
 
     constructor() {
-        this.#intSchoolId    = "";
-        this.#strFullName    = "";
-        this.#strAbbrv       = "";
+        this.#intSchoolId = "";
+        this.#strFullName = "";
+        this.#strAbbrv = "";
         this.#strDescription = "";
-        this.#intAreaId    = "";
+        this.#intAreaId = "";
     }
 
     setIntSchoolId(schoolId) {
@@ -43,17 +43,17 @@ module.exports = class School {
         return this.#strDescription;
     }
 
-    setIntAreaId(intAreaId){
+    setIntAreaId(intAreaId) {
         this.#intAreaId = intAreaId;
     }
-    getIntAreaId(){
+    getIntAreaId() {
         return this.#intAreaId;
     }
 
 
     // Register School
     registerSchool() {
-        var strSql = "INSERT INTO school(fullName, abbrv, description) VALUES (" + db.escape(this.#strFullName) + ", " + db.escape(this.#strAbbrv) + "," + db.escape(this.#strDescription)   +")";
+        var strSql = "INSERT INTO school(fullName, abbrv, description) VALUES (" + db.escape(this.#strFullName) + ", " + db.escape(this.#strAbbrv) + "," + db.escape(this.#strDescription) + ")";
 
         return new Promise(function (resolve, reject) {
             //js function to insert data (callback function)
@@ -70,9 +70,8 @@ module.exports = class School {
     }
 
     // Update school
-    updateSchool() 
-    {
-        var strSql = "UPDATE school SET fullName= " + db.escape(this.#strFullName) + ", abbrv=" + db.escape(this.#strAbbrv) +", description=" + db.escape(this.#strDescription) + " WHERE schoolId= " + db.escape(this.#intSchoolId);
+    updateSchool() {
+        var strSql = "UPDATE school SET fullName= " + db.escape(this.#strFullName) + ", abbrv=" + db.escape(this.#strAbbrv) + ", description=" + db.escape(this.#strDescription) + " WHERE schoolId= " + db.escape(this.#intSchoolId);
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {
@@ -125,7 +124,7 @@ module.exports = class School {
 
     static getSchool(schoolId) {
         return new Promise(function (resolve, reject) {
-            var strSql = "SELECT fullName,abbrv,description FROM  school WHERE schoolId =  " + db.escape(schoolId);
+            var strSql = "SELECT * FROM  school WHERE schoolId =  " + db.escape(schoolId);
             db.query(strSql, function (err, result) {
                 if (err) {
                     console.log("error:" + err.message);
