@@ -253,10 +253,16 @@
         school = JSON.parse(ejsData.school)
         console.log(school)
         dtbClassList = new DataTable('#dtbClassList', {
-            "columnDefs": {
+            "columnDefs": [{
                 "targets": [2, 3],
                 "searchable": false
+            },
+            {
+                "targets": [3],
+                "className": "text-center"
             }
+            ]
+
 
         })
     }
