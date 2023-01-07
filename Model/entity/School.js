@@ -1,54 +1,65 @@
 const db = require("../DBConn")
-module.exports = class School {
-    #intschoolId;
-    #strfullNamesch;
-    #strabbrvsch;
-    #strdescriptionsch;
 
+module.exports = class School {
+    #intSchoolId;
+    #strFullName;
+    #strAbbrv;
+    #strDescription;
+    #intAreaId;
 
     constructor() {
-        this.#intschoolId = "";
-        this.#strfullNamesch = "";
-        this.#strabbrvsch = "";
-        this.#strdescriptionsch = "";
+        this.#intSchoolId    = "";
+        this.#strFullName    = "";
+        this.#strAbbrv       = "";
+        this.#strDescription = "";
+        this.#intAreaId    = "";
     }
 
-    setIntSchoolId(intschoolId) {
-        this.#intschoolId = intschoolId;
+    setIntSchoolId(schoolId) {
+        this.#intSchoolId = schoolId;
     }
     getIntSchoolId() {
-        return this.#intschoolId;
+        return this.#intSchoolId;
     }
 
-    setStrFullNameSch(strfullNamesch) {
-        this.#strfullNamesch = strfullNamesch;
+    setStrFullName(fullName) {
+        this.#strFullName = fullName;
     }
-    getStrFullNameSch() {
-        return this.#strfullNamesch;
-    }
-
-    setStrAbbrvSch(strabbrvsch) {
-        this.#strabbrvsch = strabbrvsch;
-    }
-    getStrAbbrvSch() {
-        return this.#strabbrvsch;
+    getStrFullName() {
+        return this.#strFullName;
     }
 
-    setStrDescriptionSch(strdescriptionsch) {
-        this.#strdescriptionsch = strdescriptionsch;
+    setStrAbbrv(strAbbrv) {
+        this.#strAbbrv = strAbbrv;
     }
-    getStrDescriptionSch() {
-        return this.#strdescriptionsch;
+    getStrAbbrv() {
+        return this.#strAbbrv;
     }
 
-    register() {
-        var strsql = "INSERT INTO school(schoolId,fullName,abbrv,description) VALUES ('"
-            + this.#intschoolId + "', '" + this.#strfullNamesch + "', '" + this.#strabbrvsch + "', '" + this.#strdescriptionsch + "')";
+    setStrDescription(strDescription) {
+        this.#strDescription = strDescription;
+    }
+    getStrDescription() {
+        return this.#strDescription;
+    }
+
+    setIntAreaId(intAreaId){
+        this.#intAreaId = intAreaId;
+    }
+    getIntAreaId(){
+        return this.#intAreaId;
+    }
+
+
+    // Register School
+    registerSchool() {
+        var strSql = "INSERT INTO school(fullName, abbrv, description) VALUES (" + db.escape(this.#strFullName) + ", " + db.escape(this.#strAbbrv) + "," + db.escape(this.#strDescription)   +")";
 
         return new Promise(function (resolve, reject) {
-            db.query(strsql, function (err, result) {
+            //js function to insert data (callback function)
+            db.query(strSql, function (err, result) {
                 if (err) {
-                    console.log("error:" + err.message);
+                    console.log("Error: " + err.message);
                     reject(err.message);
                 }
                 else {
@@ -56,11 +67,12 @@ module.exports = class School {
                 }
             });
         });
-
     }
-    update() {
-        var strSql = "UPDATE school SET fullName = " + db.escape(this.#strfullNamesch) + ", abbrv = " + db.escape(this.#strabbrvsch) + ", description = " + db.escape(this.#strdescriptionsch) + " WHERE schoolId=" + db.escape(this.#intschoolId);
-        console.log(strSql)
+
+    // Update school
+    updateSchool() 
+    {
+        var strSql = "UPDATE school SET fullName= " + db.escape(this.#strFullName) + ", abbrv=" + db.escape(this.#strAbbrv) +", description=" + db.escape(this.#strDescription) + " WHERE schoolId= " + db.escape(this.#intSchoolId);
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {
@@ -75,10 +87,11 @@ module.exports = class School {
                 }
             });
         });
+
     }
 
-    delete() {
-        var strSql = "DELETE FROM school WHERE schoolId='" + this.#intschoolId + "'";
+    deleteSchool() {
+        var strSql = "DELETE FROM school WHERE schoolId= " + db.escape(this.#intSchoolId);
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {
@@ -90,6 +103,21 @@ module.exports = class School {
                 }
                 else {
                     resolve("success");
+                }
+            });
+        });
+    }
+
+    static getAll() {
+        return new Promise(function (resolve, reject) {
+            var strSql = "SELECT * FROM school";
+            db.query(strSql, function (err, result) {
+                if (err) {
+                    console.log("error:" + err.message);
+                    reject(err.message);
+                }
+                else {
+                    resolve(JSON.parse(JSON.stringify(result)));
                 }
             });
         });

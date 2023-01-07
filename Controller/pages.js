@@ -44,7 +44,7 @@ router.get('/student', Auth.userType([2, 3]), async function (req, res) {
 
 //school & class
 router.get('/school', function (req, res) {
-    return res.sendFile(ViewDir + "\\school.html");
+    return res.sendFile(ViewDir + "\\school.ejs");
 })
 router.get('/class', function (req, res) {
     return res.sendFile(ViewDir + "\\class.html");
