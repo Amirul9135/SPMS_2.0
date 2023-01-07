@@ -208,7 +208,7 @@
   function changeSubject(e) {
     var subjId = document.getElementById(e.target.dataset.list).dataset.selected;
     if (e.target.value != -1) {
-      Server.request("POST", "/api/question/getTopicBySubject", { subjectId: subjId }, false).then(
+      Server.request("POST", "/api/question/getTopicBySubject", { subjectId: subjId }, true).then(
         function (value) {
           value = JSON.parse(value)
           var fragment = document.createDocumentFragment();
@@ -288,7 +288,7 @@
     }
   }
   function viewQuestionDetail(qid) {
-    Server.request("GET", "/api/question/detail?questionId=" + qid, null, false).then(
+    Server.request("GET", "/api/question/detail?questionId=" + qid, null, true).then(
       function (result) {
         result = JSON.parse(result)
         document.getElementById("MDQ_Editbtn").dataset.questionid = qid
@@ -325,7 +325,7 @@
   }
 
   function loadQuestionDetailAttachment(questionId) {
-    Server.request("GET", "/api/question/attachmentList?id=" + questionId, null, false).then(function (result) {
+    Server.request("GET", "/api/question/attachmentList?id=" + questionId, null, true).then(function (result) {
       result = JSON.parse(result);
       document.getElementById("MQD_imageContainer").innerHTML = ""
       result.forEach(attc => {
@@ -346,7 +346,7 @@
   }
 
   function loadAnswer(questionId) {
-    Server.request("GET", "/api/question/answer/?id=" + questionId, null, false).then(
+    Server.request("GET", "/api/question/answer/?id=" + questionId, null, true).then(
       function (result) {
         MQD_ansTable.clear()
         result = JSON.parse(result)

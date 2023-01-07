@@ -64,8 +64,8 @@ module.exports = class Question {
             })
         })
     }
-    deleteThis() {
-        var strSql = "DELETE FROM question WHERE questionId=" + db.escape(this.#intQuestionId)
+    deleteThis(staffId) {
+        var strSql = "DELETE FROM question WHERE questionId=" + db.escape(this.#intQuestionId) + " AND creatorId=" + db.escape(staffId)
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {
@@ -123,8 +123,9 @@ module.exports = class Question {
         }))
     }
 
-    update() {
+    update(staffId) {
         var strSql = "UPDATE question SET questionText=" + db.escape(this.#strQuestionText) + " WHERE questionId=" + db.escape(this.#intQuestionId)
+            + " AND creatorId=" + db.escape(staffId)
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {

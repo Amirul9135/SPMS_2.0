@@ -9,6 +9,7 @@ const Auth = require("./Middleware/Authenticate")
 const Assessment = require("../Model/entity/assessment/Assessment")
 const AssessmentController = require('./assessmentController');
 const QuestionAnswer = require('../Model/entity/question/QuestionAnswer');
+const Account = require('../Model/entity/Account');
 //ni folder handle routes page request
 //page kita ni in form of fragment je x full page
 //front end SPA script ak yg akan load kan ke dlm page nanti
@@ -145,8 +146,9 @@ router.get('/assessment_attempt', Auth.userType([1]), async function (req, res) 
     })
 })
 
-router.get('/assessmentIReport', Auth.userType([1, 2]), async function (req, res) {
-    console.log(req.query)
+router.get('/assessmentIReport', Auth.userType([1, 2, 3]), async function (req, res) {
+
+    console.log(req.user)
     if (!req.query.asid || !req.query.sid) {//assessment id, student id
         return res.status(400).send()
     }
@@ -159,37 +161,42 @@ router.get('/assessmentIReport', Auth.userType([1, 2]), async function (req, res
             return res.status(401).send()//student xle acccess report student lain
         }
     }
-    console.log('sni')
     var errormsg = ""
+    var stud = await Account.getAccount(studentId).catch(function (err) {
+        errormsg = err
+    })
+    if (!stud) {
+        return res.status(400).send({ error: errormsg })
+    }
+    //load acc untuk nama n ic dr sid
     var As = new Assessment()
     As.assessmentId = req.query.asid;
     var dataAs = await As.load().catch(function (err) {
         errormsg = err
     })
-    console.log('sni')
     if (!dataAs) {
         return res.status(400).send({ error: errormsg })
     }
-    console.log('sni')
     var totalMark = await As.totalFullMark().catch(function (err) {
         errormsg = err
     })
     if (!totalMark) {
         return res.status(400).send({ error: errormsg })
     }
-    console.log('sni')
 
     var asq = await As.getAllAssignedQuestion(studentId).catch(function (err) {
         console.log(err)
         errormsg = err
     })
+    console.log(asq)
     if (!asq) {
         return res.status(400).send({ error: errormsg })
     }
     return res.render('assessment_report_student.ejs', {
         assessment: dataAs[0],
         tMark: totalMark,
-        assignedQuestion: asq
+        assignedQuestion: asq,
+        student: stud
     })
 })
 

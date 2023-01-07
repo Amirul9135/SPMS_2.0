@@ -13,11 +13,9 @@ const attachmentPath = path.join(__dirname, "../View/Res/images/attachment");
 const Auth = require("../Controller/Middleware/Authenticate")
 
 
-router.post('/test', function (req, res) {
-})
 
 router.post('/', [
-    Auth.userType([2]),
+    Auth.userType([2, 3]),
     Validator.checkNumber("intTopicId", "invalid topic Id"),
     Validator.checkNumber("intQuestionType", "invalid question type"),
     Validator.checkString("strQuestionText", { min: 3 }, "question text must be included"),
@@ -34,18 +32,20 @@ router.post('/', [
     })
 
 })
-router.get('/', function (req, res) {
-    var id = req.query.id;
-    if (!id || id < 0) {
-        return res.status(400).send("invalid id");
-    }
-    Question.loadFromDb(id).then(function (foundQuestion) {
-        return res.status(200).send(foundQuestion.toJSON());
-    }).catch(function (value) {
-        return res.status(500).send("not found: " + value);
+router.get('/', Auth.userType([1, 2, 3])
+    , function (req, res) {
+        var id = req.query.id;
+        if (!id || id < 0) {
+            return res.status(400).send("invalid id");
+        }
+        Question.loadFromDb(id).then(function (foundQuestion) {
+            return res.status(200).send(foundQuestion.toJSON());
+        }).catch(function (value) {
+            return res.status(500).send("not found: " + value);
+        })
     })
-})
 router.patch('/', [
+    Auth.userType([2, 3]),
     Validator.checkString("strQuestionText", { min: 3 }, "question text must be included"),
     Validator.validate()
 ], function (req, res) {
@@ -57,30 +57,33 @@ router.patch('/', [
         intQuestionId: id,
         strQuestionText: req.body.strQuestionText
     })
-    updateQuestion.update().then(function (value) {
+    updateQuestion.update(req.user.id).then(function (value) {
         return res.status(200).send()
     }).catch(function (value) {
         return res.status(500).send(value)
     })
 })
 
-router.delete('/', function (req, res) {
-    var id = req.query.id;
-    if (!id || id < 0) {
-        return res.status(400).send("invalid id");
-    }
-    var delQ = new Question({ intQuestionId: id });
-    delQ.deleteThis().then(function (value) {
-        return res.status(200).send()
-    }).catch(function (value) {
-        return res.status(500).send()
-    })
+router.delete('/',
+    Auth.userType([2, 3])
+    , function (req, res) {
+        var id = req.query.id;
+        if (!id || id < 0) {
+            return res.status(400).send("invalid id");
+        }
+        var delQ = new Question({ intQuestionId: id });
+        delQ.deleteThis(req.user.id).then(function (value) {
+            return res.status(200).send()
+        }).catch(function (value) {
+            return res.status(500).send()
+        })
 
-})
+    })
 
 
 router.post('/answer',
     [
+        Auth.userType([2, 3]),
         Validator.checkNumber("intQuestionId", "Question Id must be included"),
         Validator.checkString("strAnswerText", "Answer text must be included"),
         Validator.checkNumber("dblRelativeMark", { min: 0, max: 100 }, "relative mark must be between 0 ~ 100"),
@@ -100,6 +103,7 @@ router.post('/answer',
 
 router.patch('/answer',
     [
+        Auth.userType([2, 3]),
         Validator.checkNumber("intQuestionId", "Question Id must be included"),
         Validator.checkString("strAnswerText", "Answer text must be included"),
         Validator.checkNumber("dblRelativeMark", { min: 0, max: 100 }, "relative mark must be between 0 ~ 100"),
@@ -123,43 +127,50 @@ router.patch('/answer',
         })
     })
 
-router.delete('/answer', function (req, res) {
-    var questionId = req.query.questionId;
-    if (!questionId || questionId < 0) {
-        return res.status(400).send("invalid question id");
-    }
-    var answerNo = req.query.answerNo;
-    if (!answerNo || answerNo < 0) {
-        return res.status(400).send("invalid answer No id");
-    }
+router.delete('/answer', [
+    Auth.userType([2, 3])
+]
+    , function (req, res) {
+        var questionId = req.query.questionId;
+        if (!questionId || questionId < 0) {
+            return res.status(400).send("invalid question id");
+        }
+        var answerNo = req.query.answerNo;
+        if (!answerNo || answerNo < 0) {
+            return res.status(400).send("invalid answer No id");
+        }
 
-    var delAns = new QuestionAnswer({
-        "intQuestionId": questionId,
-        "intAnswerNo": answerNo
-    })
-    delAns.deleteThis().then(function (value) {
-        return res.status(200).send();
-    }).catch(function (value) {
-        return res.status(500).send(value)
-    })
+        var delAns = new QuestionAnswer({
+            "intQuestionId": questionId,
+            "intAnswerNo": answerNo
+        })
+        delAns.deleteThis().then(function (value) {
+            return res.status(200).send();
+        }).catch(function (value) {
+            return res.status(500).send(value)
+        })
 
 
-})
-
-router.get('/answer', function (req, res) {//provide id of question
-    var id = req.query.id;
-    if (!id || id < 0) {
-        return res.status(400).send("invalid id");
-    }
-    QuestionAnswer.getAllAnswers(id).then(function (foundAnswers) {
-        return res.status(200).send(foundAnswers);
-    }).catch(function (value) {
-        return res.status(400).send(value)
     })
 
-})
+router.get('/answer', [
+    Auth.userType([1, 2, 3]),],
+    function (req, res) {//provide id of question
+        var id = req.query.id;
+        if (!id || id < 0) {
+            return res.status(400).send("invalid id");
+        }
+        QuestionAnswer.getAllAnswers(id).then(function (foundAnswers) {
+            return res.status(200).send(foundAnswers);
+        }).catch(function (value) {
+            return res.status(400).send(value)
+        })
 
-router.post('/getTopicBySubject', function (req, res) {
+    })
+
+router.post('/getTopicBySubject', [
+    Auth.userType([2, 3]),
+], function (req, res) {
     Question.tmpGetTopicBySub(req.body.subjectId).then(
         function (value) {
             return res.status(200).send(value);
@@ -170,7 +181,9 @@ router.post('/getTopicBySubject', function (req, res) {
 })
 
 
-router.post('/addQuestionAttachment', function (req, res) {
+router.post('/addQuestionAttachment', [
+    Auth.userType([2, 3]),
+], function (req, res) {
     var targetQuestion = new Question();
     targetQuestion.setIntQuestionId(req.body.intQuestionId)
     targetQuestion.addAttachments(req.body.attachments).then(function (value) {
@@ -181,7 +194,7 @@ router.post('/addQuestionAttachment', function (req, res) {
 })
 
 router.get('/find',
-    Auth.userType([2])
+    Auth.userType([2, 3])
     , function (req, res) {
         //dStart,dEnd,subjectCode,topicId,questionType
         var dStart = req.query.dStart;
@@ -218,7 +231,9 @@ router.get('/find',
     })
 
 
-router.get('/attachmentList', function (req, res) {
+router.get('/attachmentList', [
+    Auth.userType([1, 2, 3]),
+], function (req, res) {
     var id = req.query.id;
     if (!id || id < 0) {
         return res.status(400).send("invalid id");
@@ -230,8 +245,10 @@ router.get('/attachmentList', function (req, res) {
     })
 
 })
-
+/*
 router.post('/uploadAttachment', [
+
+    Auth.userType([2, 3]),
     fileUpload({ createParentPath: true }),
     fileUploadValidator.fileExist(),
     fileUploadValidator.maxMbSize(5),
@@ -267,8 +284,9 @@ router.post('/uploadAttachment', [
             return res.status(500).send({ error: value })
         })
     })
-
+*/
 router.post("/attachment/upload", [
+    Auth.userType([2, 3]),
     fileUpload({ createParentPath: true }),
     fileUploadValidator.fileExist(),
     fileUploadValidator.maxMbSize(5),
@@ -297,7 +315,9 @@ router.post("/attachment/upload", [
     })
 })
 
-router.get("/attachment/delete", function (req, res) {
+router.get("/attachment/delete", [
+    Auth.userType([2, 3])
+], function (req, res) {
     Attachment.loadFromDb(req.query.intAttachmentId).then(function (foundFile) {
 
         foundFile.deleteThis().then(function (value) {
@@ -315,7 +335,9 @@ router.get("/attachment/delete", function (req, res) {
     return;
 })
 
-router.get("/detail", function (req, res) {
+router.get("/detail", [
+    Auth.userType([1, 2, 3])
+], function (req, res) {
     var questionId = req.query.questionId;
     if (!questionId) {
         return res.status(400).send()
@@ -328,17 +350,19 @@ router.get("/detail", function (req, res) {
 
 })
 
-router.get("/setId", function (req, res) {
-    var setId = req.query.questionSetId;
-    if (!setId) {
-        return res.status(400).send()
-    }
-    Question.findQuestionInSet(setId).then(function (result) {
-        return res.status(200).send(result)
-    }).catch(function (err) {
-        return res.status(500).send(err)
+router.get("/setId",
+    Auth.userType([2, 3])
+    , function (req, res) {
+        var setId = req.query.questionSetId;
+        if (!setId) {
+            return res.status(400).send()
+        }
+        Question.findQuestionInSet(setId).then(function (result) {
+            return res.status(200).send(result)
+        }).catch(function (err) {
+            return res.status(500).send(err)
+        })
     })
-})
 
 
 module.exports = router; 

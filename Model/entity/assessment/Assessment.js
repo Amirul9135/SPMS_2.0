@@ -496,9 +496,14 @@ module.exports = class Assessment {
     }
 
 
-    static checkAssignedQuestion(asId, studentId) {
+    static checkAssignedQuestion(asId, studentId, rand = true) {
+        var strsql = "SELECT questionId,choosenAnswerNo,answerText"
+        if (!rand) {
+            strsql += ",mark,fullMark,time"
+        }
+        strsql += " FROM assigned_question WHERE assessmentId=" + db.escape(asId) + " AND studentId=" + db.escape(studentId) + ((rand) ? " ORDER BY RAND();" : "")
         return new Promise(function (resolve, reject) {
-            db.query("SELECT questionId,choosenAnswerNo,answerText FROM assigned_question WHERE assessmentId=" + db.escape(asId) + " AND studentId=" + db.escape(studentId) + " ORDER BY RAND()",
+            db.query(strsql,
                 function (err, result) {
                     if (err) {
                         reject(err.message)

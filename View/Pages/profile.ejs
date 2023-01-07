@@ -78,6 +78,9 @@
             </div>
           </div>
           <div class="card-footer text-right">
+            <button onclick="passwordEdit()" class="btn btn-primary" style="float: left;"><i class="fa fa-lock"
+                aria-hidden="true"></i> Change
+              Password</button>
             <a onclick="updateacc()" class="btn btn-primary mt-1"><i class="fa fa-floppy-o"></i> Save</a>
           </div>
         </div>
@@ -102,6 +105,64 @@
           Message.createNew("Error", value, 3);
           console.log(value);
         })
+    }
+
+    async function passwordEdit() {
+      var curPass = "", nPass = "", cPass = "";
+      while (1) {
+        var pass = await Swal.fire({
+          html: 'Old Password: <input  class="form-control text-center" type="password"  id="swalOP" value="' + curPass + '"/>'
+            + '<br>New Password: <input  class="form-control text-center" type="password"  id="swalNP" value="' + nPass + '"/>'
+            + 'Confirm Password: <input  class="form-control text-center" type="password"  id="swalCP" value="' + cPass + '"/>'
+
+          ,
+          showCancelButton: true,
+          preConfirm: function () {
+            return new Promise(function (resolve) {
+              resolve([
+                $('#swalOP').val(),
+                $('#swalNP').val(),
+                $('#swalCP').val()
+              ])
+            })
+          }
+        })
+        if (pass.dismiss) {
+          return;
+        }
+        curPass = pass.value[0];
+        nPass = pass.value[1];
+        cPass = pass.value[2];
+        if (pass.value[1] != pass.value[2]) {
+          await Swal.fire({
+            type: 'error',
+            text: 'new password and confirm password does not match'
+          })
+        }
+        else if (pass.value[0] == pass.value[1]) {
+          await Swal.fire({
+            type: 'error',
+            text: 'new password cannot be same with current password'
+          })
+        }
+        else {
+          Server.request('POST', '/api/account/password', {
+            password: curPass,
+            newPassword: nPass
+          }, true).then(function (res) {
+            Swal.fire({
+              type: 'success',
+              text: 'password updated'
+            })
+          }).catch(function (err) {
+            Swal.fire({
+              type: 'error',
+              title: 'failed',
+              text: err
+            })
+          })
+        }
+      }
     }
 
     function updateacc() {
@@ -238,7 +299,8 @@
         "areaId": areaId
       }
       Server.request("POST", "/api/address/set", address, false).then(function (result) {
-        Message.createNew("success", "address saved", 0);
+        //Message.createNew("success", "address saved", 0);
+        console.log('address saved')
         return;
       }).catch(function (err) {
         Message.createNew("err", err, 3);

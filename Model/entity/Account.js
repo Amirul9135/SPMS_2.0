@@ -174,4 +174,18 @@ module.exports = class Account {
             })
         })
     }
+
+    saveNewPassword(encPass) {
+        var strSql = "UPDATE account SET password=" + db.escape(encPass)
+        return new Promise(function (resolve, reject) {
+            db.query(strSql, function (err, result) {
+                if (err) {
+                    reject(err.message)
+                }
+                else {
+                    resolve()
+                }
+            })
+        })
+    }
 }

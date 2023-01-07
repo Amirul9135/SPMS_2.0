@@ -5,6 +5,7 @@ const QuestionSet = require("../Model/entity/question/QuestionSet")
 const Auth = require("./Middleware/Authenticate")
 
 router.post("/", [
+    Auth.userType([2, 3]),
     Validator.checkString("qSetName"),
     Validator.checkString("qSetDesc"),
     Validator.checkString("subjectCode"),
@@ -19,6 +20,7 @@ router.post("/", [
     })
 
 router.patch("/", [
+    Auth.userType([2, 3]),
     Validator.checkNumber("qSetId", { min: 0 }),
     Validator.checkString("qSetName"),
     Validator.checkString("qSetDesc"),
@@ -31,7 +33,9 @@ router.patch("/", [
     })
 })
 
-router.delete("/", function (req, res) {
+router.delete("/", [
+    Auth.userType([2, 3])
+], function (req, res) {
     var id = req.query.id;
     if (!id || id < 0) {
         return res.status(400).send("invalid id");
@@ -45,6 +49,7 @@ router.delete("/", function (req, res) {
 })
 
 router.post("/question", [
+    Auth.userType([2, 3]),
     Validator.checkNumber("qSetId", { min: 0 }),
     Validator.checkNumber("questionId", { min: 0 }),
     Validator.validate()
@@ -58,6 +63,7 @@ router.post("/question", [
     })
 
 router.delete("/question", [
+    Auth.userType([2, 3]),
     Validator.checkNumber("qSetId", { min: 0 }),
     Validator.checkNumber("questionId", { min: 0 }),
     Validator.validate()
@@ -70,7 +76,7 @@ router.delete("/question", [
 })
 
 router.post("/staff", [
-    Auth.userType([2]),
+    Auth.userType([2, 3]),
     Validator.checkString("staffId", { min: 12, max: 12 }),
     Validator.checkNumber("qSetId", { min: 0 }),
     Validator.validate()
@@ -86,6 +92,7 @@ router.post("/staff", [
 })
 
 router.delete("/staff", [
+    Auth.userType([2, 3]),
     Validator.checkString("staffId", { min: 12, max: 12 }),
     Validator.checkNumber("qSetId", { min: 0 }),
     Validator.validate()
@@ -98,7 +105,7 @@ router.delete("/staff", [
 })
 
 router.get("/",
-    Auth.userType([2])
+    Auth.userType([2, 3])
     , function (req, res) {
         var accId = req.user.id
         var subjCode = null;
