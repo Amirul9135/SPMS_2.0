@@ -82,9 +82,10 @@
                                 <tr>
                                     <th width="40%" class="text-white">School Name</th>
                                     <th width="20%" class="text-center text-white">Abbreviation</th>
-                                    <th width="30%" class="text-center text-white">Description</th>
+                                    <th width="30%" class="text-white">Description</th>
                                     <!-- <th width="10%" class="text-center text-white">Area</th> -->
-                                    <th width="10%" class="text-center text-white"></th>
+                                    <th width="5%" class="text-white"></th>
+                                    <th width="5%" class="text-white"></th>
                                 </tr>
                             </thead>
                             <tbody class="mySchool_tbd">
@@ -198,7 +199,7 @@
             // options 
             "columnDefs":
                 [
-                    { "targets": [1], "className": "text-center" }
+                    { "targets": [1,3,4], "className": "text-center" }
                 ]
         });
 
@@ -280,7 +281,8 @@
                     '<button onclick="getSchool(event);" id="' + qSchool.schoolId + '"><b>' + qSchool.fullName + '</b></button>',
                     qSchool.abbrv,
                     qSchool.description,
-                    '<button class="btn btn-danger text-center" style="vertical-align: middle;" onclick="deleteSchool(event);" id="' + qSchool.schoolId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>'
+                    '<button class="btn btn-danger" style="vertical-align: middle;" onclick="deleteSchool(event);" id="' + qSchool.schoolId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>',
+                    '<button class="btn btn-secondary" style="vertical-align: middle;" onclick="#" id="' + qSchool.schoolId + '"><b><i class="fa fa-list-ul" style="font-size: 17px;"></i></b></button>'
                 ]).node()
                tmpRow.id = qSchool.subjectCode; //letak id
             })
