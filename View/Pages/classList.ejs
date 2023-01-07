@@ -87,52 +87,27 @@
         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Senarai Sekolah/ Kelas</h3>
+                    <h3 class="card-title">Senarai Kelas</h3>
                 </div>
-                <div>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover text-nowrap mb-0">
-                            <thead class="bg-primary">
-                                <tr>
-                                    <th width="5%" class="text-center text-white">No</th>
-                                    <th width="50%" class="text-white">Nama Guru Kelas</th>
-                                    <th width="15%" class="text-center text-white">Nama Kelas</th>
-                                    <th width="10%" class="text-center text-white">Jumlah Pelajar</th>
-                                    <th width="10%" class="text-center text-white">Tahun</th>
-                                    <th width="10%" class="text-center text-white">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr data-toggle="modal" data-target="#modal_classDetails">
-                                    <td width="8%" class="text-center">1</td>
-                                    <td width="50%">
-                                        <b>Nurin Aina Syafiqah Binti Muhamad Baharom</b><br>
-                                        <t class="text-muted">SK Lahad Datu</t>
-                                    </td>
-                                    <td width="15%" class="text-center" style="vertical-align: middle;">5 Arif</td>
-                                    <td width="12%" class="text-center" style="vertical-align: middle;">45</td>
-                                    <td width="12%" class="text-center" style="vertical-align: middle;">2022</td>
-                                    <td width="15%" class="text-center" style="vertical-align: middle;">
-                                        <t class="badge badge-info"><b>Aktif</b></t>
-                                    </td>
-                                </tr>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover text-nowrap mb-0" id="dtbClassList">
+                                    <thead class="bg-primary">
+                                        <tr>
+                                            <th width="40%" class="text-white">Nama Kelas</th>
+                                            <th width="40%" class="text-center text-white">Guru Kelas</th>
+                                            <th width="10%" class="text-center text-white">Jumlah Pelajar</th>
+                                            <th width="10%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="mycustom_tbd">
+                                    </tbody>
+                                </table>
+                            </div>
 
-                                <tr data-toggle="modal" data-target="#modal_classDetails">
-                                    <td width="8%" class="text-center">2</td>
-                                    <td width="50%">
-                                        <b>Muhammad Rahman bin Abdullah</b><br>
-                                        <t class="text-muted">SMKA Sultan Muhammad</t>
-                                    </td>
-                                    <td width="15%" class="text-center" style="vertical-align: middle;">1 Bestari</td>
-                                    <td width="12%" class="text-center" style="vertical-align: middle;">42</td>
-                                    <td width="12%" class="text-center" style="vertical-align: middle;">2021</td>
-                                    <td width="15%" class="text-center" style="vertical-align: middle;">
-                                        <t class="badge badge-warning"><b>Tidak Aktif</b></t>
-                                    </td>
-                                </tr>
-
-                            </tbody>
-                        </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -269,6 +244,7 @@
 <script>
     var ejsData
     var school
+    var dtbClassList
     function setup() {
 
         ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
@@ -276,5 +252,12 @@
         document.getElementById("ejsData").remove()
         school = JSON.parse(ejsData.school)
         console.log(school)
+        dtbClassList = new DataTable('#dtbClassList', {
+            "columnDefs": {
+                "targets": [2, 3],
+                "searchable": false
+            }
+
+        })
     }
 </script>
