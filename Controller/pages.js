@@ -260,7 +260,26 @@ router.get('/assessmentReport', Auth.userType([2]), async function (req, res) {
         assignedQuestion: asq
     })
 })
-
+//later add type authority
+router.get('/performanceReport', Auth.userType(),
+    async function (req, res) {
+        var subjects = await Subject.getAll().catch(function (err) {
+            console.log(err)
+        })
+        if (!subjects) {
+            return res.status(400).send()
+        }
+        var statesdata = await Address.getState().catch(function (err) {
+            console.log(err)
+        })
+        if (!statesdata) {
+            return res.status(400).send()
+        }
+        return res.render("performance_report.ejs", {
+            subjects: subjects,
+            states: statesdata
+        })
+    })
 
 //question bank
 router.get('/findQuestion', Auth.userType([2, 3]), async function (req, res) {

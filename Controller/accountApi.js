@@ -27,6 +27,15 @@ router.post('/register',
         Validator.validate()
     ]
     , async function controller(req, res) {
+        if (!isValidIc(req.body.accountId)) {
+            return res.status(400).send({ validationError: { ID: "invalid ID" } })
+        }
+        if (!isValidEmail(req.body.email)) {
+            return res.status(400).send({ validationError: { email: "invalid format" } })
+        }
+        if (!isValidPhone(req.body.phone)) {
+            return res.status(400).send({ validationError: { phone: "invalid format" } })
+        }
         var newAcc = new Account();
         newAcc.setStrAccountId(req.body.accountId);
         newAcc.setStrName(req.body.name);
@@ -73,11 +82,18 @@ router.post('/update',
     [
         Auth.userType(),
         Validator.checkString("name", "nama is required"),
-        Validator.checkString("email", "@required"),
+        Validator.checkString("email", "required"),
         Validator.checkString("phone", { min: 10, max: 11 }),
         Validator.validate()
     ]
     , function (req, res) {
+
+        if (!isValidEmail(req.body.email)) {
+            return res.status(400).send({ validationError: { email: "invalid format" } })
+        }
+        if (!isValidPhone(req.body.phone)) {
+            return res.status(400).send({ validationError: { phone: "invalid format" } })
+        }
         var updateAcc = new Account();
         var accountId = req.user.id
         updateAcc.setStrAccountId(accountId);
@@ -263,5 +279,15 @@ router.get('/verify',
         return res.status(200).send(req.user)
     })
 
+
+function isValidEmail(strEmail) {
+    return /^.+@.+\.\w+$/.test(strEmail)
+}
+function isValidIc(strIc) {
+    return /^\d{12}$/.test(strIc)
+}
+function isValidPhone(strPhone) {
+    return /^\d{10,11}$/.test(strPhone)
+}
 
 module.exports = router; //bila nk require something dari file lain file tu mesti ada module.exports

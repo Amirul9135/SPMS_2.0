@@ -406,7 +406,6 @@
 </div>
 
 <script src="/res/script/echarts.min.js"></script>
-<script src="/res/script/print.min.js"></script>
 <script src="/res/script/questiondetail.js"></script>
 <script>
 
@@ -897,6 +896,7 @@
         data.assessmentId = assessmentId
         data.range = grading
         data.fullMark = parseFloat(ejsData.totalmark)
+        console.log(data)
         Server.request('POST', '/api/assessment/grade', data, true).then(function (result) {
             Swal.fire({
                 type: 'success',
