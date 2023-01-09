@@ -62,4 +62,8 @@ module.exports = class Utils {
         return dpart[2] + "-" + dpart[1] + "-" + dpart[0] + " " + hour + ":" + tpart[1] + ":" + tpart[2];
     }
 
+    static nthKeyValOf(obj, n) {
+        return obj[Object.keys(obj)[n]]
+    }
+
 }

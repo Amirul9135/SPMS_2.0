@@ -335,11 +335,18 @@ router.get('/attachment', function (req, res) {
     return res.sendFile(ViewDir + "\\attachment.html");
 })
 
-//reports
-router.get('/reportAssessment', function (req, res) {
-    return res.sendFile(ViewDir + "\\reportAssessment_old.html")
+router.get('/mapping', async function (req, res) {
+    var statedata = await Address.getState().catch(function (err) {
+        console.log(err)
+    })
+    if (!statedata) {
+        return res.status(400).send()
+    }
+    console.log(statedata)
+    return res.render('manageMap.ejs', {
+        statedata: statedata
+    })
 })
-
 
 
 module.exports = router;
