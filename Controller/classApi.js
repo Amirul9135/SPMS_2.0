@@ -42,7 +42,7 @@ router.post('/delete', function (req, res) {
 });
 
 router.get('/getClassBySchool', function (req, res) {
-    var schoolId ="2";
+    var schoolId ="1";
     var promiseAll = Class.getClassBySchool(schoolId);
     promiseAll.then(function (value) {
         console.log(value);
