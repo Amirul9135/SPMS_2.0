@@ -1,0 +1,18 @@
+<div class="side-app" onload="setup()">
+
+    <div id="ejsData" data-curclass="<%= JSON.stringify(classData) %> "></div>
+    class detail
+</div>
+
+<script>
+    var classData
+    function setup() {
+
+
+        ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
+
+        document.getElementById("ejsData").remove()
+        classData = JSON.parse(ejsData.curclass)
+        console.log(classData)
+    }
+</script>

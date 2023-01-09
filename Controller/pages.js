@@ -11,6 +11,7 @@ const AssessmentController = require('./assessmentController');
 const QuestionAnswer = require('../Model/entity/question/QuestionAnswer');
 const Account = require('../Model/entity/Account');
 const School = require('../Model/entity/School');
+const Class = require('../Model/entity/Class');
 //ni folder handle routes page request
 //page kita ni in form of fragment je x full page
 //front end SPA script ak yg akan load kan ke dlm page nanti
@@ -76,6 +77,25 @@ router.get('/classList', [
         school: school
     })
 })
+
+router.get('/classDetails', [
+    Auth.userType([2, 3]),
+    async function (req, res) {
+        if (!req.query.cid) {
+            return res.status(400).send({ error: 'invalid class id' })
+        }
+        var classData = await Class.getClass(req.query.cid).catch(function (err) {
+            console.log(err)
+        })
+        if (!classData) {
+            return res.status(400).send({ error: 'invalid class' })
+        }
+        console.log(classData)
+        return res.render('classDetail.ejs', {
+            classData: classData
+        })
+    }
+])
 
 //subject & topic
 router.get('/subject', function (req, res) {

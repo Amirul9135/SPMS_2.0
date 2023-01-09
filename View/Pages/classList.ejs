@@ -260,7 +260,7 @@
                 "searchable": false
             },
             {
-                "targets": [0,2,3,4],
+                "targets": [0, 2, 3, 4],
                 "className": "text-center"
             }
             ]
@@ -278,7 +278,8 @@
             var data = JSON.parse(value);
             dtbClassList.clear();
             var tmpRow;
-
+            console.log('sni')
+            console.log(data)
             data.forEach(qClass => { //temporary
                 tmpRow = dtbClassList.row.add([
                     '<button onclick="getSchool(event);" id="' + qClass.classId + '"><b>' + qClass.className + '</b></button>',
@@ -287,13 +288,17 @@
                     '<button class="btn btn-danger" style="vertical-align: middle;" onclick="" id="' + qClass.classId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>',
                     '<button class="btn btn-secondary" style="vertical-align: middle;" onclick="" id="' + qClass.classId + '"><b><i class="fa fa-pencil" style="font-size: 17px;"></i></b></button>'
                 ]).node()
-                tmpRow.id = qClass.subjectCode; //letak id
+                tmpRow.id = qClass.subjectCode; //letak id mane datang subject code ni haha
             })
             dtbClassList.draw();
-            console.log(data)
         }
         ).catch(function (value) {
             console.log(value);
         });
     }
+
+
+    //nak pegi ke classdetail call function
+    //navigate('/classDetails?cid=????')
+    //???? letak class id yang amek dari button/row depends
 </script>
