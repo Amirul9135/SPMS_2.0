@@ -1,23 +1,13 @@
 <div class="side-app" onload="setup()">
 
     <div id="ejsData" data-curclass="<%= JSON.stringify(classData) %> "></div>
-    class detail
-</div>
-
-<!-- MODAL -->
-<div class="modal fade" id="modal_classDetails" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content modal-md">
-            <div class="modal-header bg-info">
-                <h5 class="modal-title text-white" id="exampleModalLabel">Maklumat Kelas</h5>
-                <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">×</span>
-								</button> -->
-            </div>
-            <div class="modal-body">
-                <div class="row">
-
+  
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Class Detail</h3>
+                </div>
                     <div class="col-md-12">
                         <div class="card bg-white">
                             <div class="table-responsive">
@@ -120,21 +110,24 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer" style="justify-content: center;">
+            
+                
             </div>
         </div>
-    </div>
-</div>
-<script>
-    var classData
-    function setup() {
 
 
-        ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
 
-        document.getElementById("ejsData").remove()
-        classData = JSON.parse(ejsData.curclass)
-        console.log(classData)
-    }
-</script>
+        <script>
+            var classData
+            function setup() {
+
+
+                ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
+
+                document.getElementById("ejsData").remove()
+                classData = JSON.parse(ejsData.curclass)
+                console.log(classData)
+            }
+        </script>
+
+        
