@@ -137,131 +137,124 @@
 								</button> -->
             </div>
             <div class="modal-body">
-                
-                    <div class="col-lg-6 col-md-12">
-                        <div class="form-group">
-                            <label for="exampleInputname">Class Name</label>
-                            <input type="text" class="form-control" id="txtnameclass">
-                        </div>
+
+                <div class="col-lg-6 col-md-12">
+                    <div class="form-group">
+                        <label for="exampleInputname">Class Name</label>
+                        <input type="text" class="form-control" id="txtnameclass">
                     </div>
-              
-                    <div class="col-sm-12 col-md-4 col-lg-6 col-xl-4">
-                        <div class="form-group">
-                            <label class="form-label">Subject Code</label>
-                            <select class="form-control select2-show-search" id="selSubjectCode" onchange="subjectChange(event);">
-                                <optgroup>
-                                    
-                                </optgroup>
-                            </select>
-                        </div>
-                    </div>
-                    
-            <div class="modal-footer" style="justify-content: center;">
-            </div>
-            <div class="modal-footer text-white" style="justify-content: center;">
-                <a class="btn btn-warning mt-1" data-dismiss="modal">Cancel</a>
-                <a class="btn btn-success mt-1" button onclick="registerClass()">Save</a>
-                <span id="spnMsg"></span>
+                </div>
+
+
+
+                <div class="modal-footer" style="justify-content: center;">
+                </div>
+                <div class="modal-footer text-white" style="justify-content: center;">
+                    <a class="btn btn-warning mt-1" data-dismiss="modal">Cancel</a>
+                    <a class="btn btn-success mt-1" button onclick="registerClass()">Save</a>
+                    <span id="spnMsg"></span>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- MODAL CLOSED -->
-<script>
-    var ejsData
-    var school
-    var dtbClassList
-    function setup() {
+    <!-- MODAL CLOSED -->
+    <script>
+        var ejsData
+        var school
+        var dtbClassList
+        function setup() {
 
-        ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
+            ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
 
-        document.getElementById("ejsData").remove()
-        school = JSON.parse(ejsData.school)
-        console.log(school)
-        dtbClassList = new DataTable('#dtbClassList', {
-            "columnDefs": [{
-                "targets": [2, 3],
-                "searchable": false
-            },
-            {
-                "targets": [0, 2, 3, 4],
-                "className": "text-center"
-            }
-            ]
-        })
-
-        loadClass();
-    }
-
-    function loadClass() {
-        console.log("load");
-
-
-        Server.request("GET", "/api/class/getClassBySchool", null, false).then(function (value) {
-            var data = JSON.parse(value);
-            dtbClassList.clear();
-            var tmpRow;
-            console.log('sni')
-            console.log(data)
-
-            data.forEach(qClass => { //temporary
-                tmpRow = dtbClassList.row.add([
-                    '<button onclick="getSchool(event);" id="' + qClass.classId + '" ><b style="vertical-align: middle;">' + qClass.className + '</b></button>',
-                    qClass.name,
-                    qClass.total,
-                    '<button class="btn btn-danger" style="vertical-align: middle;" onclick="" id="' + qClass.classId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>',
-                    '<button class="btn btn-secondary" style="vertical-align: middle;" onclick="goToClassDetails(event);" id="' + qClass.classId + '"><b><i class="fa fa-pencil" style="font-size: 17px;"></i></b></button>'
-                ]).node()
-                tmpRow.id = qClass.classId; //letak id 
+            document.getElementById("ejsData").remove()
+            school = JSON.parse(ejsData.school)
+            console.log(school)
+            dtbClassList = new DataTable('#dtbClassList', {
+                "columnDefs": [{
+                    "targets": [2, 3],
+                    "searchable": false
+                },
+                {
+                    "targets": [0, 2, 3, 4],
+                    "className": "text-center"
+                }
+                ]
             })
-            dtbClassList.draw();
+
+            loadClass();
         }
-        ).catch(function (value) {
-            console.log(value);
-        });
-    }
 
-    function goToClassDetails(event) {
-        navigate('/classDetails?cid=' + event.target.id)
-    }
+        function loadClass() {
+            console.log("load");
 
-    async function registerClass() {
-        var action = await Swal.fire({
-            type: 'question',
-            title: 'Confirm Registration',
-            text: 'Register new class into the system?',
-            showCancelButton: true
-        })
-        if (action.dismiss) {
-            return;
-        } 
-    }
 
-    var className = document.getElementById ("txtnameclass").value;
+            Server.request("GET", "/api/class/getClassBySchool", null, false).then(function (value) {
+                var data = JSON.parse(value);
+                dtbClassList.clear();
+                var tmpRow;
+                console.log('sni')
+                console.log(data)
 
-    var data = {
-            "className": className
-    }
+                data.forEach(qClass => { //temporary
+                    tmpRow = dtbClassList.row.add([
+                        '<button onclick="getSchool(event);" id="' + qClass.classId + '" ><b style="vertical-align: middle;">' + qClass.className + '</b></button>',
+                        qClass.name,
+                        qClass.total,
+                        '<button class="btn btn-danger" style="vertical-align: middle;" onclick="" id="' + qClass.classId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>',
+                        '<button class="btn btn-secondary" style="vertical-align: middle;" onclick="goToClassDetails(event);" id="' + qClass.classId + '"><b><i class="fa fa-pencil" style="font-size: 17px;"></i></b></button>'
+                    ]).node()
+                    tmpRow.id = qClass.classId; //letak id 
+                })
+                dtbClassList.draw();
+            }
+            ).catch(function (value) {
+                console.log(value);
+            });
+        }
 
-    Server.request("POST", "/api//register", data, true).then(function (value) {
-            console.log(value)
-            Message.createNew("Success", "s", 0);
-            document.getElementById("txtnameclass").value = "";
+        function goToClassDetails(event) {
+            navigate('/classDetails?cid=' + event.target.id)
+        }
+
+        async function registerClass() {
+            var action = await Swal.fire({
+                type: 'question',
+                title: 'Confirm Registration',
+                text: 'Register new class into the system?',
+                showCancelButton: true
+            })
+            if (action.dismiss) {
+                return;
+            }
             
-            submitAddress(studentId)//ni panggil function ak buat yg akan insertkan address ke address table guna id die
-            $('#modal_studentForm').modal('hide');//ni auto tutup balek modal after register
+            var className = document.getElementById("txtnameclass").value;
+           
+            var schoolId = document.getElementById("ejsData").value;
+           
+            var data = {
+                "schoolId" : school,
+                "className": className
 
-        }).catch(function (value) {
-            console.log(value);
-            value = JSON.parse(value);
-            if (value.hasOwnProperty("validationError")) {
-                displayValidationError(value);
-            }
-            else {
-                Message.createNew("Error", value, 3);
             }
 
-        })
+            Server.request("POST", "/api/class/register", data, true).then(function (value) {
+                console.log(value)
+                Message.createNew("Success", "s", 0);
+                document.getElementById("txtnameclass").value = "";
+                // $('#modal_studentForm').modal('hide');//ni auto tutup balek modal after register
 
-</script>
+            }).catch(function (value) {
+                console.log(value);
+                value = JSON.parse(value);
+                if (value.hasOwnProperty("validationError")) {
+                    displayValidationError(value);
+                }
+                else {
+                    Message.createNew("Error", value, 3);
+                }
+
+            })
+        }
+
+    </script>
