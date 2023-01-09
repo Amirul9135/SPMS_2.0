@@ -264,8 +264,6 @@
                 "className": "text-center"
             }
             ]
-
-
         })
 
         loadClass();
@@ -273,6 +271,7 @@
 
     function loadClass() {
         console.log("load");
+        
 
         Server.request("GET", "/api/class/getClassBySchool", null, false).then(function (value) {
             var data = JSON.parse(value);
@@ -280,15 +279,16 @@
             var tmpRow;
             console.log('sni')
             console.log(data)
+
             data.forEach(qClass => { //temporary
                 tmpRow = dtbClassList.row.add([
-                    '<button onclick="getSchool(event);" id="' + qClass.classId + '"><b>' + qClass.className + '</b></button>',
+                    '<button onclick="getSchool(event);" id="' + qClass.classId + '" ><b style="vertical-align: middle;">' + qClass.className + '</b></button>',
                     qClass.name,
                     qClass.total,
                     '<button class="btn btn-danger" style="vertical-align: middle;" onclick="" id="' + qClass.classId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>',
-                    '<button class="btn btn-secondary" style="vertical-align: middle;" onclick="" id="' + qClass.classId + '"><b><i class="fa fa-pencil" style="font-size: 17px;"></i></b></button>'
+                    '<button class="btn btn-secondary" style="vertical-align: middle;" onclick="goToClassDetails(event);" id="' + qClass.classId + '"><b><i class="fa fa-pencil" style="font-size: 17px;"></i></b></button>'
                 ]).node()
-                tmpRow.id = qClass.subjectCode; //letak id mane datang subject code ni haha
+                tmpRow.id = qClass.classId; //letak id 
             })
             dtbClassList.draw();
         }
@@ -297,8 +297,7 @@
         });
     }
 
-
-    //nak pegi ke classdetail call function
-    //navigate('/classDetails?cid=????')
-    //???? letak class id yang amek dari button/row depends
+    function goToClassDetails(event) {
+        navigate('/classDetails?cid=' + event.target.id)
+    }
 </script>
