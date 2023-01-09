@@ -5,7 +5,7 @@ const Class = require ('../Model/entity/Class');
 
 router.post('/register', function (req, res) {     
     var newcls = new Class();
-    newcls.setIntClassId(req.body.classId);
+    // newcls.setIntClassId(req.body.classId);
     newcls.setIntSchoolId(req.body.schoolId);
     newcls.setIntClassName(req.body.className);
    
@@ -42,7 +42,7 @@ router.post('/delete', function (req, res) {
 });
 
 router.get('/getClassBySchool', function (req, res) {
-    var schoolId ="1";
+    var schoolId ="2";
     var promiseAll = Class.getClassBySchool(schoolId);
     promiseAll.then(function (value) {
         console.log(value);
