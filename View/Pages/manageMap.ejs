@@ -1,0 +1,482 @@
+<link rel="stylesheet" href="/res/assets/leaflet/leaflet.css">
+<script src="/res/assets/leaflet/leaflet.min.js"></script>
+<style>
+    .remove_active {
+        background-color: #ffc107;
+        color: white;
+    }
+
+    .add_active {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    .trnsparent_popup .leaflet-popup-content-wrapper,
+    .trnsparent_popup .leaflet-popup-tip-container,
+    .trnsparent_popup .leaflet-popup-tip {
+        background: rgba(255, 255, 255, 0.2) !important;
+        color: white;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        pointer-events: none;
+    }
+</style>
+<div class="side-app" onload="setup()">
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>State</label>
+                            <select id="selectState" class="form-control select2" onchange="changeGeoState(event)">
+                                <option value="-1">Choose State</option>
+                                <% statedata.forEach(s=>{ %>
+                                    <option value="<%=s.state_code%>" data-lng="<%=s.coord.x%>"
+                                        data-lat="<%=s.coord.y%>">
+                                        <%= s.state_name %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="exampleInputnumber">Postcode</label>
+
+                            <div class="select-search">
+                                <input id="SSPostcode" type="text" disabled class="form-control"
+                                    data-list="idListPostcode" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                    onblur="SSFocus(event)" onplay="changePostcode(event)" autocomplete="off">
+                                <ul onclick="SSItemClick(event)" id="idListPostcode" data-selected="-1">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="exampleInputnumber">Area</label>
+                            <div class="select-search">
+                                <input id="SSArea" type="text" autocomplete="off" disabled class="form-control"
+                                    data-list="idListArea" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                    onblur="SSFocus(event)" onplay="areaSelect(event)">
+                                <ul onclick="SSItemClick(event)" id="idListArea" data-selected="-1">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header text-center">
+                <div style="position: relative;margin: auto;">
+                    <i class="fa fa-info-circle" onclick="help()"
+                        style="font-size: 2em; position: absolute;left: -2em; top: 50%;transform: translateY(-50%);"></i>
+                    <button id="btnAdd" class="btn btn-outline-info" style="width: 110px;"
+                        onclick="btnEmodeHandler(event)">Add Point</button>
+                    &nbsp;&nbsp;
+                    <button id="btnRmv" class="btn btn-outline-warning" style="width: 110px;"
+                        onclick="btnEmodeHandler(event)">Remove Point</button>
+                    &nbsp;&nbsp;
+                    <button class="btn btn-outline-primary" style="width: 110px;" onclick="submitGeo()">Save</button>
+
+                </div>
+
+            </div>
+            <div class="card-body">
+                <div id="mapdiv" style="height: 60vh;width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var map
+    var editMode = false
+    var center = null
+    var mapLayer
+    var polygon
+    var CenterMark
+    var rclickmode = 0;
+
+    var popup
+    function setup() {
+        var initialCoord = new L.LatLng(4.123425, 102.240730)
+        map = L.map('mapdiv').setView([51.505, -0.09], 7); //(?,?) z
+        map.panTo(initialCoord)
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        polygon = newData()
+        mapLayer = L.geoJSON().addTo(map);
+
+        CenterMark = new L.marker(initialCoord).addTo(map);
+
+        map.on('click', mapClick);
+        map.on('contextmenu', rClickHandler);
+        popup = L.popup();
+        popup.options.className = 'trnsparent_popup'
+        popup.off('click');
+    }
+
+    function submitGeo() {
+        var areaId = parseInt(document.getElementById('idListArea').dataset.selected)
+        if (areaId == -1) {
+
+            Swal.fire({
+                type: 'error',
+                text: 'No area selected'
+            })
+            return
+        }
+        if (polygon[0].coordinates[0].length < 3) {
+            Swal.fire({
+                type: 'error',
+                text: 'Area Should contain at least 3 point'
+            })
+            return
+        }
+        var submCoord = {
+            x: CenterMark._latlng.lng,
+            y: CenterMark._latlng.lat
+        }
+        //convert ke spms nye accepted format
+        var tmpPoly = []
+        for (var i = 0; i < polygon[0].coordinates[0].length; i++) {
+            tmpPoly.push({ "x": polygon[0].coordinates[0][i][0], "y": polygon[0].coordinates[0][i][1] })
+        }
+        var submPolygon = []
+        submPolygon[0] = tmpPoly
+        console.log('sub')
+        console.log(submPolygon)
+        Server.request("POST", "/api/address/geo/area", {
+            areaId: areaId,
+            coord: submCoord,
+            areaPolygon: submPolygon
+        }, true).then(function (result) {
+            Swal.fire({
+                type: 'success',
+                title: 'Information Saved'
+            })
+        }).catch(function (err) {
+            console.log(err)
+            try {
+                err = JSON.parse(err)
+                if (err.hasOwnProperty("validationError")) {
+                    displayValidationError(err);
+                }
+                else {
+                    Message.createNew("Error", err, 3);
+                }
+            } catch {
+            }
+        })
+
+    }
+
+    function areaSelect(e) {
+        editMode = false
+        resetREditMode()
+        console.log(e.target)
+        console.log(e.target.dataset.selected)
+        Server.request('GET', '/api/address/geo/area?id=' + e.target.dataset.selected, null, true).then(
+            function (result) {
+                result = JSON.parse(result)
+                console.log(result)
+                if (result.coord) {
+
+                    if (!CenterMark) {
+                        CenterMark = new L.marker([result.coord.x, result.coord.y]).addTo(map);
+                    }
+                    else {
+                        CenterMark.setLatLng([result.coord.y, result.coord.x])
+                    }
+                    map.setView([result.coord.y, result.coord.x], 9)
+                }
+                if (result.areaPolygon) {
+                    //convert format
+                    var tmpCoord = []
+                    result.areaPolygon[0].forEach(item => {
+                        tmpCoord.push([item.x, item.y])
+                    })
+
+                    console.log(tmpCoord)
+                    console.log(polygon)
+                    polygon[0].coordinates[0] = tmpCoord
+                    console.log(polygon)
+                    redrawPolygon()
+
+                    //   mapLayer.clearLayers()
+                    //   mapLayer.addData(polygon)
+                }
+                else {
+
+                    Swal.fire({
+                        type: 'info',
+                        title: 'There is no mapping data on this area yet'
+                    })
+                }
+                editMode = true
+
+            }
+        ).catch(function (err) {
+            console.log(err)
+            Swal.fire({
+                type: 'error',
+                title: 'Failed',
+                text: 'Unable to load area info'
+            })
+        })
+    }
+    function btnEmodeHandler(e) {
+        resetREditMode()
+        if (!editMode) {
+            Message.createNew('Unable to Perform Action', 'Please select an area to enable editing', 2)
+            return
+        }
+        if (e.target.id == "btnAdd") {
+            e.target.classList.add('add_active')
+            rclickmode = 1
+        }
+        if (e.target.id == "btnRmv") {
+            e.target.classList.add('remove_active')
+            rclickmode = -1
+        }
+    }
+    function rClickHandler(e) {
+        if (!editMode) {
+            Message.createNew('Unable to Perform Action', 'Please select an area to enable editing', 2)
+            return
+        }
+        if (rclickmode == 0) {
+            Message.createNew('Ambiguos Action', 'Please click Add Point/Remove Point to sepcify action', 2)
+            return
+        }
+        popup
+            .setLatLng(e.latlng)
+            .setContent(e.latlng.lat + " , " + e.latlng.lng)
+            .openOn(map);
+        if (rclickmode == 1) {
+            addPoint(e.latlng)
+        }
+        if (rclickmode == -1) {
+            removePoint(e.latlng)
+        }
+
+    }
+
+    async function removePoint(lnlt) {//long lat  
+        if (polygon[0].coordinates[0].length == 0) {
+            Message.createNew('Unable to Perform Action', 'No Point to Dlete', 2)
+            return
+        }
+        polygon[0].coordinates[0].forEach(p => {
+            if (p.length < 2) {
+                p.push(Math.sqrt((Math.pow((p[0] - lnlt.lng), 2) + Math.pow((p[1] - lnlt.lat), 2))))
+
+            }
+            else {
+                p[2] = Math.sqrt((Math.pow((p[0] - lnlt.lng), 2) + Math.pow((p[1] - lnlt.lat), 2)))
+            }
+        })
+        //find closest point to clicked point
+        var lowI = 0
+        for (var i = 0; i < polygon[0].coordinates[0].length; i++) {
+            if (polygon[0].coordinates[0][i][2] < polygon[0].coordinates[0][lowI][2]) {
+                lowI = i
+            }
+        }
+
+        rmvMark = new L.marker(new L.LatLng(polygon[0].coordinates[0][lowI][1], polygon[0].coordinates[0][lowI][0])).addTo(map);
+        rmvMark._icon.style.filter = "hue-rotate(120deg)"
+        var choice = await Swal.fire({
+            type: 'question',
+            position: 'top',
+            text: 'Are you sure you want to remove the marked point',
+            showCancelButton: true
+        })
+        if (choice.dismiss) {
+            map.removeLayer(rmvMark)
+            return
+        }
+        polygon[0].coordinates[0].splice(lowI, 1)
+        redrawPolygon()
+        map.removeLayer(rmvMark)
+
+    }
+
+    function addPoint(lnlt) {//long lat 
+        console.log(polygon)
+        polygon[0].coordinates[0].push([lnlt.lng, lnlt.lat])
+        redrawPolygon()
+        console.log(polygon)
+    }
+
+    function redrawPolygon() {
+        console.log('redraw')
+        sortCoord(CenterMark._latlng, polygon[0].coordinates[0])
+        mapLayer.clearLayers()
+        mapLayer.addData(polygon)
+    }
+
+    function mapClick(e) {
+        if (editMode) {
+            popup
+                .setLatLng(e.latlng)
+                .setContent(e.latlng.lat + " , " + e.latlng.lng)
+                .openOn(map);
+
+            if (!CenterMark) {
+                CenterMark = new L.marker(e.latlng).addTo(map);
+            }
+            else {
+                CenterMark.setLatLng(e.latlng)
+            }
+            CenterPoint = CenterMark._latlng
+            redrawPolygon()
+        }
+        else {
+            Message.createNew('Unable to Perform Action', 'Please select an area to enable editing', 2)
+        }
+
+    }
+
+    function changeGeoState(e) {
+        resetArea()
+        resetPostcode()
+        if (e.target.value == '-1') {
+            return;
+        }
+        document.getElementById("SSPostcode").disabled = false;
+        getPostcodes(e.target.value).then(function (result) {
+            result = JSON.parse(result)
+            var strhtml = ""
+            result.forEach(pcode => {
+                strhtml += '<li id="' + pcode.postcode + '">' + pcode.postcode + ' ' + pcode.postOffice + '</li>'
+            });
+            document.getElementById("idListPostcode").innerHTML = strhtml
+        }).catch(function (err) {
+            console.log(err)
+        })
+        console.log(e.target.options[e.target.selectedIndex])
+        var optcoord = e.target.options[e.target.selectedIndex].dataset
+        map.setView([parseFloat(optcoord.lat), parseFloat(optcoord.lng)], 9)
+        CenterMark.setLatLng([parseFloat(optcoord.lat), parseFloat(optcoord.lng)])
+        //map.panTo(new L.LatLng(parseFloat(optcoord.lat), parseFloat(optcoord.lng)))
+    }
+
+    function newData() {
+        return [{
+            "type": "Polygon",
+            "coordinates": [[]]
+        }]
+    }
+
+    function help() {
+        Swal.fire({
+            type: 'info',
+            title: 'How to Use',
+            html: "<b><u>Select An Area to enable editing mode</u></b>"
+                + '<div style="text-align:left;padding-left:1em"><br>Editing Mode Control'
+                + "<br><u>Left Click</u> to Move Pivot Point Coordinate"
+                + '<br><i style="font-size:.8em">Pivot point should be within the polygon/area</i>'
+                + "<br><u>Right Click</u> to Add or Remove point depending on mode"
+                + "<br>Click the 'Add Point' OR 'RemovePoint' to switch editing mode"
+                + "<br>Click the save button to upload changes to the system server</div>"
+
+        })
+    }
+
+
+    function sortCoord(center, coordArr) { //arr dlm bentuk [long,lat], center long lat json lat,lng 
+        var dy, dx, theta;
+        coordArr.forEach(point => {
+            dy = center.lng - point[0]
+            dx = center.lat - point[1]
+            theta = Math.atan2(dy, dx); // range (-PI, PI]
+            theta *= (180 / Math.PI) // rads to degs, range (-180, 180]\
+            theta = Math.round(theta)
+            if (point.length < 3) {
+                point.push(theta)
+            }
+            else {
+                point[2] = theta
+            }
+        });
+        coordArr.sort(coordAngleCompare)
+    }
+
+    function coordAngleCompare(a, b) {
+        if (a[2] < b[2]) {
+            return -1;
+        }
+        if (a[2] > b[2]) {
+            return 1;
+        }
+        return 0
+    }
+
+
+
+
+
+
+
+    window.addEventListener('resize', function () {
+        setTimeout(function () { map.invalidateSize() }, 400);
+    })
+
+
+
+
+
+
+    //address
+    function resetREditMode() {
+        rclickmode = 0
+        document.getElementById('btnAdd').classList.remove('add_active')
+        document.getElementById('btnRmv').classList.remove('remove_active')
+
+    }
+
+    function resetPostcode() {
+        resetREditMode()
+        editMode = false
+        document.getElementById("SSPostcode").disabled = true;
+        document.getElementById("SSPostcode").value = "";
+        document.getElementById("idListPostcode").innerHTML = ""
+        document.getElementById("idListPostcode").dataset.selected = "-1"
+    }
+    function resetArea() {
+        resetREditMode()
+        editMode = false
+        document.getElementById("SSArea").disabled = true;
+        document.getElementById("SSArea").value = "";
+        document.getElementById("idListArea").innerHTML = ""
+        document.getElementById("idListArea").dataset.selected = "-1"
+    }
+
+    function changePostcode(e) {
+        if (e.target.value == '-1') {
+            resetArea()
+            return;
+        }
+        document.getElementById("SSArea").disabled = false;
+
+        var postcode = document.getElementById(e.target.dataset.list).dataset.selected;
+        getAreaInPostcode(postcode).then(function (result) {
+            result = JSON.parse(result)
+            var strhtml = ""
+            result.forEach(area => {
+                strhtml += '<li id="' + area.areaId + '">' + area.areaName + '</li>'
+            });
+            document.getElementById("idListArea").innerHTML = strhtml
+        }).catch(function (err) {
+            console.log(err)
+        })
+    } 
+</script>

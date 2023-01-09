@@ -141,7 +141,7 @@
       transition: all .2s ease-in-out;
       transform: scaleY(0);
       position: absolute;
-      z-index: 2;
+      z-index: 1000;
     }
 
     .select-search-blank>li {
@@ -456,11 +456,6 @@
             </a>
             <ul class="slide-menu">
               <li>
-                <p class="slide-item" title="/reportAssessment" onclick="navigate('/reportAssessment')">
-                  <span>Assessment Report_old</span>
-                </p>
-              </li>
-              <li>
                 <p class="slide-item" title="/pastAssessment" onclick="navigate('/pastAssessment')">
                   <span>Past Assessments</span>
                 </p>
@@ -471,6 +466,13 @@
                 </p>
               </li>
             </ul>
+          </li>
+
+          <li class="slide">
+            <p class="side-menu__item" title="/mapping" onclick="navigate('/mapping')">
+              <i style="font-size: 14pt" class="fa fa-map"></i>
+              <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp; Map</span>
+            </p>
           </li>
         </ul>
       </aside>
