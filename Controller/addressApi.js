@@ -32,6 +32,8 @@ router.post("/set",
         ).then(function (result) {
             return res.status(200).send(result)
         }).catch(function (err) {
+            console.log('addr')
+            console.log(err)
             return res.status(500).send(err)
         })
         //obj with accountId,addressText, areaId

@@ -257,23 +257,30 @@
         }
 
         Server.request("POST", "/api/account/register", data, true).then(function (value) {
+            console.log(value)
             Message.createNew("Success", "", 0);
-            document.getElementById("txtname").value = "";
+            document.getElementById("txtnameteach").value = "";
             document.getElementById("txtstaffId").value = "";
             document.getElementById("txtpassword").value = "";
             document.getElementById("txtphone").value = "";
             document.getElementById("txtemail").value = "";
-            submitAddress(studentId)//ni panggil function ak buat yg akan insertkan address ke address table guna id die
+            submitAddress(staffId)//ni panggil function ak buat yg akan insertkan address ke address table guna id die
             $('#ModalAddTeacher').modal('hide');
 
         }).catch(function (value) {
             console.log(value);
-            value = JSON.parse(value);
-            if (value.hasOwnProperty("validationError")) {
-                displayValidationError(value);
+            try {
+
+                value = JSON.parse(value);
+                if (value.hasOwnProperty("validationError")) {
+                    displayValidationError(value);
+                }
+                else {
+                    Message.createNew("Error", value, 3);
+                }
             }
-            else {
-                Message.createNew("Error", value, 3);
+            catch {
+
             }
         })
     }
@@ -396,10 +403,13 @@
             "addressText": text,
             "areaId": areaId
         }
-        Server.request("POST", "/api/address/set", address, false).then(function (result) {
+        console.log(address)
+        Server.request("POST", "/api/address/set", address, true).then(function (result) {
+            console.log(result)
             Message.createNew("success", "address saved", 0);
             return;
         }).catch(function (err) {
+            console.log(err)
             Message.createNew("err", err, 3);
             return;
         })

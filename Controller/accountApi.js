@@ -74,6 +74,10 @@ router.post('/register',
                 });
             }
         }).catch(function (value) {//.catch means promis is rejected, got some error
+            if (value.includes('ER_DUP_ENTRY')) {
+
+                return res.status(400).send({ validationError: { accountId: "Already exist" } })
+            }
             return res.status(400).send(value);
         });
     })
