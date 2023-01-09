@@ -15,6 +15,7 @@ router.post('/register', function (req, res) {
         res.status(400).send(value);
     });
 });
+
 router.post('/update', function (req, res) { 
     var updatecls = new Class();
     updatecls.setIntClassId(req.body.classId);
@@ -28,6 +29,7 @@ router.post('/update', function (req, res) {
         res.status(400).send(value);
     });
 });
+
 router.post('/delete', function (req, res) {
     var delcls = new Class();
     delcls.setIntClassId(req.body.classId);
@@ -38,9 +40,22 @@ router.post('/delete', function (req, res) {
         res.status(400).send(value);
     });
 });
+
+router.get('/getClassBySchool', function (req, res) {
+    var schoolId ="13";
+    var promiseAll = Class.getClassBySchool(schoolId);
+    promiseAll.then(function (value) {
+        console.log(value);
+        return res.send(value);
+    }).catch(function (value) {
+        console.log(value);
+        return res.status(400).send(value);
+    });
+});
+
 router.get('/getClass', function (req, res) {
-    var classlId ="2"
-    var promiseAll = Class.getClass(classlId);
+    var classId ="5"
+    var promiseAll = Class.getClass(classId);
     promiseAll.then(function (value) {
         console.log(value);
         return res.send(value);

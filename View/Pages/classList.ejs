@@ -4,18 +4,19 @@
     <!-- header -->
     <div class="row">
         <div class="col-md-10 col-xl-10">
-            <h1 class="page-title mb-6" style="font-size: 30px;">Senarai Kelas</h1>
+            <h1 class="page-title mb-6" style="font-size: 30px;">Class</h1>
         </div>
 
         <div class="col-md-2 col-xl-2 text-right">
-            <button type="button" class="btn btn-pill btn-secondary-light"><i class="fa fa-plus mr-2"><b
-                        style="font-family: sans-serif;">&nbsp;Kelas</b></i></button>
+            <button type="button" class="btn btn-pill btn-secondary-light" data-toggle="modal"
+                data-target="#modal_classDetails">
+                <i class="fa fa-plus mr-2"><b style="font-family: sans-serif;">&nbsp;Class</b></i>
         </div>
     </div>
     <!-- /header -->
 
     <!-- filter -->
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-md-12 col-xl-12">
             <div class="card">
                 <div class="card-header text-white bg-info">
@@ -79,7 +80,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <!-- /filter -->
 
     <!-- ROW-table -->
@@ -87,7 +88,7 @@
         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Senarai Kelas</h3>
+                    <h3 class="card-title">Class List</h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -96,9 +97,10 @@
                                 <table class="table table-bordered table-hover text-nowrap mb-0" id="dtbClassList">
                                     <thead class="bg-primary">
                                         <tr>
-                                            <th width="40%" class="text-white">Nama Kelas</th>
-                                            <th width="40%" class="text-center text-white">Guru Kelas</th>
-                                            <th width="10%" class="text-center text-white">Jumlah Pelajar</th>
+                                            <th width="20%" class="text-center text-white">Class Name</th>
+                                            <th width="50%" class="text-white">Teacher</th>
+                                            <th width="10%" class="text-center text-white">Total Students</th>
+                                            <th width="10%"></th>
                                             <th width="10%"></th>
                                         </tr>
                                     </thead>
@@ -258,12 +260,40 @@
                 "searchable": false
             },
             {
-                "targets": [3],
+                "targets": [0,2,3,4],
                 "className": "text-center"
             }
             ]
 
 
         })
+
+        loadClass();
+    }
+
+    function loadClass() {
+        console.log("load");
+
+        Server.request("GET", "/api/class/getClassBySchool", null, false).then(function (value) {
+            var data = JSON.parse(value);
+            dtbClassList.clear();
+            var tmpRow;
+
+            data.forEach(qClass => { //temporary
+                tmpRow = dtbClassList.row.add([
+                    '<button onclick="getSchool(event);" id="' + qClass.classId + '"><b>' + qClass.className + '</b></button>',
+                    qClass.name,
+                    qClass.total,
+                    '<button class="btn btn-danger" style="vertical-align: middle;" onclick="" id="' + qClass.classId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>',
+                    '<button class="btn btn-secondary" style="vertical-align: middle;" onclick="" id="' + qClass.classId + '"><b><i class="fa fa-pencil" style="font-size: 17px;"></i></b></button>'
+                ]).node()
+                tmpRow.id = qClass.subjectCode; //letak id
+            })
+            dtbClassList.draw();
+            console.log(data)
+        }
+        ).catch(function (value) {
+            console.log(value);
+        });
     }
 </script>

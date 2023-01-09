@@ -5,8 +5,6 @@ module.exports= class Class{
     #intclassName;
     #straccountId;
     #strstudentId;
-    
-   
 
     constructor() {
         this.#intclassId = "";
@@ -50,8 +48,6 @@ module.exports= class Class{
     }
 
 
-   
-   
 
     register() {
         
@@ -72,6 +68,7 @@ module.exports= class Class{
                });
             }); 
     }
+
     update() {
         var strSql = "UPDATE class SET schoolId = " + db.escape(this.#intschoolId) + ", ClassName = " + db.escape(this.#intclassName) + " WHERE classId=" + db.escape(this.#intclassId);
         console.log(strSql)
@@ -91,6 +88,22 @@ module.exports= class Class{
         });
     }
     
+    static getClassBySchool(schoolId) {
+        return new Promise(function (resolve, reject) {
+            var strSql = "SELECT c.classId AS classId,c.className AS className, a.name AS name, COUNT(*) AS total FROM class_student cs INNER JOIN class c ON c.classId = cs.classId INNER JOIN school s ON s.schoolId = c.schoolId INNER JOIN account a ON a.accountId = c.teacherId WHERE cs.endDate > CURRENT_DATE && s.schoolId =" + db.escape(schoolId) + "GROUP BY cs.classId";
+           
+            db.query(strSql, function (err, result) {
+                if (err) {
+                    console.log("error:" + err.message);
+                    reject(err.message);
+                }
+                else {
+                    resolve(JSON.parse(JSON.stringify(result)));
+                }
+            });
+        });
+    }
+
     static getClass(classId) {
         return new Promise(function (resolve, reject) {
             var strSql = "SELECT schoolId,ClassName FROM  class WHERE classId =  " + db.escape(classId);
@@ -105,6 +118,7 @@ module.exports= class Class{
             });
         });
     }
+
     static getstudentclass(studentId) {
         return new Promise(function (resolve, reject) {
            // var strSql = "SELECT a.* ,b.* FROM (SELECT studentId, name FROM account a INNER JOIN student  ON studentId=accountId) a JOIN class_student  ON studentId=studentId JOIN (SELECT className,classId,fullName,schoolId FROM class INNER JOIN school ON schoolId = schoolId)  ON classId=classId  " + db.escape(studentId);
