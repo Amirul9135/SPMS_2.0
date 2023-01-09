@@ -1,3 +1,4 @@
+const Utils = require("../Controller/Utils")
 const db = require("./DBConn")
 
 module.exports = class Address {
@@ -85,6 +86,56 @@ module.exports = class Address {
                     }
                 }
             )
+        })
+    }
+
+    static updateGeo(geoObj) {
+        //geoObj 2 kaey, coord , areaPolygon  
+        var skipOnce = true
+        var strSql = "UPDATE area SET coord=  POINT(" + db.escape(Utils.nthKeyValOf(geoObj.coord, 0)) + "," + db.escape(Utils.nthKeyValOf(geoObj.coord, 1)) + ") , "
+            + " areaPolygon = ST_GEOMFROMTEXT('POLYGON((" + db.escape(Utils.nthKeyValOf(geoObj.areaPolygon[0][0], 0)) + " " + db.escape(Utils.nthKeyValOf(geoObj.areaPolygon[0][0], 1))
+        geoObj.areaPolygon[0].shift()
+        geoObj.areaPolygon[0].forEach(p => {
+            strSql += "," + db.escape(Utils.nthKeyValOf(p, 0)) + " " + db.escape(Utils.nthKeyValOf(p, 1))
+
+        });
+        strSql += "))') WHERE areaId=" + db.escape(geoObj.areaId)
+        console.log(strSql)
+        return new Promise(function (resolve, reject) {
+            db.query(strSql, function (err, result) {
+                if (err) {
+                    reject(err.message)
+                }
+                else {
+                    if (result.affectedRows == 0) {
+                        reject('nochange')
+                    }
+                    else {
+                        resolve()
+                    }
+                }
+            })
+        })
+
+    }
+
+    static getAreaGeo(areaId) {
+        return new Promise(function (resolve, reject) {
+            db.query("SELECT coord,areaPolygon FROM area WHERE areaId=" + db.escape(areaId),
+                function (err, result) {
+                    if (err) {
+                        reject(err.message)
+                    }
+                    else {
+                        result = JSON.parse(JSON.stringify(result))
+                        if (result.length == 0) {
+                            reject('notfound')
+                        }
+                        else {
+                            resolve(result[0])
+                        }
+                    }
+                })
         })
     }
 }

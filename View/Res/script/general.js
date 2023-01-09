@@ -19,6 +19,7 @@ function SSItemClick(e) {
     if (e.target.tagName == "LI") {
         e.target.parentElement.dataset.selected = e.target.id;
         SelectSearchCacheVal = e.target.innerHTML.trim();
+        e.target.parentElement.parentElement.children[0].dataset.selected = e.target.id;
         e.target.parentElement.parentElement.children[0].value = e.target.innerHTML.trim();
         e.target.parentElement.parentElement.children[0].dispatchEvent(new Event("play"));
 
