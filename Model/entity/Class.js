@@ -2,14 +2,14 @@ const db = require("../DBConn")
 module.exports = class Class {
     #intclassId;
     #intschoolId;
-    #intclassName;
+    #strClassName;
     #straccountId;
     #strstudentId;
 
     constructor() {
         this.#intclassId = "";
         this.#intschoolId = "";
-        this.#intclassName = "";
+        this.#strClassName = "";
         this.#straccountId = "";
         this.#strstudentId = "";
     }
@@ -28,11 +28,11 @@ module.exports = class Class {
         return this.#intschoolId;
     }
 
-    setIntClassName(intclassName) {
-        this.#intclassName = intclassName;
+    setIntClassName(strClassName) {
+        this.#strClassName = strClassName;
     }
     getIntClassName() {
-        return this.#intclassName;
+        return this.#strClassName;
     }
     setStrAccountId(straccountId) {
         this.#straccountId = straccountId;
@@ -51,8 +51,7 @@ module.exports = class Class {
 
     register() {
 
-        var strsql = "INSERT INTO class(classId,schoolId,ClassName) VALUES ('" + this.#intclassId + "','"
-            + this.#intschoolId + "','" + this.#intclassName + "')";
+        var strsql = "INSERT INTO class(schoolId,className) VALUES (" + db.escape(this.#intschoolId) + ", " + db.escape(this.#strClassName) + ")";
         console.log(strsql);
         return new Promise(function (resolve, reject) {
 
@@ -70,7 +69,7 @@ module.exports = class Class {
     }
 
     update() {
-        var strSql = "UPDATE class SET schoolId = " + db.escape(this.#intschoolId) + ", ClassName = " + db.escape(this.#intclassName) + " WHERE classId=" + db.escape(this.#intclassId);
+        var strSql = "UPDATE class SET schoolId = " + db.escape(this.#intschoolId) + ", ClassName = " + db.escape(this.#strClassName) + " WHERE classId=" + db.escape(this.#intclassId);
         console.log(strSql)
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
