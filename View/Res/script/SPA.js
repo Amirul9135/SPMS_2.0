@@ -153,7 +153,11 @@ function displayValidationError(value) {
     Object.keys(value["validationError"]).forEach(function (key) {
         message += key + " : " + value["validationError"][key] + "<br>"
     })
-    Message.createNew("Validation Error", message, 3);
+    Swal.fire({
+        "type": 'error',
+        "title": 'Validation Error',
+        "html": message
+    })
 }
 
 function zoomImage(event) {
