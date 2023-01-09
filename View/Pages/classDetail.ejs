@@ -1,127 +1,111 @@
 <div class="side-app" onload="setup()">
 
     <div id="ejsData" data-curclass="<%= JSON.stringify(classData) %> "></div>
-    class detail
-</div>
 
-<!-- MODAL -->
-<div class="modal fade" id="modal_classDetails" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content modal-md">
-            <div class="modal-header bg-info">
-                <h5 class="modal-title text-white" id="exampleModalLabel">Maklumat Kelas</h5>
-                <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">×</span>
-								</button> -->
-            </div>
-            <div class="modal-body">
-                <div class="row">
+    <div class="row">
+        <div class="col-md-10 col-xl-10">
+            <h1 class="page-title mb-6" style="font-size: 30px;">Class Details</h1>
+        </div>
+    </div>
 
-                    <div class="col-md-12">
-                        <div class="card bg-white">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover text-nowrap mb-0 p-0">
-                                    <thead class="bg-info">
-                                        <tr>
-                                            <th width="50%" class="text-white">Nama Guru Kelas</th>
-                                            <th width="15%" class="text-center text-white">Nama Kelas</th>
-                                            <th width="10%" class="text-center text-white">Jumlah Pelajar</th>
-                                            <th width="10%" class="text-center text-white">Tahun</th>
-                                            <th width="10%" class="text-center text-white">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td width="50%">
-                                                <a href="class_list.php"><b>Nurin Aina Syafiqah Binti Muhamad
-                                                        Baharom</b></a><br>
-                                                <t class="text-muted">SK Lahad Datu</t>
-                                            </td>
-                                            <td width="15%" class="text-center" style="vertical-align: middle;">5 Arif
-                                            </td>
-                                            <td width="12%" class="text-center" style="vertical-align: middle;">45</td>
-                                            <td width="12%" class="text-center" style="vertical-align: middle;">2022
-                                            </td>
-                                            <td width="15%" class="text-center" style="vertical-align: middle;">
-                                                <t class="badge badge-info"><b>Aktif</b></t>
-                                            </td>
-                                        </tr>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card bg-white">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover text-nowrap mb-0 p-0">
+                        <thead class="bg-info">
+                            <tr>
+                                <th width="50%" class="text-white">Teacher</th>
+                                <th width="15%" class="text-center text-white">CLass</th>
+                                <th width="10%" class="text-center text-white">Total Students</th>
+                                <th width="10%" class="text-center text-white">Year</th>
+                                <th width="10%" class="text-center text-white">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td width="50%">
+                                    <a href=""><b>Nurin Aina Syafiqah Binti Muhamad
+                                            Baharom</b></a><br>
+                                    <t class="text-muted">SK Lahad Datu</t>
+                                </td>
+                                <td width="15%" class="text-center" style="vertical-align: middle;">5 Arif
+                                </td>
+                                <td width="12%" class="text-center" style="vertical-align: middle;">45</td>
+                                <td width="12%" class="text-center" style="vertical-align: middle;">2022
+                                </td>
+                                <td width="15%" class="text-center" style="vertical-align: middle;">
+                                    <t class="badge badge-info"><b>Active</b></t>
+                                </td>
+                            </tr>
 
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Senarai Pelajar Dalam Kelas</h3>
-                                <div class="card-options">
-                                    <a href="#" class="btn btn-orange btn-sm ml-2"><i class="fa fa-trash"></i>
-                                        Senarai</a>
-                                    <a href="#" class="btn btn-danger btn-sm ml-2"><i class="fa fa-trash"></i>
-                                        Kelas</a>&nbsp;&nbsp;
-                                    <a href="#" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Pelajar</a>
-                                    <a href="#" class="btn btn-success btn-sm ml-2"><i class="fa fa-floppy-o"></i>
-                                        Simpan</a>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover text-nowrap mb-0">
-                                        <thead class="bg-primary">
-                                            <tr>
-                                                <th width="8%" class="text-center text-white">No</th>
-                                                <th width="50%" class="text-white">Nama Pelajar</th>
-                                                <th width="15%" class="text-center text-white">Nama Kelas</th>
-                                                <th width="12%" class="text-center text-white">Tarikh Daftar</th>
-                                                <th width="15%" class="text-center text-white">Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td width="8%" class="text-center">1</td>
-                                                <td width="50%">
-                                                    <a href="student_add.php"><b>Nurin Aina Syafiqah Binti Muhamad
-                                                            Baharom</b></a><br>
-                                                    <t class="text-muted">SK Lahad Datu</t>
-                                                </td>
-                                                <td width="15%" class="text-center" style="vertical-align: middle;">5
-                                                    Arif</td>
-                                                <td width="12%" class="text-center" style="vertical-align: middle;">
-                                                    07/12/2022</td>
-                                                <td width="15%" class="text-center" style="vertical-align: middle;">
-                                                    <t class="badge badge-warning"><b>Masih Belajar</b></t>
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td width="8%" class="text-center">2</td>
-                                                <td width="50%">
-                                                    <a href="student_add.php"><b>Muhammad Rahman bin
-                                                            Abdullah</b></a><br>
-                                                    <t class="text-muted">SMKA Sultan Muhammad</t>
-                                                </td>
-                                                <td width="15%" class="text-center" style="vertical-align: middle;">1
-                                                    Bestari</td>
-                                                <td width="12%" class="text-center" style="vertical-align: middle;">
-                                                    07/12/2022</td>
-                                                <td width="15%" class="text-center" style="vertical-align: middle;">
-                                                    <t class="badge badge-danger"><b>Tamat Belajar</b></t>
-                                                </td>
-                                            </tr>
-
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="modal-footer" style="justify-content: center;">
+        </div>
+
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Student List</h3>
+                    <div class="card-options">
+                        <a href="#" class="btn btn-orange btn-sm ml-2"><i class="fa fa-trash"></i>
+                            List</a>
+                        <a href="#" class="btn btn-danger btn-sm ml-2"><i class="fa fa-trash"></i>
+                            Class</a>&nbsp;&nbsp;
+                        <a href="#" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Student</a>
+                        <a href="#" class="btn btn-success btn-sm ml-2"><i class="fa fa-floppy-o"></i>
+                            Save</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover text-nowrap mb-0">
+                            <thead class="bg-primary">
+                                <tr>
+                                    <th width="70%" class="text-white">Student's Name</th>
+                                    <th width="15%" class="text-center text-white">Registered Date</th>
+                                    <th width="15%" class="text-center text-white">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td width="8%" class="text-center">1</td>
+                                    <td width="50%">
+                                        <a href="student_add.php"><b>Nurin Aina Syafiqah Binti Muhamad
+                                                Baharom</b></a><br>
+                                        <t class="text-muted">SK Lahad Datu</t>
+                                    </td>
+                                    <td width="15%" class="text-center" style="vertical-align: middle;">5
+                                        Arif</td>
+                                    <td width="12%" class="text-center" style="vertical-align: middle;">
+                                        07/12/2022</td>
+                                    <td width="15%" class="text-center" style="vertical-align: middle;">
+                                        <t class="badge badge-warning"><b>Masih Belajar</b></t>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td width="8%" class="text-center">2</td>
+                                    <td width="50%">
+                                        <a href="student_add.php"><b>Muhammad Rahman bin
+                                                Abdullah</b></a><br>
+                                        <t class="text-muted">SMKA Sultan Muhammad</t>
+                                    </td>
+                                    <td width="15%" class="text-center" style="vertical-align: middle;">1
+                                        Bestari</td>
+                                    <td width="12%" class="text-center" style="vertical-align: middle;">
+                                        07/12/2022</td>
+                                    <td width="15%" class="text-center" style="vertical-align: middle;">
+                                        <t class="badge badge-danger"><b>Tamat Belajar</b></t>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
