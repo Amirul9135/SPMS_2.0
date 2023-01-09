@@ -256,7 +256,7 @@
             "userType": 2
         }
 
-        Server.request("POST", "/api/account/register", data, false).then(function (value) {
+        Server.request("POST", "/api/account/register", data, true).then(function (value) {
             Message.createNew("Success", "", 0);
             document.getElementById("txtname").value = "";
             document.getElementById("txtstaffId").value = "";
@@ -264,7 +264,7 @@
             document.getElementById("txtphone").value = "";
             document.getElementById("txtemail").value = "";
             submitAddress(studentId)//ni panggil function ak buat yg akan insertkan address ke address table guna id die
-            $('#modal_studentForm').modal('hide');
+            $('#ModalAddTeacher').modal('hide');
 
         }).catch(function (value) {
             console.log(value);

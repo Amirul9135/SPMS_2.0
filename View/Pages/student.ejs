@@ -218,8 +218,8 @@
 
                             <div class="select-search">
                                 <input id="SSPostcode" type="text" autocomplete="off" disabled class="form-control"
-                                    data-list="idListPostcode" onkeyup="SSKeyHandler(event)"
-                                    onfocus="SSFocus(event)" onblur="SSFocus(event)" onplay="changePostcode(event)">
+                                    data-list="idListPostcode" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                    onblur="SSFocus(event)" onplay="changePostcode(event)">
                                 <ul onclick="SSItemClick(event)" id="idListPostcode" data-selected="-1">
                                 </ul>
                             </div>
@@ -245,7 +245,7 @@
                             <input type="text" class="form-control" id="txtalamat" placeholder="Alamat" />
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
 
@@ -300,7 +300,7 @@
             "userType": 1
         }
 
-        Server.request("POST", "/api/account/register", data, false).then(function (value) {
+        Server.request("POST", "/api/account/register", data, true).then(function (value) {
             console.log(value)
             Message.createNew("Success", "s", 0);
             document.getElementById("txtname").value = "";
@@ -333,7 +333,7 @@
         console.log(school);
 
 
-        Server.request("GET", "/api/account/allStudent?schoolId=" + school + "&classId=" + classId, null, false).then(function (value) {
+        Server.request("GET", "/api/account/allStudent?schoolId=" + school + "&classId=" + classId, null, true).then(function (value) {
             var data = JSON.parse(value);
             tableStud.clear();
             var tmpRow;
@@ -424,7 +424,7 @@
             "addressText": text,
             "areaId": areaId
         }
-        Server.request("POST", "/api/address/set", address, false).then(function (result) {
+        Server.request("POST", "/api/address/set", address, true).then(function (result) {
             Message.createNew("success", "address saved", 0);
             return;
         }).catch(function (err) {
@@ -441,7 +441,7 @@
             email: document.getElementById("txtEmail").value
         }
 
-        Server.request("POST", "/api/account/update", data, false).then(
+        Server.request("POST", "/api/account/update", data, true).then(
             function (value) {
                 Message.createNew("Success", value, 0);
             }).catch(function (value) {
@@ -470,7 +470,7 @@
             "accountId": event.target.parentElement.parentElement.id
         }
 
-        Server.request("POST", "/api/account/delete", data, false).then(function (value) {
+        Server.request("POST", "/api/account/delete", data, true).then(function (value) {
             tableStud.row("#" + event.target.parentElement.parentElement.id).remove()
             tableStud.draw()
             Message.createNew("Removed", "Student has been removed from database", 1);

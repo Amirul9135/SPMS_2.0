@@ -27,6 +27,7 @@ router.post('/register',
         Validator.validate()
     ]
     , async function controller(req, res) {
+        console.log('sini')
         if (!isValidIc(req.body.accountId)) {
             return res.status(400).send({ validationError: { ID: "invalid ID" } })
         }
