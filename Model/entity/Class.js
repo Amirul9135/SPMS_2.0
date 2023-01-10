@@ -66,7 +66,7 @@ module.exports = class Class {
     }
 
     update() {
-        var strSql = "UPDATE class SET schoolId = " + db.escape(this.#intschoolId) + ", ClassName = " + db.escape(this.#strClassName) + " WHERE classId=" + db.escape(this.#intclassId);
+        var strSql = "UPDATE class SET teacherId = " + db.escape(this.#straccountId) + ", ClassName = " + db.escape(this.#strClassName) + " WHERE classId=" + db.escape(this.#intclassId);
         console.log(strSql)
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
@@ -79,6 +79,25 @@ module.exports = class Class {
                 }
                 else {
                     resolve();
+                }
+            });
+        });
+    }
+
+    // Delete topic
+    delete() {
+        var strSql = "DELETE FROM class WHERE classId= " + db.escape(this.#intclassId);
+        return new Promise(function (resolve, reject) {
+            db.query(strSql, function (err, result) {
+                if (err) {
+                    console.log("error:" + err.message);
+                    reject(err.message);
+                }
+                else if (result.affectedRows == 0) {
+                    reject("no changes")
+                }
+                else {
+                    resolve("success");
                 }
             });
         });

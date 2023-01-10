@@ -20,7 +20,7 @@ router.post('/register', function (req, res) {
 router.post('/update', function (req, res) { 
     var updatecls = new Class();
     updatecls.setIntClassId(req.body.classId);
-    updatecls.setIntSchoolId(req.body.schoolId);
+    updatecls.setStrAccountId(req.body.accountId);
     updatecls.setIntClassName(req.body.className);
 
     var update = updatecls.update();
@@ -34,6 +34,7 @@ router.post('/update', function (req, res) {
 router.post('/delete', function (req, res) {
     var delcls = new Class();
     delcls.setIntClassId(req.body.classId);
+
     var del = delcls.delete();
     del.then(function (value) {//berjaya 
         res.status(200).send();
@@ -43,7 +44,7 @@ router.post('/delete', function (req, res) {
 });
 
 router.get('/getClassBySchool', function (req, res) {
-    var schoolId ="1";
+    var schoolId = req.query.schoolId;;
     var promiseAll = Class.getClassBySchool(schoolId);
     promiseAll.then(function (value) {
         console.log(value);
@@ -54,17 +55,39 @@ router.get('/getClassBySchool', function (req, res) {
     });
 });
 
-router.get('/getClass', function (req, res) {
-    var classId ="5"
-    var promiseAll = Class.getClass(classId);
-    promiseAll.then(function (value) {
-        console.log(value);
-        return res.send(value);
-    }).catch(function (value) {
-        console.log(value);
-        return res.status(400).send(value);
-    });
-});
+// router.post("/getClassBySchool", function (req, res) {
+//     var schoolId = req.query.schoolId;
+//     if (!schoolId) {
+//         return res.status(400).send("invalid school id");
+//     }
+//     Address.getPostCode(schoolId).then(function (result) {
+//         return res.status(200).send(result)
+//     }).catch(function (err) {
+//         return res.status(500).send(err)
+//     })
+// })
+
+// router.get('/getClass', function (req, res) {
+//     var classId ="5"
+//     var promiseAll = Class.getClass(classId);
+//     promiseAll.then(function (value) {
+//         console.log(value);
+//         return res.send(value);
+//     }).catch(function (value) {
+//         console.log(value);
+//         return res.status(400).send(value);
+//     });
+// });
+
+router.post('/getClassBySchool', function (req, res) {
+    Class.getClassBySchool(req.body.schoolId).then(
+        function (value) {
+            return res.status(200).send(value);
+        }
+    ).catch(function (value) {
+        return res.status(500).send(value);
+    })
+})
 
 router.get('/getstudentclass', function (req, res) {
     var classId="2"

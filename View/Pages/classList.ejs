@@ -76,7 +76,7 @@
                     <div class="col-lg-6 col-md-12">
                         <div class="form-group">
                             <label for="exampleInputname">Teacher</label>
-                            <select class="form-control select2-show-search" id="selTeacher" onchange="taecherChange(event);">
+                            <select class="form-control select2-show-search" id="selTeacher">
                                 <optgroup>
                                 </optgroup>
                             </select>
@@ -88,8 +88,8 @@
 
             <div class="modal-footer text-white" style="justify-content: center;">
                 <a class="btn btn-warning mt-1" data-dismiss="modal">Cancel</a>
-                <a class="btn btn-success mt-1" button onclick="registerClass()">Save</a>
-                <span id="spnMsg"></span>
+                <a class="btn btn-primary" onclick="registerClass()" id="btnRegister"><b><i class="fa fa-plus"></i>&nbsp;Class</b></a>
+                <a class="btn btn-success text-white" onclick="updateClass()" id="btnUpdate" style="display: none;"><b><i class="fa fa-floppy-o"></i>&nbsp;Class</b></a>
             </div>
         </div>
     </div>
@@ -99,6 +99,7 @@
     var ejsData
     var school
     var dtbClassList
+    var selectedClassId
 
     function setup() {
 
@@ -130,19 +131,23 @@
     function loadClass() {
         console.log("load");
 
-        Server.request("GET", "/api/class/getClassBySchool", null, false).then(function (value) {
+        schoolId = JSON.stringify(school.schoolId);
+        var data = {
+            "schoolId" : schoolId
+        }
+
+        Server.request("POST", "/api/class/getClassBySchool", data, false).then(function (value) {
             var data = JSON.parse(value);
             dtbClassList.clear();
             var tmpRow;
-            console.log('sni')
             console.log(data)
 
             data.forEach(qClass => { //temporary
                 tmpRow = dtbClassList.row.add([
-                    '<button onclick="getSchool(event);" id="' + qClass.classId + '" ><b style="vertical-align: middle;">' + qClass.className + '</b></button>',
+                    '<button onclick="getClass(event)" id="' + qClass.classId + '" ><b style="vertical-align: middle;">' + qClass.className + '</b></button>',
                     qClass.name,
                     qClass.total,
-                    '<button class="btn btn-danger" style="vertical-align: middle;" onclick="" id="' + qClass.classId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>',
+                    '<button class="btn btn-danger" style="vertical-align: middle;" onclick="deleteClass(event);" id="' + qClass.classId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>',
                     '<button class="btn btn-secondary" style="vertical-align: middle;" onclick="goToClassDetails(event);" id="' + qClass.classId + '"><b><i class="fa fa-pencil" style="font-size: 17px;"></i></b></button>'
                 ]).node()
                 tmpRow.id = qClass.classId; //letak id 
@@ -152,10 +157,6 @@
         ).catch(function (value) {
             console.log(value);
         });
-    }
-
-    function teacherChange(event){
-        var subjectCode = event.target.value;
     }
 
     function loadTeacher(){
@@ -196,9 +197,11 @@
 
         Server.request("POST", "/api/class/register", data, true).then(function (value) {
             console.log(value) 
+            
             Message.createNew("Success", "s", 0);
+            document.getElementById("selTeacher").value   = "";
             document.getElementById("txtnameclass").value = "";
-            $('#modal_studentForm').modal('hide');//ni auto tutup balek modal after register
+            $('#modal_classDetails').modal('hide');//ni auto tutup balek modal after register
 
         }).catch(function (value) {
             console.log(value);
@@ -211,6 +214,129 @@
             }
 
         })
+    }
+
+    async function getClass(event) {
+        var action = await Swal.fire({
+            type : 'question',
+            title: 'Update this class?',
+            text : 'Directing to update form',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+
+        var data = {
+            "classId": event.target.id
+        }
+
+        var row = event.target.parentElement.parentElement;
+
+        $('#modal_classDetails').modal('show');
+
+        //finding name by text
+        var textToFind = row.children[1].innerHTML;
+
+        var dd = document.getElementById('selTeacher');
+        for (var i = 0; i < dd.options.length; i++) {
+            if (dd.options[i].text === textToFind) {
+                dd.selectedIndex = i;
+                break;
+            }
+        }
+
+        document.getElementById("txtnameclass").value        = event.target.children[0].innerHTML;
+        document.getElementById("btnUpdate").style.display   = "inline-block";
+        document.getElementById("btnRegister").style.display = "none";
+
+        selectedClassId = event.target.id;
+    }
+
+    async function updateClass() {
+        var action = await Swal.fire({
+            type : 'question',
+            title: 'Confirm Update?',
+            text : 'This class will be updated into the system',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+
+        var accountId = document.getElementById("selTeacher").value;
+        var className = document.getElementById("txtnameclass").value;
+
+        var data = {
+            "classId"   : selectedClassId,
+            "className" : className,
+            "accountId" : accountId
+        }
+
+        Server.request("POST", "/api/class/update", data, false).then(async function (value) {
+            console.log('Updated');
+
+            document.getElementById("txtnameclass").value       = "";
+            document.getElementById("selTeacher").value      = "";
+            document.getElementById("btnUpdate").style.display   = "none";
+            document.getElementById("btnRegister").style.display = "inline-block";
+            $('#modal_classDetails').modal('hide');
+
+            var action = await Swal.fire({
+                type : 'success',
+                title: 'Updated Successfully!',
+                text : '',
+                showCancelButton: false
+            })
+            
+            //loadTopic(document.getElementById("selSubjectCode").value);
+
+        }).catch(async function (value) {
+            var action = await Swal.fire({
+                type : 'error',
+                title: 'Cannot Updated!',
+                text : 'An Error has occured',
+                showCancelButton: false
+            })
+        })
+    }
+
+    async function deleteClass(event){
+
+        var action = await Swal.fire({
+            type : 'question',
+            title: 'Confirm Delete?',
+            text : 'This class will be removed from the system',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+
+        var data = {
+            "classId":event.target.id
+        }
+
+        Server.request("POST", "/api/class/delete", data, false).then(async function(value){
+            var action = await Swal.fire({
+                type : 'success',
+                title: 'Deleted Successfully!',
+                text : '',
+                showCancelButton: false
+            })
+
+            dtbClassList.row("#" + event.target.parentElement.parentElement.id).remove();
+            dtbClassList.draw();
+
+        }).catch(async function(value){
+            var action = await Swal.fire({
+                type : 'error',
+                title: 'Cannot Deleted!',
+                text : 'An Error has occured',
+                showCancelButton: false
+            })
+        })
+
     }
 
 </script>
