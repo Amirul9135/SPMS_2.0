@@ -1,4 +1,5 @@
 const express = require('express');
+const Class = require('../Model/entity/Class');
 const router = express.Router();
 const School = require('../Model/entity/School');
 const Staff = require("../Model/entity/Staff");
@@ -70,5 +71,17 @@ router.get('/allSchool', function (req, res) {
         res.status(400).send(value);
     });
 });
+
+
+router.get('/classList', function (req, res) {
+    if (!req.query.schId) {
+        return res.status(400).send()
+    }
+    Class.getAllClassInSchool(req.query.schId).then(function (result) {
+        return res.status(200).send(result)
+    }).catch(function (err) {
+        return res.status(500).send({ error: err })
+    })
+})
 
 module.exports = router;

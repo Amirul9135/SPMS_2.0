@@ -64,7 +64,8 @@ router.get('/student', Auth.userType([2, 3]), async function (req, res) {
         return res.status(500).send({ error: "failed to load school list data" })
     }
     return res.render("student.ejs", {
-        states: statesdata
+        states: statesdata,
+        schoolList: schoolList
     });
 })
 

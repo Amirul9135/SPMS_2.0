@@ -41,18 +41,23 @@
 
                 <div class="card-body">
                     <div class="row">
-
-                        <div class="col-md-3 col-xl-3">
-                            <label class="form-label mt-0">Choose School</label>
-                            <select id="selSchool" class="form-control select2-show-search" data-placeholder="Semua">
-                                <% schoolList.forEach(s=>{ %>
-                                    <option value="<%=s.schoolId%>" title="<%=s.fullName%>">
-                                        <%=s.abbrv%>
-                                    </option>
-                                    <% }) %>
-                            </select>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label mt-0">School</label>
+                                <div class="select-search">
+                                    <input id="SSfschool" type="text" autocomplete="off" class="form-control"
+                                        data-list="idListfSchool" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                        onblur="SSFocus(event)">
+                                    <ul onclick="SSItemClick(event)" id="idListfSchool" data-selected="-1">
+                                        <% schoolList.forEach(s=>{ %>
+                                            <li id="<%=s.schoolId%>" title="<%=s.fullName%>">
+                                                <%=s.abbrv%>
+                                            </li>
+                                            <% }) %>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-
                         <div class="col-md-1 col-xl-1 text-right">
                             <label class="form-label mt-0"><br></label>
                             <button onclick="loadStaff()" class="btn btn-info"><b><i class="fa fa-search"></i></b></a>
@@ -256,15 +261,21 @@
                             <div class="row">
                                 <div class="col-md-12">
 
-                                    <label class="form-label">Choose School</label>
-                                    <select id="updSchool" class="form-control select2-show-search"
-                                        data-placeholder="Semua">
-                                        <% schoolList.forEach(s=>{ %>
-                                            <option value="<%=s.schoolId%>" title="<%=s.fullName%>">
-                                                <%=s.abbrv%>
-                                            </option>
-                                            <% }) %>
-                                    </select>
+                                    <div class="form-group">
+                                        <label class="form-label mt-0">School</label>
+                                        <div class="select-search">
+                                            <input id="SSupSchool" type="text" autocomplete="off" class="form-control"
+                                                data-list="idLstUpSchool" onkeyup="SSKeyHandler(event)"
+                                                onfocus="SSFocus(event)" onblur="SSFocus(event)">
+                                            <ul onclick="SSItemClick(event)" id="idLstUpSchool" data-selected="-1">
+                                                <% schoolList.forEach(s=>{ %>
+                                                    <li id="<%=s.schoolId%>" title="<%=s.fullName%>">
+                                                        <%=s.abbrv%>
+                                                    </li>
+                                                    <% }) %>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -364,8 +375,8 @@
     }
 
     function submitUpdateTeacher() {
-        var nsch = document.getElementById('updSchool').value
-        if (nsch == document.getElementById('selSchool').value) {
+        var nsch = document.getElementById('idLstUpSchool').dataset.selected
+        if (nsch == document.getElementById("idListfSchool").dataset.selected) {
             return
         }
         Server.request("POST", "/api/account/staff/school", {
@@ -398,7 +409,7 @@
 
     function loadStaff() {
 
-        var school = document.getElementById("selSchool").value;
+        var school = document.getElementById("idListfSchool").dataset.selected;
         console.log(school);
 
 

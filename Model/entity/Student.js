@@ -1,14 +1,14 @@
 const db = require("../DBConn")
-module.exports= class Student {
+module.exports = class Student {
     #strstudentId;
     #strguardianId;
 
     constructor() {
-        this.#strstudentId= "";
-        this.#strguardianId= "";
+        this.#strstudentId = "";
+        this.#strguardianId = "";
 
     }
-    setStrStudentId(strstudentId){
+    setStrStudentId(strstudentId) {
         this.#strstudentId = strstudentId;
     }
     getStrStudentId() {
@@ -22,29 +22,29 @@ module.exports= class Student {
     }
 
     register() {
-        var strsql = "INSERT INTO student(studentId) VALUES ("+ db.escape (this.#strstudentId)+")";
-         return new Promise(function(resolve, reject){ 
-             db.query(strsql, function (err, result) {
-                 if (err) {
-                     console.log("error:" + err.message);
-                     reject(err.message);
+        var strsql = "INSERT INTO student(studentId) VALUES (" + db.escape(this.#strstudentId) + ")";
+        return new Promise(function (resolve, reject) {
+            db.query(strsql, function (err, result) {
+                if (err) {
+                    console.log("error:" + err.message);
+                    reject(err.message);
                 }
-                 else {
-                        resolve();
-                    }
+                else {
+                    resolve();
+                }
             });
-         });
+        });
     }
 
-    static getStudent(schoolId,classId){
-        return new Promise(function(resolve, reject){
+    static getStudent(schoolId, classId) {
+        return new Promise(function (resolve, reject) {
             //var strSql ="SELECT a.*, b.* FROM (SELECT s.studentId, a.name FROM account a INNER JOIN student s ON s.studentId = a.accountId) a JOIN class_student cs ON a.studentId = cs.studentId JOIN (SELECT c.className,c.classId,s.fullName,s.schoolId FROM class c INNER JOIN school s ON s.schoolId = c.schoolId) b ON cs.classId = b.classId ";
-            var strSql = "SELECT a.*,b.*,MAX(cs.startDate) FROM (SELECT s.studentId, a.name FROM account a INNER JOIN student s ON s. studentId=a.accountId) a JOIN class_student cs ON a.studentId=cs.studentId JOIN (SELECT c.className,c.classId,s.fullName,s.schoolId FROM class c INNER JOIN school s ON s.schoolId = c.schoolId) b ON cs.classId=b.classId"
-            
-            strSql +=" WHERE b.schoolId = " +db.escape(schoolId) 
-            if (classId){
+            var strSql = "SELECT a.*,b.*,MAX(cs.startDate) FROM (SELECT s.studentId, a.name,a.disabled FROM account a INNER JOIN student s ON s. studentId=a.accountId) a JOIN class_student cs ON a.studentId=cs.studentId JOIN (SELECT c.className,c.classId,s.fullName,s.schoolId FROM class c INNER JOIN school s ON s.schoolId = c.schoolId) b ON cs.classId=b.classId"
 
-                strSql += " AND b.classId = " +db.escape(classId) 
+            strSql += " WHERE b.schoolId = " + db.escape(schoolId)
+            if (classId) {
+
+                strSql += " AND b.classId = " + db.escape(classId)
             }
             strSql += " GROUP BY a.studentId"
             db.query(strSql, function (err, result) {
@@ -56,7 +56,7 @@ module.exports= class Student {
                     resolve(JSON.parse(JSON.stringify(result)));
                 }
             });
-        
+
         });
     }
 }
