@@ -3,8 +3,6 @@ const router = express.Router();
 const Account = require("../Model/entity/Account");
 const Student = require("../Model/entity/Student");
 const Staff = require("../Model/entity/Staff");
-
-const Guardian = require("../Model/entity/Guardian");
 //const fnStrLength = require("./Middleware/stringLength"); 
 const Validator = require("./Middleware/Validator");
 const Utils = require("./Utils")
