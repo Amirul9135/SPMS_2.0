@@ -15,12 +15,6 @@
         <div class="col-md-10 col-xl-10">
             <h1 class="page-title mb-6" style="font-size: 30px;">Student</h1>
         </div>
-
-        <div class="col-md-2 col-xl-2 text-right">
-            <button type="button" class="btn btn-pill btn-secondary-light" data-toggle="modal"
-                data-target="#modal_studentForm"><i class="fa fa-plus mr-2"><b
-                        style="font-family: sans-serif;">&nbsp;Student</b></i></button>
-        </div>
     </div>
     <!-- /header -->
 
@@ -56,7 +50,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <div class="form-group">
                                 <label class="form-label mt-0">Class</label>
                                 <div class="select-search">
@@ -68,12 +62,20 @@
                                 </div>
                             </div>
                         </div>
-
-
-                        <div class="col-md-1 col-xl-1 text-right">
-                            <label class="form-label mt-0"><br></label>
-                            <button onclick="loadStudent()" class="btn btn-info"><b><i
-                                        class="fa fa-search"></i></b></button>
+                        <div class="col-md-3">
+                            <div class="row">
+                                <div class="col-5 mr-1">
+                                    <label class="form-label mt-0"><br></label>
+                                    <button onclick="loadStudent()" class="btn btn-pill btn-info-light"><b><i
+                                                class="fa fa-search">&nbsp;Search</i></b></button>
+                                </div>
+                                <div class="col-5">
+                                    <label class="form-label mt-0"><br></label>
+                                    <button type="button" class="btn btn-pill btn-secondary-light"
+                                        onclick="registerModal()"><i class="fa fa-plus mr-2"><b
+                                                style="font-family: sans-serif;">&nbsp;Register</b></i></button>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -128,62 +130,48 @@
 
             <div class="modal-body">
                 <div class="row">
+                    <div class="col-12">
+                        <div class="row">
 
-                    <div class="col-lg-6 col-md-12">
-                        <div class="form-group">
-                            <label for="exampleInputname">Name</label>
-                            <input type="text" class="form-control" id="txtname">
+                            <div class="col-lg-6 col-md-12">
+                                <div class="form-group">
+                                    <label for="exampleInputname">Name</label>
+                                    <input type="text" class="form-control" id="txtname">
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12">
+                                <div class="form-group">
+                                    <label for="exampleInputnumber">I/C Number</label>
+                                    <input type="text" class="form-control" id="txtstudentId">
+                                </div>
+                            </div>
                         </div>
+
+                    </div>
+                    <div class="col-12">
+                        <div class="row">
+
+                            <div class="col-lg-6 col-md-12">
+                                <div class="form-group">
+                                    <label for="exampleInputnumber1">Phone Number</label>
+                                    <input type="text" class="form-control" id="txtphone">
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-12">
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Email</label>
+                                    <input type="email" class="form-control" id="txtemail">
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="col-lg-3 col-md-12">
-                        <div class="form-group">
-                            <label for="exampleInputnumber">I/C Number</label>
-                            <input type="text" class="form-control" id="txtstudentId">
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-md-12">
-                        <div class="form-group">
-                            <label for="exampleInputnumber1">Phone Number</label>
-                            <input type="text" class="form-control" id="txtphone">
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6 col-md-12">
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">Email</label>
-                            <input type="email" class="form-control" id="txtemail">
-                        </div>
-                    </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="form-group">
                             <label for="exampleInputnumber">Password</label>
                             <input type="password" class="form-control" id="txtpassword">
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6 col-md-12">
-                        <div class="form-group">
-                            <label for="sekolah">School</label>
-                            <select class="form-control select2-show-search" id="txtfullName">
-                                <optgroup>
-                                    <option value="1">SMKA Sultan Muhammad</option>
-                                    <option value="2">SMK Telok Mas</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6 col-md-12">
-                        <div class="form-group">
-                            <label for="kelas">Class</label>
-                            <select class="form-control select2-show-search" id="txtclassName">
-                                <optgroup>
-                                    <option value="1">5 Arif</option>
-                                    <option value="2">1 Bestari</option>
-                                </optgroup>
-                            </select>
                         </div>
                     </div>
 
@@ -282,6 +270,16 @@
         tableStud = new DataTable("#StudTable")
     }
 
+    function registerModal() {
+        if (document.getElementById('LstFClass').dataset.selected == '-1') {
+            Swal.fire({
+                type: 'error',
+                title: 'No class selected'
+            })
+        }
+        $('#modal_studentForm').modal('show')
+    }
+
     async function registerStud() {
 
         var action = await Swal.fire({
@@ -326,6 +324,7 @@
             document.getElementById("txtemail").value = "";
             submitAddress(studentId)//ni panggil function ak buat yg akan insertkan address ke address table guna id die
             $('#modal_studentForm').modal('hide');//ni auto tutup balek modal after register
+            loadStudent()
 
         }).catch(function (value) {
             console.log(value);
