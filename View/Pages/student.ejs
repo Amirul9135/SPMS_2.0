@@ -276,6 +276,7 @@
                 type: 'error',
                 title: 'No class selected'
             })
+            return
         }
         $('#modal_studentForm').modal('show')
     }
@@ -389,6 +390,7 @@
                 tmpRow.id = student.studentId; //letak id
                 if (student.disabled) {
                     tmpRow.classList.add('disabled_acc')
+                    tmpRow.title = "This account was disabled on " + new Date(student.disabled).toLocaleDateString('en-GB')
                 }
             })
             tableStud.draw();
@@ -505,7 +507,7 @@
         var chc = await Swal.fire({
             type: 'question',
             title: 'Re-Activate Account',
-            text: 'Account Id : ' + e.target.parentElement.parentElement.id
+            html: 'Account Id : ' + e.target.parentElement.parentElement.id + '<br>' + e.target.parentElement.parentElement.title
         })
         if (chc.dismiss) {
             return

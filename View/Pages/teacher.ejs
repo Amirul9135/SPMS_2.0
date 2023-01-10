@@ -466,6 +466,7 @@
                     tmpRow.id = staff.accountId;
                     if (staff.disabled) {
                         tmpRow.classList.add('disabled_acc')
+                        tmpRow.title = "This account was disabled on " + new Date(staff.disabled).toLocaleDateString('en-GB')
                     }
                     else {
                         tmpRow.onclick = updateStaff
@@ -513,7 +514,7 @@
         var chc = await Swal.fire({
             type: 'question',
             title: 'Re-Activate Account',
-            text: 'Account Id : ' + e.target.parentElement.parentElement.id
+            html: 'Account Id : ' + e.target.parentElement.parentElement.id + '<br>' + e.target.parentElement.parentElement.title
         })
         if (chc.dismiss) {
             return
