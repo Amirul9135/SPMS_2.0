@@ -124,7 +124,7 @@ module.exports = class School {
 
     static getSchool(schoolId) {
         return new Promise(function (resolve, reject) {
-            var strSql = "SELECT * FROM  school WHERE schoolId =  " + db.escape(schoolId);
+            var strSql = "SELECT * FROM  school WHERE schoolId =  " + db.escape(schoolId) + " ORDER BY fullName"
             db.query(strSql, function (err, result) {
                 if (err) {
                     console.log("error:" + err.message);

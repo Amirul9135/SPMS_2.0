@@ -33,9 +33,22 @@ router.get('/profile', Auth.userType(), async function (req, res) {
     });
 })
 router.get('/teacher', Auth.userType([2, 3]), async function (req, res) {
-    var statesdata = await Address.getState();
+    var statesdata = await Address.getState().catch(function (err) {
+        console.log(err)
+    })
+    if (!statesdata) {
+        return res.status(500).send({ error: "failed to load States data" })
+    }
+    var schoolList = await School.getAll().catch(function (err) {
+        console.log(err)
+    })
+    if (!schoolList) {
+        return res.status(500).send({ error: "failed to load school list data" })
+    }
+    console.log(schoolList)
     return res.render("teacher.ejs", {
-        states: statesdata
+        states: statesdata,
+        schoolList: schoolList
     });
 })
 router.get('/student', Auth.userType([2, 3]), async function (req, res) {
