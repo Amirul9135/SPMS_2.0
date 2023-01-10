@@ -157,7 +157,7 @@ module.exports = class Account {
     }
 
     login() {
-        var strSql = "SELECT name,password,userType FROM account WHERE accountId=" + db.escape(this.#straccountId)
+        var strSql = "SELECT name,password,userType FROM account WHERE accountId=" + db.escape(this.#straccountId) + " AND disabled IS NULL"
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {
