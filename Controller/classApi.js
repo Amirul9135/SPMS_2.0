@@ -8,6 +8,7 @@ router.post('/register', function (req, res) {
     // newcls.setIntClassId(req.body.classId);
     newcls.setIntSchoolId(req.body.schoolId);
     newcls.setIntClassName(req.body.className);
+    newcls.setStrAccountId(req.body.accountId);
    
     newcls.register().then(function(value){ //.then means resolve (no error)
         res.send("Success");
@@ -74,6 +75,17 @@ router.get('/getstudentclass', function (req, res) {
     }).catch(function (value) {
         console.log(value);
         return res.status(400).send(value);
+    });
+});
+
+router.get('/getTeacher', function (req, res) {
+    var promiseAll = Class.getTeacher();
+    promiseAll.then(function (value) {
+        console.log(value);
+        res.send(JSON.stringify(value));
+    }).catch(function (value) {
+        console.log(value);
+        res.status(400).send(value);
     });
 });
 

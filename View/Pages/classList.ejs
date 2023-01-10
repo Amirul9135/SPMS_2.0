@@ -1,3 +1,9 @@
+<style>
+    button * {
+        pointer-events: none;
+    }
+</style>
+
 <div class="side-app" onload="setup()">
 
     <div id="ejsData" data-school="<%= JSON.stringify(school) %> "></div>
@@ -14,74 +20,6 @@
         </div>
     </div>
     <!-- /header -->
-
-    <!-- filter -->
-    <!-- <div class="row">
-        <div class="col-md-12 col-xl-12">
-            <div class="card">
-                <div class="card-header text-white bg-info">
-                    <h3 class="card-title">Saring Kelas</h3>
-                    <div class="card-options">
-                        <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i
-                                class="fe fe-chevron-up text-white"></i></a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-2 col-xl-2">
-                            <label class="form-label mt-0">Tarikh Daftar</label>
-                            <div class="input-group">
-                                <input class="form-control fc-datepicker" placeholder="MM/DD/YYYY" type="text">
-                            </div>
-                        </div>
-
-                        <div class="col-md-2 col-xl-2">
-                            <label class="form-label mt-0">Hingga</label>
-                            <div class="input-group">
-                                <input class="form-control fc-datepicker" placeholder="MM/DD/YYYY" type="text">
-                            </div>
-                        </div>
-
-                        <div class="col-md-12 col-xl-4">
-                            <label class="form-label mt-0">Pilih Sekolah</label>
-                            <select class="form-control select2-show-search" data-placeholder="Semua">
-                                <option value="#">Semua</option>
-                                <option value="#">SMK Telok Mas</option>
-                                <option value="#">SK Lahad Datu</option>
-                                <option value="#">SMKA Sultan Muhammad</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-2 col-xl-2">
-                            <label class="form-label mt-0">Pilih Kelas</label>
-                            <select class="form-control select2-show-search" data-placeholder="Semua">
-                                <option value="#">Semua</option>
-                                <option value="#">1 Bestari</option>
-                                <option value="#">2 Arif</option>
-                                <option value="#">5 Arif</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-12 col-xl-1">
-                            <label class="form-label mt-0">Status</label>
-                            <select class="form-control select2-show-search" data-placeholder="Semua">
-                                <option value="#">Semua</option>
-                                <option value="#">Aktif</option>
-                                <option value="#">Tidak Aktif</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-1 col-xl-1 text-right">
-                            <label class="form-label mt-0"><br></label>
-                            <a href="#" class="btn btn-info"><b><i class="fa fa-search"></i></b></a>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-    <!-- /filter -->
 
     <!-- ROW-table -->
     <div class="row">
@@ -120,155 +58,73 @@
 
 
 <!-- MODAL -->
-<div class="modal fade" id="modal_classDetails" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="modal_classDetails" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content modal-md">
             <div class="modal-header bg-info">
-                <h5 class="modal-title text-white" id="exampleModalLabel">Maklumat Kelas</h5>
-                <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">×</span>
-								</button> -->
+                <h5 class="modal-title text-white" id="exampleModalLabel">Class Registration</h5>
             </div>
             <div class="modal-body">
                 <div class="row">
-
-                    <div class="col-md-12">
-                        <div class="card bg-white">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover text-nowrap mb-0 p-0">
-                                    <thead class="bg-info">
-                                        <tr>
-                                            <th width="50%" class="text-white">Nama Guru Kelas</th>
-                                            <th width="15%" class="text-center text-white">Nama Kelas</th>
-                                            <th width="10%" class="text-center text-white">Jumlah Pelajar</th>
-                                            <th width="10%" class="text-center text-white">Tahun</th>
-                                            <th width="10%" class="text-center text-white">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td width="50%">
-                                                <a href="class_list.php"><b>Nurin Aina Syafiqah Binti Muhamad
-                                                        Baharom</b></a><br>
-                                                <t class="text-muted">SK Lahad Datu</t>
-                                            </td>
-                                            <td width="15%" class="text-center" style="vertical-align: middle;">5 Arif
-                                            </td>
-                                            <td width="12%" class="text-center" style="vertical-align: middle;">45</td>
-                                            <td width="12%" class="text-center" style="vertical-align: middle;">2022
-                                            </td>
-                                            <td width="15%" class="text-center" style="vertical-align: middle;">
-                                                <t class="badge badge-info"><b>Aktif</b></t>
-                                            </td>
-                                        </tr>
-
-                                    </tbody>
-                                </table>
-                            </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="exampleInputname">Class Name</label>
+                            <input type="text" class="form-control" id="txtnameclass">
                         </div>
                     </div>
 
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Senarai Pelajar Dalam Kelas</h3>
-                                <div class="card-options">
-                                    <a href="#" class="btn btn-orange btn-sm ml-2"><i class="fa fa-trash"></i>
-                                        Senarai</a>
-                                    <a href="#" class="btn btn-danger btn-sm ml-2"><i class="fa fa-trash"></i>
-                                        Kelas</a>&nbsp;&nbsp;
-                                    <a href="#" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Pelajar</a>
-                                    <a href="#" class="btn btn-success btn-sm ml-2"><i class="fa fa-floppy-o"></i>
-                                        Simpan</a>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover text-nowrap mb-0">
-                                        <thead class="bg-primary">
-                                            <tr>
-                                                <th width="8%" class="text-center text-white">No</th>
-                                                <th width="50%" class="text-white">Nama Pelajar</th>
-                                                <th width="15%" class="text-center text-white">Nama Kelas</th>
-                                                <th width="12%" class="text-center text-white">Tarikh Daftar</th>
-                                                <th width="15%" class="text-center text-white">Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td width="8%" class="text-center">1</td>
-                                                <td width="50%">
-                                                    <a href="student_add.php"><b>Nurin Aina Syafiqah Binti Muhamad
-                                                            Baharom</b></a><br>
-                                                    <t class="text-muted">SK Lahad Datu</t>
-                                                </td>
-                                                <td width="15%" class="text-center" style="vertical-align: middle;">5
-                                                    Arif</td>
-                                                <td width="12%" class="text-center" style="vertical-align: middle;">
-                                                    07/12/2022</td>
-                                                <td width="15%" class="text-center" style="vertical-align: middle;">
-                                                    <t class="badge badge-warning"><b>Masih Belajar</b></t>
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td width="8%" class="text-center">2</td>
-                                                <td width="50%">
-                                                    <a href="student_add.php"><b>Muhammad Rahman bin
-                                                            Abdullah</b></a><br>
-                                                    <t class="text-muted">SMKA Sultan Muhammad</t>
-                                                </td>
-                                                <td width="15%" class="text-center" style="vertical-align: middle;">1
-                                                    Bestari</td>
-                                                <td width="12%" class="text-center" style="vertical-align: middle;">
-                                                    07/12/2022</td>
-                                                <td width="15%" class="text-center" style="vertical-align: middle;">
-                                                    <t class="badge badge-danger"><b>Tamat Belajar</b></t>
-                                                </td>
-                                            </tr>
-
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="exampleInputname">Teacher</label>
+                            <select class="form-control select2-show-search" id="selTeacher" onchange="taecherChange(event);">
+                                <optgroup>
+                                </optgroup>
+                            </select>
                         </div>
                     </div>
+                            
                 </div>
             </div>
-            <div class="modal-footer" style="justify-content: center;">
+
+            <div class="modal-footer text-white" style="justify-content: center;">
+                <a class="btn btn-warning mt-1" data-dismiss="modal">Cancel</a>
+                <a class="btn btn-success mt-1" button onclick="registerClass()">Save</a>
+                <span id="spnMsg"></span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- MODAL CLOSED -->
 <script>
     var ejsData
     var school
     var dtbClassList
+
     function setup() {
 
         ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
-
         document.getElementById("ejsData").remove()
         school = JSON.parse(ejsData.school)
         console.log(school)
+
         dtbClassList = new DataTable('#dtbClassList', {
             "columnDefs": [{
                 "targets": [2, 3],
                 "searchable": false
             },
             {
-                "targets": [0,2,3,4],
+                "targets": [0, 2, 3, 4],
                 "className": "text-center"
             }
             ]
-
-
         })
 
+        loadTeacher();
         loadClass();
+    }
+
+    function goToClassDetails(event) {
+        navigate('/classDetails?cid=' + event.target.id)
     }
 
     function loadClass() {
@@ -278,22 +134,83 @@
             var data = JSON.parse(value);
             dtbClassList.clear();
             var tmpRow;
+            console.log('sni')
+            console.log(data)
 
             data.forEach(qClass => { //temporary
                 tmpRow = dtbClassList.row.add([
-                    '<i style="vertical-align: middle;">' + qClass.className + '</b></button>',
+                    '<button onclick="getSchool(event);" id="' + qClass.classId + '" ><b style="vertical-align: middle;">' + qClass.className + '</b></button>',
                     qClass.name,
                     qClass.total,
                     '<button class="btn btn-danger" style="vertical-align: middle;" onclick="" id="' + qClass.classId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>',
-                    '<button class="btn btn-secondary" style="vertical-align: middle;" onclick="" id="' + qClass.classId + '"><b><i class="fa fa-pencil" style="font-size: 17px;"></i></b></button>'
+                    '<button class="btn btn-secondary" style="vertical-align: middle;" onclick="goToClassDetails(event);" id="' + qClass.classId + '"><b><i class="fa fa-pencil" style="font-size: 17px;"></i></b></button>'
                 ]).node()
-                tmpRow.id = qClass.subjectCode; //letak id
+                tmpRow.id = qClass.classId; //letak id 
             })
             dtbClassList.draw();
-            console.log(data)
         }
         ).catch(function (value) {
             console.log(value);
         });
     }
+
+    function teacherChange(event){
+        var subjectCode = event.target.value;
+    }
+
+    function loadTeacher(){
+        Server.request("GET", "/api/class/getTeacher", null, false).then(function (value) {
+            var data = JSON.parse(value);
+            var strHtmlRads = "";
+            strHtmlRads += '<option value="-1" selected>Select Teacher</option>'
+
+            data.forEach(qTeacher=>{
+                strHtmlRads += '<option value="' + qTeacher.accountId + '">' + qTeacher.name + '</option>'
+            })
+
+            document.getElementById("selTeacher").innerHTML = strHtmlRads;
+        })
+    }
+
+    async function registerClass() {
+
+        var action = await Swal.fire({
+            type: 'question',
+            title: 'Confirm Registration',
+            text: 'Register new class into the system?',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+        
+        var accountId = document.getElementById("selTeacher").value;
+        var className = document.getElementById("txtnameclass").value;
+        schoolId = JSON.stringify(school.schoolId);
+
+        var data = {
+            "schoolId" : schoolId,
+            "className": className,
+            "accountId": accountId
+        }
+
+        Server.request("POST", "/api/class/register", data, true).then(function (value) {
+            console.log(value) 
+            Message.createNew("Success", "s", 0);
+            document.getElementById("txtnameclass").value = "";
+            $('#modal_studentForm').modal('hide');//ni auto tutup balek modal after register
+
+        }).catch(function (value) {
+            console.log(value);
+            value = JSON.parse(value);
+            if (value.hasOwnProperty("validationError")) {
+                displayValidationError(value);
+            }
+            else {
+                Message.createNew("Error", value, 3);
+            }
+
+        })
+    }
+
 </script>

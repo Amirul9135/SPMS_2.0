@@ -47,11 +47,8 @@ module.exports = class Class {
         return this.#strstudentId;
     }
 
-
-
     register() {
-
-        var strsql = "INSERT INTO class(schoolId,className) VALUES (" + db.escape(this.#intschoolId) + ", " + db.escape(this.#strClassName) + ")";
+        var strsql = "INSERT INTO class(schoolId,className,teacherId) VALUES (" + db.escape(this.#intschoolId) + ", " + db.escape(this.#strClassName) + ", " + db.escape(this.#straccountId) + ")";
         console.log(strsql);
         return new Promise(function (resolve, reject) {
 
@@ -113,6 +110,21 @@ module.exports = class Class {
                 }
                 else {
                     resolve(JSON.parse(JSON.stringify(result))[0]);
+                }
+            });
+        });
+    }
+
+    static getTeacher() {
+        return new Promise(function (resolve, reject) {
+            var strSql = "SELECT accountId, name FROM account WHERE userType = 2";
+            db.query(strSql, function (err, result) {
+                if (err) {
+                    console.log("error:" + err.message);
+                    reject(err.message);
+                }
+                else {
+                    resolve(JSON.parse(JSON.stringify(result)));
                 }
             });
         });

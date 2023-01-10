@@ -86,15 +86,39 @@
         </div>
     </div>
 </div>
+
 <script>
     var classData
     function setup() {
-
-
         ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
 
         document.getElementById("ejsData").remove()
         classData = JSON.parse(ejsData.curclass)
         console.log(classData)
     }
+
+    function loadStudentClass() {
+        console.log("load")
+
+        Server.request("POST", "/api/topic/getTopicBySubject", null, false).then(function (value) {
+            var data = JSON.parse(value);
+            tableTopic.clear();
+            var tmpRow;
+
+            data.forEach(qTopic => {
+                tmpRow = tableTopic.row.add([
+                    '<a class="text-center">' + qTopic.subjectCode + '</a>',
+                    '<button style="vertical-align: middle;" onclick="getTopic(event);" id="' + qTopic.topicId + '"><b>' + qTopic.title + '</b></button>',
+                    '<button class="btn btn-danger text-center" style="vertical-align: middle;" onclick="deleteTopic(event);" id="' + qTopic.topicId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>'
+                ]).node()
+                tmpRow.id = qTopic.topicId; //letak id
+            });
+            tableTopic .draw();
+            console.log(data)
+        }
+        ).catch(function (value) {
+            console.log(value);
+        });
+    }
+
 </script>
