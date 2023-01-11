@@ -241,12 +241,25 @@
             console.log(converted)
         }).catch(function (err) {
             console.log(err)
+            try {
+                err = JSON.parse(err)
+                if (err.error == "no data") {
+                    Swal.fire({
+                        type: 'warning',
+                        title: 'No record meets the criteria'
+                    })
+                }
+            } catch {
+
+            }
         })
 
 
     }
+    var ii = 0
     function testFunc() {
-        var newt = newSeries('btn', data3)
+        ii++
+        var newt = newSeries('btn' + ii, data3)
         lineChartOption.series.push(newt)
         LineChart.setOption(lineChartOption)
         console.log(LineChart.getModel().getSeries().map(s => {
@@ -344,15 +357,12 @@
         ['2019-04-10T20:45:03Z', 6, 0, 50]
     ];
     var lineChartOption = {
-        title: {
-            text: 'Performance Over Time'
-        },
         legend: {
             // Try 'horizontal'
+            type: 'scroll',
             orient: 'horizontal',
-            top: 0,
-            right: 0
-        },
+            right: 10
+        }, grid: { containLabel: true },
         tooltip: {
             trigger: 'axis',
             formatter: function (d) {
@@ -371,11 +381,6 @@
             right: '4%',
             bottom: '3%',
             containLabel: true
-        },
-        toolbox: {
-            feature: {
-                saveAsImage: {}
-            }
         },
         xAxis: {
             type: 'time'

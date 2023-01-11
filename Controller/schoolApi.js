@@ -3,15 +3,25 @@ const Class = require('../Model/entity/Class');
 const router = express.Router();
 const School = require('../Model/entity/School');
 const Staff = require("../Model/entity/Staff");
+const Validator = require('./Middleware/Validator');
+const Auth = require("./Middleware/Authenticate")
 //const SchoolStudent = require('../Model/entity/SchoolStudent');
 //const fnStrLength = require("./Middleware/stringLength"); 
 //const Validator = require("./Middleware/Validator");
 
-router.post('/register', function (req, res) {
+router.post('/register', [
+    Auth.userType([2, 3]),
+    Validator.checkString('fullName'),
+    Validator.checkString('description'),
+    Validator.checkString("abbrv"),
+    Validator.checkNumber("county", { min: 0 }),
+    Validator.validate()
+], function (req, res) {
     var newSchool = new School();
     newSchool.setStrFullName(req.body.fullName);
     newSchool.setStrAbbrv(req.body.abbrv);
     newSchool.setStrDescription(req.body.description);
+    newSchool.setIntCounty(req.body.county)
 
     var promiseRegister = newSchool.registerSchool();
     //calback function when resolve and reject
@@ -22,7 +32,13 @@ router.post('/register', function (req, res) {
     });
 });
 
-router.post('/update', function (req, res) {
+router.post('/update', [
+    Auth.userType([2, 3]),
+    Validator.checkString('fullName'),
+    Validator.checkString('description'),
+    Validator.checkString("abbrv"),
+    Validator.validate()
+], function (req, res) {
     var updateSchool = new School();
     updateSchool.setIntSchoolId(req.body.schoolId);
     updateSchool.setStrFullName(req.body.fullName);
@@ -38,6 +54,9 @@ router.post('/update', function (req, res) {
 });
 
 router.post('/delete', function (req, res) {
+    if (!req.body.schoolId) {
+        return res.status(400).send()
+    }
     var delSchool = new School();
     delSchool.setIntSchoolId(req.body.schoolId);
 
@@ -78,6 +97,17 @@ router.get('/classList', function (req, res) {
         return res.status(400).send()
     }
     Class.getAllClassInSchool(req.query.schId).then(function (result) {
+        return res.status(200).send(result)
+    }).catch(function (err) {
+        return res.status(500).send({ error: err })
+    })
+})
+
+router.get('/county', function (req, res) {
+    if (!req.query.id) {
+        return res.status(400).send()
+    }
+    School.schoolByCounty(req.query.id).then(function (result) {
         return res.status(200).send(result)
     }).catch(function (err) {
         return res.status(500).send({ error: err })

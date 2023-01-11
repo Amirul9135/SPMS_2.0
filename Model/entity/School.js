@@ -6,6 +6,7 @@ module.exports = class School {
     #strAbbrv;
     #strDescription;
     #intAreaId;
+    #intCounty;
 
     constructor() {
         this.#intSchoolId = "";
@@ -14,7 +15,9 @@ module.exports = class School {
         this.#strDescription = "";
         this.#intAreaId = "";
     }
-
+    setIntCounty(countyId) {
+        this.#intCounty = countyId
+    }
     setIntSchoolId(schoolId) {
         this.#intSchoolId = schoolId;
     }
@@ -53,7 +56,7 @@ module.exports = class School {
 
     // Register School
     registerSchool() {
-        var strSql = "INSERT INTO school(fullName, abbrv, description) VALUES (" + db.escape(this.#strFullName) + ", " + db.escape(this.#strAbbrv) + "," + db.escape(this.#strDescription) + ")";
+        var strSql = "INSERT INTO school(fullName, abbrv, description,county) VALUES (" + db.escape(this.#strFullName) + ", " + db.escape(this.#strAbbrv) + "," + db.escape(this.#strDescription) + "," + db.escape(this.#intCounty) + ")";
 
         return new Promise(function (resolve, reject) {
             //js function to insert data (callback function)
@@ -135,5 +138,25 @@ module.exports = class School {
                 }
             });
         });
+    }
+
+    static schoolByCounty(countyId) {
+        return new Promise(function (resolve, reject) {
+            var strSql = "SELECT * FROM school WHERE county=" + db.escape(countyId)
+            db.query(strSql, function (err, result) {
+                if (err) {
+                    reject(err.message)
+                }
+                else {
+                    result = JSON.parse(JSON.stringify(result))
+                    if (result.length == 0) {
+                        reject('no record')
+                    }
+                    else {
+                        resolve(result)
+                    }
+                }
+            })
+        })
     }
 }

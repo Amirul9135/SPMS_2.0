@@ -11,13 +11,6 @@
         <div class="col-md-10 col-xl-10">
             <h1 class="page-title mb-6" style="font-size: 30px;">School</h1>
         </div>
-
-        <div class="col-md-2 col-xl-2 text-right">
-            <button type="button" class="btn btn-pill btn-secondary-light" data-toggle="modal"
-                data-target="#modal_schoolForm">
-                <i class="fa fa-plus mr-2"><b style="font-family: sans-serif;">&nbsp;School</b></i>
-            </button>
-        </div>
     </div>
     <!-- /header -->
 
@@ -32,37 +25,62 @@
                                 class="fe fe-chevron-up text-white"></i></a>
                     </div>
                 </div>
-                <!-- <div class="card-body">
+                <div class="card-body">
                     <div class="row">
 
-                        <div class="col-md-5 col-xl-5">
-                            <label class="form-label mt-0">Choose School</label>
-                            <select id="txtschool" class="form-control select2-show-search" data-placeholder="Semua">
-                                <option value="3">SMK Telok Mas</option>
-                                <option value="4">SMK Lahad Datu</option>
-                                <option value="2">SMKA Sultan Muhammad</option>
-                                <option value="1">DUMMY school</option>
-                            </select>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label mt-0">State</label>
+                                <select id="selectState" class="form-control select2" onchange="changeState(event)">
+                                    <option value="-1">Choose State</option>
+                                    <% states.forEach(state=> {%>
+                                        <option value="<%= state['state_code']%>">
+                                            <%=state["state_name"]%>
+                                        </option>
+                                        <%});%>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label mt-0">County</label>
+                                <select id="selectCounty" class="form-control select2">
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label mt-0">&nbsp;</label>
+                                        <button onclick="loadSchool()" class="btn btn-pill btn-info-light"><b><i
+                                                    class="fa fa-search">&nbsp;Search</i></b>
+
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label mt-0">&nbsp;</label>
+
+                                        <button id="btnReg" type="button" class="btn btn-pill btn-secondary-light"
+                                            disabled data-toggle="modal" data-target="#modal_schoolForm"
+                                            onclick="clearForm()">
+                                            <i class="fa fa-plus mr-2"><b
+                                                    style="font-family: sans-serif;">&nbsp;Register</b></i>
+                                        </button>
+
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="col-md-2 col-xl-2">
-                            <label class="form-label mt-0">Choose Class</label>
-                            <select id="txtclass" class="form-control select2-show-search" data-placeholder="Semua">
-                                <option value="3">1 Bestari</option>
-                                <option value="4">1 Cemerlang</option>
-                                <option value="5">1 Arif</option>
-                                <option value="2">5 Arif</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-1 col-xl-1 text-right">
-                            <label class="form-label mt-0"><br></label>
-                            <button onclick="loadStudent()" class="btn btn-info"><b><i
-                                        class="fa fa-search"></i></b></button>
-                        </div>
 
                     </div>
-                </div> -->
+                </div>
             </div>
         </div>
     </div>
@@ -84,7 +102,6 @@
                                     <th width="40%" class="text-white">School Name</th>
                                     <th width="20%" class="text-center text-white">Abbreviation</th>
                                     <th width="30%" class="text-white">Description</th>
-                                    <!-- <th width="10%" class="text-center text-white">Area</th> -->
                                     <th width="5%" class="text-white"></th>
                                     <th width="5%" class="text-white"></th>
                                 </tr>
@@ -134,49 +151,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>State</label>
-                            <select id="selectState" class="form-control select2" onchange="changeState(event)">
-                                <option value="-1">Choose State</option>
-                                <% states.forEach(state=> {%>
-                                    <option value="<%= state['state_code']%>">
-                                        <%=state["state_name"]%>
-                                    </option>
-                                    <%});%>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>Postcode</label>
-
-                            <div class="select-search">
-                                <input id="SSPostcode" type="text" autocomplete="off" disabled class="form-control"
-                                    data-list="idListPostcode" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
-                                    onblur="SSFocus(event)" onplay="changePostcode(event)">
-                                <ul onclick="SSItemClick(event)" id="idListPostcode" data-selected="-1">
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>Area</label>
-                            <div class="select-search">
-                                <input id="SSArea" type="text" autocomplete="off" disabled class="form-control"
-                                    data-list="idListArea" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
-                                    onblur="SSFocus(event)">
-                                <ul onclick="SSItemClick(event)" id="idListArea" data-selected="-1">
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="modal-footer text-white" style="justify-content: center;">
@@ -201,11 +175,16 @@
             // options 
             "columnDefs":
                 [
-                    { "targets": [1, 3, 4], "className": "text-center" }
+                    { "targets": [1, 3, 4], "className": "text-center" },
+                    { "targets": [3, 4], "orderable": false, "searching": false }
                 ]
         });
+    }
 
-        loadSchool();
+    function clearForm() {
+        document.getElementById("txtSchoolName").value = ""
+        document.getElementById("txtSchoolAbbrv").value = ""
+        document.getElementById("txtDescription").value = ""
     }
 
     async function registerSchool() {
@@ -219,13 +198,11 @@
         if (action.dismiss) {
             return;
         }
-
-        //ni validation untuk check user dah pilih address
-        // var areaId = document.getElementById("idListArea").dataset.selected;
-        // if (areaId == "-1" || document.getElementById("txtalamat").value.length < 3) {
-        //     Message.createNew("Warning", "Invalid address", 2)
-        //     return false;
-        // }
+        var county = document.getElementById('selectCounty').value
+        if (!county) {
+            Message.createNew('Invalid', 'Please select county', 3)
+            return;
+        }
 
         var fullName = document.getElementById("txtSchoolName").value;
         var abbrv = document.getElementById("txtSchoolAbbrv").value;
@@ -234,10 +211,11 @@
         var data = {
             "fullName": fullName,
             "abbrv": abbrv,
-            "description": description
+            "description": description,
+            "county": parseInt(county)
         }
 
-        Server.request("POST", "/api/school/register", data, false).then(async function (value) {
+        Server.request("POST", "/api/school/register", data, true).then(async function (value) {
             console.log(value);
             document.getElementById("txtSchoolName").value = "";
             document.getElementById("txtSchoolAbbrv").value = "";
@@ -252,7 +230,7 @@
 
             //submitAddress(studentId)//ni panggil function ak buat yg akan insertkan address ke address table guna id die
             $('#modal_schoolForm').modal('hide');//ni auto tutup balek modal after register
-
+            loadSchool()
             //loadSchool(document.getElementById("txtSubjectCode").value);
 
         }).catch(function (value) {
@@ -271,10 +249,16 @@
 
     // Load list of subjects (dataTable)
     function loadSchool() {
-        console.log("load");
-
-        Server.request("GET", "/api/school/allSchool", null, false).then(function (value) {
+        var countyId = document.getElementById('selectCounty').value
+        if (!countyId) {
+            Swal.fire({
+                type: 'error',
+                title: 'no county selected'
+            })
+        }
+        Server.request("GET", "/api/school/county?id=" + countyId, null, true).then(function (value) {
             var data = JSON.parse(value);
+            console.log(data)
             tableSchool.clear();
             var tmpRow;
 
@@ -334,79 +318,23 @@
         console.log(event.target);
     }
 
-    function resetPostcode() {
-        document.getElementById("SSPostcode").disabled = true;
-        document.getElementById("SSPostcode").value = "";
-        document.getElementById("idListPostcode").innerHTML = ""
-        document.getElementById("idListPostcode").dataset.selected = "-1"
-    }
-
-    function resetArea() {
-        document.getElementById("SSArea").disabled = true;
-        document.getElementById("SSArea").value = "";
-        document.getElementById("idListArea").innerHTML = ""
-        document.getElementById("idListArea").dataset.selected = "-1"
-    }
-
-    function changePostcode(e) {
-        if (e.target.value == '-1') {
-            resetArea()
-            return;
-        }
-        document.getElementById("SSArea").disabled = false;
-
-        var postcode = document.getElementById(e.target.dataset.list).dataset.selected;
-        getAreaInPostcode(postcode).then(function (result) {
-            result = JSON.parse(result)
-            var strhtml = ""
-            result.forEach(area => {
-                strhtml += '<li id="' + area.areaId + '">' + area.areaName + '</li>'
-            });
-            document.getElementById("idListArea").innerHTML = strhtml
-        }).catch(function (err) {
-            console.log(err)
-        })
-        console.log(postcode)
-    }
-
     function changeState(e) {
-        resetArea()
-        resetPostcode()
         if (e.target.value == '-1') {
+            document.getElementById('btnReg').disabled = true
             return;
         }
-        document.getElementById("SSPostcode").disabled = false;
-        getPostcodes(e.target.value).then(function (result) {
+        document.getElementById('btnReg').disabled = false
+        Server.request('GET', '/api/address/county?stateCode=' + e.target.value, null, true).then(function (result) {
             result = JSON.parse(result)
-            var strhtml = ""
-            result.forEach(pcode => {
-                strhtml += '<li id="' + pcode.postcode + '">' + pcode.postcode + ' ' + pcode.postOffice + '</li>'
-            });
-            document.getElementById("idListPostcode").innerHTML = strhtml
+            console.log(result)
+            let strhtml = ""
+            result.forEach(c => {
+                strhtml += '<option value="' + c.countyId + '">' + c.name + '</option>'
+            })
+            document.getElementById('selectCounty').innerHTML = strhtml
         }).catch(function (err) {
+            Message.createNew('Eror', 'Failed to recieve county list', 3)
             console.log(err)
-        })
-    }
-
-    function submitAddress(accountId) {
-        var text = document.getElementById("txtalamat").value;
-        var areaId = document.getElementById("idListArea").dataset.selected;
-        if (areaId == "-1") {
-            Message.createNew("Warning", "Invalid address", 2)
-            return false;
-        }
-        areaId = parseInt(areaId);
-        var address = {
-            "accountId": accountId,
-            "addressText": text,
-            "areaId": areaId
-        }
-        Server.request("POST", "/api/address/set", address, false).then(function (result) {
-            Message.createNew("success", "address saved", 0);
-            return;
-        }).catch(function (err) {
-            Message.createNew("err", err, 3);
-            return;
         })
     }
 
@@ -463,8 +391,7 @@
             return;
         }
 
-        Server.request("POST", "/api/school/update", data, false).then(async function (value) {
-            Message.createNew("Success", value, 0);
+        Server.request("POST", "/api/school/update", data, true).then(async function (value) {
 
             document.getElementById("txtSchoolName").value = "";
             document.getElementById("txtSchoolAbbrv").value = "";
@@ -517,7 +444,6 @@
                 text: '',
                 showCancelButton: false
             })
-            alert('ID :' + event.target.id);
             tableSchool.row("#" + event.target.parentElement.parentElement.id).remove();
             tableSchool.draw();
 
