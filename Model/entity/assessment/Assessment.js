@@ -146,9 +146,9 @@ module.exports = class Assessment {
     }
 
     totalFullMark() {
-        var strSql = "SELECT a.mark + b.setMark as fullMark FROM (SELECT SUM(mark) as mark,assessmentId FROM assessment_question WHERE assessmentId="
-            + db.escape(this.assessmentId) + " GROUP BY assessmentId) a JOIN (SELECT SUM(mark * count) as setMark FROM assessment_question_set WHERE assessmentId="
-            + db.escape(this.assessmentId) + " GROUP BY assessmentId) b"
+        var strSql = "SELECT SUM(a.mark) AS fullMark FROM ((SELECT SUM(mark) as mark,assessmentId FROM assessment_question WHERE assessmentId=" + db.escape(this.assessmentId)
+            + " GROUP BY assessmentId) UNION (SELECT SUM(mark * count) as mark,assessmentId FROM assessment_question_set WHERE assessmentId=" + db.escape(this.assessmentId)
+            + " GROUP BY assessmentId)) a;"
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {
@@ -717,5 +717,32 @@ module.exports = class Assessment {
                 }
             })
         })
+    }
+
+    static getAreaReport(areaId, subjectCode, year) {//areaId,subjectId,year string
+        let sDt, eDt;
+        sDt = year + '-01-01';
+        eDt = year + '-12-31'
+        //for now average kalau ada assessment same date, later bole max min
+        var strSql = "SELECT AVG(a.percent) as percent, date FROM (SELECT (SUM(aq.mark) / SUM(aq.fullMark)) AS percent, CAST(a.close AS DATE) As date FROM assigned_question aq JOIN assessment a ON aq.assessmentId=a.assessmentId JOIN address ad ON aq.studentId=ad.accountId"
+            + " WHERE a.open >= " + db.escape(sDt) + " AND a.close <= " + db.escape(eDt) + " AND ad.areaId =" + db.escape(areaId) + " AND a.subject= " + db.escape(subjectCode) + " GROUP BY aq.assessmentId ORDER BY a.close ASC)  a GROUP BY a.date"
+        return new Promise(function (resolve, reject) {
+            db.query(strSql, function (err, result) {
+                if (err) {
+                    reject(err.message)
+                }
+                else {
+                    result = JSON.parse(JSON.stringify(result))
+                    if (result.length == 0) {
+                        reject('no data')
+                    }
+                    else {
+                        resolve(result)
+                    }
+                }
+
+            })
+        })
+
     }
 }

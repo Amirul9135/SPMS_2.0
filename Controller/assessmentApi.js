@@ -513,4 +513,22 @@ router.get('/QAanalysis',
             return res.status(500).send({ error: err })
         })
     })
+
+router.get('/areaReport', function (req, res) {
+    if (!req.query.areaId) {
+        return res.status(400).send()
+    }
+    if (!req.query.subjCode) {
+        return res.status(400).send()
+    }
+    if (!req.query.year) {
+        return res.status(400).send()
+    }
+    Assessment.getAreaReport(req.query.areaId, req.query.subjCode, req.query.year).then(function (result) {
+        return res.status(200).send(result)
+    }).catch(function (err) {
+        console.log(err)
+        return res.status(500).send({ error: err })
+    })
+})
 module.exports = router;

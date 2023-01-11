@@ -43,6 +43,13 @@
     .mycustom_tbd span {
         pointer-events: none;
     }
+
+    .overflow_elipsis {
+        max-width: 25vw !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
 </style>
 <link rel="stylesheet" href="/res/assets/plugins/tabs/tabs.css">
 
@@ -336,7 +343,7 @@
                                     <div class="select-search">
                                         <input type="text" class="form-control" data-list="idListSubj"
                                             onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
-                                            onblur="SSFocus(event)" id="SSinSubj">
+                                            onblur="SSFocus(event)" id="SSinSubj" autocomplete="off">
                                         <ul onclick="SSItemClick(event)" id="idListSubj" data-selected="-1">
                                             <% subjects.forEach(subj=> {%>
                                                 <li id="<%= subj['subjectCode']%>">
@@ -660,7 +667,11 @@
             })
             return
         }
-        dtbASQuestion = new DataTable('#tbASQuestion')
+        dtbASQuestion = new DataTable('#tbASQuestion', {
+            "columnDefs": [
+                { "targets": [0, 2], "className": "overflow_elipsis" }
+            ]
+        })
         tableQuestionSet = new DataTable('#tbQuestionSet', {
             // options 
             "columnDefs":
@@ -688,6 +699,7 @@
             // options 
             "columnDefs":
                 [
+                    { "targets": [0], "className": 'overflow_elipsis' },
                     { "targets": [4], "className": "text-center" }
                 ]
         }

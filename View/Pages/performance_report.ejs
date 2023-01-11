@@ -40,24 +40,7 @@
                                     <option value="2">Performance for Specific Subject</option>
                                 </select>
                             </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">
-                                    Subject
-                                </label>
-                                <div class="select-search">
-                                    <input disabled id="selectSubject" type="text" class="form-control"
-                                        data-list="idListSubj" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
-                                        onblur="SSFocus(event)" onchange="resetChartData()">
-                                    <ul onclick="SSItemClick(event)" id="idListSubj" data-selected="-1">
-                                        <% subjects.forEach(subj=> {%>
-                                            <li id="<%= subj['subjectCode']%>">
-                                                <%=subj["title"]%>
-                                            </li>
-                                            <%});%>
-                                    </ul>
-                                </div>
-                            </div>
+                            <input type="text" id="datepicker" class="form-control">
                         </div>
                         <div class="row">
                             <div class="col-md-6">
@@ -146,10 +129,34 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label class="form-label">
+                                Subject
+                            </label>
+                            <div class="select-search">
+                                <input id="selectSubject" type="text" class="form-control" data-list="idListSubj"
+                                    onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)" onblur="SSFocus(event)"
+                                    onchange="resetChartData()">
+                                <ul onclick="SSItemClick(event)" id="idListSubj" data-selected="-1">
+                                    <% subjects.forEach(subj=> {%>
+                                        <li id="<%= subj['subjectCode']%>">
+                                            <%=subj["title"]%>
+                                        </li>
+                                        <%});%>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Year</label>
+                            <select class="form-control MyYearSelect" id="selYear">
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer text-center" style="justify-content: center;">
-                <button class="btn btn-pill btn-outline-info">
+                <button class="btn btn-pill btn-outline-info" onclick="loadNewAreaData()">
                     <i class="fa fa-plus" aria-hidden="true"></i>
                 </button>
             </div>
@@ -159,9 +166,9 @@
 
 <script src="/res/assets/plugins/bootstrap-daterangepicker/moment.min.js"></script>
 <script src="/res/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+<script src="/res/assets/plugins/date-picker/jquery-ui.js"></script>
 <script src="/res/script/echarts.min.js"></script>
 <script>
-
     $('input[name="daterange"]').daterangepicker({
         startDate: new Date(), // after open picker you'll see this dates as picked
         endDate: new Date(),
@@ -183,7 +190,61 @@
         resetChartData()
     });
 
+    function yearSelector() {
+        var strhtml = ""
+        var i = new Date().getFullYear()
+        console.log(i)
+        while (i > 2000) {
 
+            strhtml += '<option value="' + i.toString() + '">' + i.toString() + '</option>'
+            console.log(i)
+            i--
+        }
+        console.log(strhtml)
+        //     for (var i = new Date().getFullYear(); i >= 2000; i--) {
+        //        strhtml += '<option value="' + i + "'>" + i + '</option>'
+        //   strhtml.trim()
+        //   }
+        document.querySelectorAll(".MyYearSelect").forEach(sel => {
+            console.log(sel)
+            sel.innerHTML = strhtml
+        })
+    }
+
+    function loadNewAreaData() {
+        var areaId = document.getElementById('idListArea').dataset.selected
+        var areaname = document.getElementById('SSArea').value
+        if (areaId == '-1') {
+            Message.createNew('Invalid Area id', '', 3)
+            return
+        }
+        var subjcode = document.getElementById('idListSubj').dataset.selected
+        if (subjcode == '-1') {
+            Message.createNew('No subject Selected', '', 3)
+            return
+        }
+        var year = document.getElementById('selYear').value
+        console.log(year)
+        Server.request('GET', '/api/assessment/areaReport?areaId=' + areaId + '&subjCode=' + subjcode + '&year=' + year, null, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            if (result.length == 0) {
+                return
+            }
+            let converted = []
+            result.forEach(res => {
+                converted.push([res.date, res.percent * 100])
+            })
+            let newData = newSeries(areaname, converted)
+            lineChartOption.series.push(newData)
+            LineChart.setOption(lineChartOption)
+            console.log(converted)
+        }).catch(function (err) {
+            console.log(err)
+        })
+
+
+    }
     function testFunc() {
         var newt = newSeries('btn', data3)
         lineChartOption.series.push(newt)
@@ -202,6 +263,13 @@
     function setup() {
         LineChart = echarts.init(document.getElementById('LineChart'))
         redrawChart()
+        $("#datepicker").datepicker({
+            format: "yyyy",
+            viewMode: "years",
+            minViewMode: "years"
+        });
+
+        yearSelector()
     }
 
     function addArea() {
@@ -285,7 +353,7 @@
                 console.log(d)
                 let ttip = ""
                 d.forEach(s => {
-                    ttip += "<u><b>" + s.seriesName + "</u></b><br>" + s.data[2] + "<br>" + new Date(s.data[0]).toLocaleDateString('en-GB') + "<br>" + s.data[1] + " %<br>"
+                    ttip += "<u><b>" + s.seriesName + "</u></b><br>" + new Date(s.data[0]).toLocaleDateString('en-GB') + "<br>" + s.data[1] + " %<br>"
                 })
                 return ttip;
 
@@ -314,13 +382,13 @@
                 type: 'line',
                 smooth: true,
                 data: data1
-            },*/
+            },
             {
                 name: 'lain panjang panjang nama',
                 type: 'line',
                 smooth: true,
                 data: data2
-            }
+            }*/
         ]
     }
 

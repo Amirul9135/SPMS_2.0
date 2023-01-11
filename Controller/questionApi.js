@@ -299,9 +299,9 @@ router.post("/attachment/upload", [
     var uploadedArr = []
     Object.keys(files).forEach(key => {
         newAttachment.setStrName(key);
-        newAttachment.insertIntoDb().then(function (value) {
+        newAttachment.insertIntoDb().then(async function (value) {
             var fpath = path.join(attachmentPath, value + ".png");
-            files[key].mv(fpath, (err) => {
+            await files[key].mv(fpath, (err) => {
                 if (err) return res.status(500).send(err)
             })
             uploadedArr.push({ "id": value, "fname": newAttachment.getStrName() });

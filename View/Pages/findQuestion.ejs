@@ -1,3 +1,11 @@
+<style>
+  .overflow_elipsis {
+    max-width: 40vw !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+</style>
 <div class="side-app" onload="setup()">
 
   <div class="row">
@@ -200,7 +208,8 @@
       // options 
       "columnDefs":
         [
-          { "targets": [1, 2, 3], "searchable": false }
+          { "targets": [1, 2, 3], "searchable": false },
+          { "targets": [0], "className": "overflow_elipsis" }
         ]
     });
   }
@@ -250,6 +259,9 @@
     }
     Server.request("GET", requestUrl, null, true).then(function (result) {
       result = JSON.parse(result)
+      if (result.length == 0) {
+        Message.createNew('No Result Found', 'Specified Critetria contain no result', 2)
+      }
       console.log(result)
       var tmpRow;
       datatable.clear();
