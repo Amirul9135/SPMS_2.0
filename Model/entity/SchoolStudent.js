@@ -5,7 +5,6 @@ module.exports= class SchoolStudent{
     #strenrolDate;
     #strendDatestudent;
 
-
     constructor() {
         this.#intschoolId = "";
         this.#strstudentId = "";
@@ -43,7 +42,6 @@ module.exports= class SchoolStudent{
 
   
     register() {
-        
         var strsql = "INSERT INTO school_student(schoolId,studentId,enrollDate,endDate) VALUES ('"+ this.#intschoolId +"', '"
         + this.#strstudentId +"','"+ this.#strenrolDate +"','"+ this.#strendDatestudent +"')";
             console.log(strsql); 
@@ -61,6 +59,7 @@ module.exports= class SchoolStudent{
                });
             }); 
     }
+
     update() {
         var strSql = "UPDATE school_student SET enrollDate = " + db.escape(this.#strenrolDate) + ", endDate = " + db.escape(this.#strendDatestudent) +  " WHERE studentId=" + db.escape(this.#strstudentId);
         console.log(strSql)

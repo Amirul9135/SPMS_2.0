@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router(); 
 const Class = require ('../Model/entity/Class');
 
-
 router.post('/register', function (req, res) {     
     var newcls = new Class();
     // newcls.setIntClassId(req.body.classId);
@@ -43,42 +42,6 @@ router.post('/delete', function (req, res) {
     });
 });
 
-router.get('/getClassBySchool', function (req, res) {
-    var schoolId = req.query.schoolId;;
-    var promiseAll = Class.getClassBySchool(schoolId);
-    promiseAll.then(function (value) {
-        console.log(value);
-        return res.send(value);
-    }).catch(function (value) {
-        console.log(value);
-        return res.status(400).send(value);
-    });
-});
-
-// router.post("/getClassBySchool", function (req, res) {
-//     var schoolId = req.query.schoolId;
-//     if (!schoolId) {
-//         return res.status(400).send("invalid school id");
-//     }
-//     Address.getPostCode(schoolId).then(function (result) {
-//         return res.status(200).send(result)
-//     }).catch(function (err) {
-//         return res.status(500).send(err)
-//     })
-// })
-
-// router.get('/getClass', function (req, res) {
-//     var classId ="5"
-//     var promiseAll = Class.getClass(classId);
-//     promiseAll.then(function (value) {
-//         console.log(value);
-//         return res.send(value);
-//     }).catch(function (value) {
-//         console.log(value);
-//         return res.status(400).send(value);
-//     });
-// });
-
 router.post('/getClassBySchool', function (req, res) {
     Class.getClassBySchool(req.body.schoolId).then(
         function (value) {
@@ -111,5 +74,15 @@ router.get('/getTeacher', function (req, res) {
         res.status(400).send(value);
     });
 });
+
+router.post('/getClassTeacher', function (req, res) {
+    Class.getClassTeacher(req.body.classId).then(
+        function (value) {
+            return res.status(200).send(value);
+        }
+    ).catch(function (value) {
+        return res.status(500).send(value);
+    })
+})
 
 module.exports = router;
