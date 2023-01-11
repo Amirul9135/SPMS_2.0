@@ -3,8 +3,6 @@ const router = express.Router();
 const Account = require("../Model/entity/Account");
 const Student = require("../Model/entity/Student");
 const Staff = require("../Model/entity/Staff");
-
-const Guardian = require("../Model/entity/Guardian");
 //const fnStrLength = require("./Middleware/stringLength"); 
 const Validator = require("./Middleware/Validator");
 const Utils = require("./Utils")
@@ -37,6 +35,9 @@ router.post('/register',
         if (!isValidPhone(req.body.phone)) {
             return res.status(400).send({ validationError: { phone: "invalid format" } })
         }
+        if (req.body.userType == 2 && !req.body.schoolId) {
+            return res.status(400).send({ validationError: { school: "invalid school Id" } })
+        }
         var newAcc = new Account();
         newAcc.setStrAccountId(req.body.accountId);
         newAcc.setStrName(req.body.name);
@@ -66,6 +67,7 @@ router.post('/register',
                 var newStaff = new Staff();
                 //console.log(req.body.accountId);//dalam request die account id
                 newStaff.setStrStaffId(req.body.accountId);
+                newStaff.setIntschoolId(req.body.schoolId)
                 // console.log(newStaff.getStrStaffId())
                 newStaff.register().then(function (value) {
                     return res.send("success");
@@ -114,20 +116,40 @@ router.post('/update',
     });
 
 
-router.post('/delete',
-    Auth.userType(2, 3),
+router.post('/delete', [
+
+    Auth.userType([2, 3]),
     Validator.checkString("accountId"),
-    Validator.validate(),
+    Validator.validate()
+],
     function (req, res) {
         var delAcc = new Account();
+        console.log(req.body.accountId)
         delAcc.setStrAccountId(req.body.accountId);
         var del = delAcc.delete();
         del.then(function (value) {//berjaya 
-            res.status(200).send();
+            return res.status(200).send();
         }).catch(function (value) {//no change atau error 
-            res.status(400).send(value);
+            console.log(value)
+            return res.status(400).send(value);
         });
     });
+
+router.post('/activate', [
+    Auth.userType([2, 3])
+], function (req, res) {
+    if (!req.query.accountId) {
+        return res.status(400).send()
+    }
+    var nacc = new Account()
+    nacc.setStrAccountId(req.query.accountId)
+    nacc.reActivate().then(function (result) {
+        return res.status(200).send()
+    }).catch(function (err) {
+        console.log(err)
+        return res.status(500).send({ error: err })
+    })
+})
 
 router.get('/',
     Auth.userType()
@@ -163,7 +185,7 @@ router.get('/allStaff', function (req, res) {
     if (!schoolId) {
         return res.status(400).send("invalid id");
     }
-    var promiseAll = Staff.getStaff(schoolId);
+    var promiseAll = Staff.getStaffList(schoolId);
     promiseAll.then(function (value) {
         console.log(value);
         res.send(JSON.stringify(value));
@@ -283,6 +305,23 @@ router.get('/verify',
     function (req, res) {
         return res.status(200).send(req.user)
     })
+
+router.post('/staff/school', [
+    Auth.userType([2, 3]),
+    Validator.checkString('staffId', { min: 12, max: 12 }),
+    Validator.checkNumber('schoolId', { min: 0 }),
+    Validator.validate()
+], function (req, res) {
+    var nstaff = new Staff()
+    nstaff.setStrStaffId(req.body.staffId)
+    nstaff.setIntschoolId(req.body.schoolId)
+    nstaff.updateSchool().then(function (result) {
+        return res.status(200).send()
+    }).catch(function (err) {
+        console.log(err)
+        return res.status(500).send({ error: err })
+    })
+})
 
 
 function isValidEmail(strEmail) {

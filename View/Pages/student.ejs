@@ -2,6 +2,10 @@
     button * {
         pointer-events: none;
     }
+
+    .disabled_acc {
+        background-color: rgba(255, 40, 40, 0.2) !important;
+    }
 </style>
 
 <div class="side-app" onload="setup()">
@@ -10,12 +14,6 @@
     <div class="row">
         <div class="col-md-10 col-xl-10">
             <h1 class="page-title mb-6" style="font-size: 30px;">Student</h1>
-        </div>
-
-        <div class="col-md-2 col-xl-2 text-right">
-            <button type="button" class="btn btn-pill btn-secondary-light" data-toggle="modal"
-                data-target="#modal_studentForm"><i class="fa fa-plus mr-2"><b
-                        style="font-family: sans-serif;">&nbsp;Student</b></i></button>
         </div>
     </div>
     <!-- /header -->
@@ -34,30 +32,50 @@
                 <div class="card-body">
                     <div class="row">
 
-                        <div class="col-md-5 col-xl-5">
-                            <label class="form-label mt-0">Choose School</label>
-                            <select id="txtschool" class="form-control select2-show-search" data-placeholder="Semua">
-                                <option value="3">SMK Telok Mas</option>
-                                <option value="4">SMK Lahad Datu</option>
-                                <option value="2">SMKA Sultan Muhammad</option>
-                                <option value="1">DUMMY school</option>
-                            </select>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label mt-0">School</label>
+                                <div class="select-search">
+                                    <input id="SSfschool" type="text" autocomplete="off" class="form-control"
+                                        data-list="idListfSchool" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                        onblur="SSFocus(event)" onplay="fSchoolChange(event)">
+                                    <ul onclick="SSItemClick(event)" id="idListfSchool" data-selected="-1">
+                                        <% schoolList.forEach(s=>{ %>
+                                            <li id="<%=s.schoolId%>" title="<%=s.fullName%>">
+                                                <%=s.abbrv%>
+                                            </li>
+                                            <% }) %>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="col-md-2 col-xl-2">
-                            <label class="form-label mt-0">Choose Class</label>
-                            <select id="txtclass" class="form-control select2-show-search" data-placeholder="Semua">
-                                <option value="3">1 Bestari</option>
-                                <option value="4">1 Cemerlang</option>
-                                <option value="5">1 Arif</option>
-                                <option value="2">5 Arif</option>
-                            </select>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label class="form-label mt-0">Class</label>
+                                <div class="select-search">
+                                    <input id="SSfclass" type="text" autocomplete="off" disabled class="form-control"
+                                        data-list="LstFClass" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                        onblur="SSFocus(event)">
+                                    <ul onclick="SSItemClick(event)" id="LstFClass" data-selected="-1">
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="col-md-1 col-xl-1 text-right">
-                            <label class="form-label mt-0"><br></label>
-                            <button onclick="loadStudent()" class="btn btn-info"><b><i
-                                        class="fa fa-search"></i></b></button>
+                        <div class="col-md-3">
+                            <div class="row">
+                                <div class="col-5 mr-1">
+                                    <label class="form-label mt-0"><br></label>
+                                    <button onclick="loadStudent()" class="btn btn-pill btn-info-light"><b><i
+                                                class="fa fa-search">&nbsp;Search</i></b></button>
+                                </div>
+                                <div class="col-5">
+                                    <label class="form-label mt-0"><br></label>
+                                    <button type="button" class="btn btn-pill btn-secondary-light"
+                                        onclick="registerModal()"><i class="fa fa-plus mr-2"><b
+                                                style="font-family: sans-serif;">&nbsp;Register</b></i></button>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -112,62 +130,48 @@
 
             <div class="modal-body">
                 <div class="row">
+                    <div class="col-12">
+                        <div class="row">
 
-                    <div class="col-lg-6 col-md-12">
-                        <div class="form-group">
-                            <label for="exampleInputname">Name</label>
-                            <input type="text" class="form-control" id="txtname">
+                            <div class="col-lg-6 col-md-12">
+                                <div class="form-group">
+                                    <label for="exampleInputname">Name</label>
+                                    <input type="text" class="form-control" id="txtname">
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12">
+                                <div class="form-group">
+                                    <label for="exampleInputnumber">I/C Number</label>
+                                    <input type="text" class="form-control" id="txtstudentId">
+                                </div>
+                            </div>
                         </div>
+
+                    </div>
+                    <div class="col-12">
+                        <div class="row">
+
+                            <div class="col-lg-6 col-md-12">
+                                <div class="form-group">
+                                    <label for="exampleInputnumber1">Phone Number</label>
+                                    <input type="text" class="form-control" id="txtphone">
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-12">
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Email</label>
+                                    <input type="email" class="form-control" id="txtemail">
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="col-lg-3 col-md-12">
-                        <div class="form-group">
-                            <label for="exampleInputnumber">I/C Number</label>
-                            <input type="text" class="form-control" id="txtstudentId">
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-md-12">
-                        <div class="form-group">
-                            <label for="exampleInputnumber1">Phone Number</label>
-                            <input type="text" class="form-control" id="txtphone">
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6 col-md-12">
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">Email</label>
-                            <input type="email" class="form-control" id="txtemail">
-                        </div>
-                    </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="form-group">
                             <label for="exampleInputnumber">Password</label>
                             <input type="password" class="form-control" id="txtpassword">
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6 col-md-12">
-                        <div class="form-group">
-                            <label for="sekolah">School</label>
-                            <select class="form-control select2-show-search" id="txtfullName">
-                                <optgroup>
-                                    <option value="1">SMKA Sultan Muhammad</option>
-                                    <option value="2">SMK Telok Mas</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6 col-md-12">
-                        <div class="form-group">
-                            <label for="kelas">Class</label>
-                            <select class="form-control select2-show-search" id="txtclassName">
-                                <optgroup>
-                                    <option value="1">5 Arif</option>
-                                    <option value="2">1 Bestari</option>
-                                </optgroup>
-                            </select>
                         </div>
                     </div>
 
@@ -266,6 +270,17 @@
         tableStud = new DataTable("#StudTable")
     }
 
+    function registerModal() {
+        if (document.getElementById('LstFClass').dataset.selected == '-1') {
+            Swal.fire({
+                type: 'error',
+                title: 'No class selected'
+            })
+            return
+        }
+        $('#modal_studentForm').modal('show')
+    }
+
     async function registerStud() {
 
         var action = await Swal.fire({
@@ -310,6 +325,7 @@
             document.getElementById("txtemail").value = "";
             submitAddress(studentId)//ni panggil function ak buat yg akan insertkan address ke address table guna id die
             $('#modal_studentForm').modal('hide');//ni auto tutup balek modal after register
+            loadStudent()
 
         }).catch(function (value) {
             console.log(value);
@@ -324,12 +340,38 @@
         })
     }
 
+    function fSchoolChange(e) {
+        console.log(e.target.dataset.selected)
+        Server.request('GET', '/api/school/classList?schId=' + e.target.dataset.selected, null, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            if (result.length == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'No class in selected school'
+                })
+                tableStud.clear();
+                tableStud.draw();
+                document.getElementById('SSfclass').disabled = true
+                return
+            }
+            var strhtml = ""
+            result.forEach(cls => {
+                strhtml += '<li id="' + cls.classId + '">' + cls.className + '</li>'
+            })
+            document.getElementById('LstFClass').innerHTML = strhtml
+            document.getElementById('SSfclass').disabled = false
+        }).catch(function (err) {
+            console.log(err)
+            Message.createNew("Error", "Failed to load class list in selected school", 3)
+        })
+    }
     //
     function loadStudent() {
         console.log("load")
 
-        var school = document.getElementById("txtschool").value;
-        var classId = document.getElementById("txtclass").value;
+        var school = document.getElementById("SSfschool").dataset.selected;
+        var classId = document.getElementById("SSfclass").dataset.selected;
         console.log(school);
 
 
@@ -341,10 +383,15 @@
                 tmpRow = tableStud.row.add([
                     student.name + '<br><span>' + student.studentId + '</span>',
                     student.fullName,
-                    student.className,
-                    '<button onclick="deleteStud(event)" class="btn btn-danger"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button>'
+                    student.className, (student.disabled == null) ? '<button onclick="deleteStud(event)" class="btn btn-danger"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button>'
+                        : '<button onclick="reActivateAcc(event)" class="btn btn-success"><b><i class="fa fa-check-circle  text-white" style="font-size: 17px;"></i></b></button>'
+
                 ]).node()
                 tmpRow.id = student.studentId; //letak id
+                if (student.disabled) {
+                    tmpRow.classList.add('disabled_acc')
+                    tmpRow.title = "This account was disabled on " + new Date(student.disabled).toLocaleDateString('en-GB')
+                }
             })
             tableStud.draw();
             console.log(data)
@@ -455,6 +502,28 @@
             })
     }
 
+    async function reActivateAcc(e) {
+        console.log(e.target.parentElement.parentElement.id)
+        var chc = await Swal.fire({
+            type: 'question',
+            title: 'Re-Activate Account',
+            html: 'Account Id : ' + e.target.parentElement.parentElement.id + '<br>' + e.target.parentElement.parentElement.title
+        })
+        if (chc.dismiss) {
+            return
+        }
+        Server.request("POST", "/api/account/activate?accountId=" + e.target.parentElement.parentElement.id, null, true).then(function (result) {
+            Swal.fire({
+                type: 'success',
+                title: 'account enabled'
+            })
+            loadStudent()
+        }).catch(function (err) {
+            Message.createNew("Error", "Unable to activate account", 3);
+
+        })
+    }
+
     async function deleteStud(event) {
 
         var action = await Swal.fire({
@@ -471,9 +540,8 @@
         }
 
         Server.request("POST", "/api/account/delete", data, true).then(function (value) {
-            tableStud.row("#" + event.target.parentElement.parentElement.id).remove()
-            tableStud.draw()
-            Message.createNew("Removed", "Student has been removed from database", 1);
+            Message.createNew("Disabled", "Student account has been disabled", 1);
+            loadStudent()
 
         }).catch(function (value) {
             console.log(value)

@@ -58,7 +58,8 @@
 
 
 <!-- MODAL -->
-<div class="modal fade" id="modal_classDetails" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modal_classDetails" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content modal-md">
             <div class="modal-header bg-info">
@@ -82,14 +83,16 @@
                             </select>
                         </div>
                     </div>
-                            
+
                 </div>
             </div>
 
             <div class="modal-footer text-white" style="justify-content: center;">
                 <a class="btn btn-warning mt-1" data-dismiss="modal">Cancel</a>
-                <a class="btn btn-primary" onclick="registerClass()" id="btnRegister"><b><i class="fa fa-plus"></i>&nbsp;Class</b></a>
-                <a class="btn btn-success text-white" onclick="updateClass()" id="btnUpdate" style="display: none;"><b><i class="fa fa-floppy-o"></i>&nbsp;Class</b></a>
+                <a class="btn btn-primary" onclick="registerClass()" id="btnRegister"><b><i
+                            class="fa fa-plus"></i>&nbsp;Class</b></a>
+                <a class="btn btn-success text-white" onclick="updateClass()" id="btnUpdate"
+                    style="display: none;"><b><i class="fa fa-floppy-o"></i>&nbsp;Class</b></a>
             </div>
         </div>
     </div>
@@ -107,13 +110,13 @@
         document.getElementById("ejsData").remove()
         school = JSON.parse(ejsData.school)
         console.log(school)
-
         dtbClassList = new DataTable('#dtbClassList', {
             "columnDefs": [{
                 "targets": [2, 3],
                 "searchable": false
             },
             {
+                "targets": [0, 2, 3, 4],
                 "targets": [0, 2, 3, 4],
                 "className": "text-center"
             }
@@ -133,7 +136,7 @@
 
         schoolId = JSON.stringify(school.schoolId);
         var data = {
-            "schoolId" : schoolId
+            "schoolId": schoolId
         }
 
         Server.request("POST", "/api/class/getClassBySchool", data, false).then(function (value) {
@@ -159,13 +162,13 @@
         });
     }
 
-    function loadTeacher(){
+    function loadTeacher() {
         Server.request("GET", "/api/class/getTeacher", null, false).then(function (value) {
             var data = JSON.parse(value);
             var strHtmlRads = "";
             strHtmlRads += '<option value="-1" selected>Select Teacher</option>'
 
-            data.forEach(qTeacher=>{
+            data.forEach(qTeacher => {
                 strHtmlRads += '<option value="' + qTeacher.accountId + '">' + qTeacher.name + '</option>'
             })
 
@@ -184,22 +187,22 @@
         if (action.dismiss) {
             return;
         }
-        
+
         var accountId = document.getElementById("selTeacher").value;
         var className = document.getElementById("txtnameclass").value;
         schoolId = JSON.stringify(school.schoolId);
 
         var data = {
-            "schoolId" : schoolId,
+            "schoolId": schoolId,
             "className": className,
             "accountId": accountId
         }
 
         Server.request("POST", "/api/class/register", data, true).then(function (value) {
-            console.log(value) 
-            
+            console.log(value)
+
             Message.createNew("Success", "s", 0);
-            document.getElementById("selTeacher").value   = "";
+            document.getElementById("selTeacher").value = "";
             document.getElementById("txtnameclass").value = "";
             $('#modal_classDetails').modal('hide');//ni auto tutup balek modal after register
 
@@ -218,9 +221,9 @@
 
     async function getClass(event) {
         var action = await Swal.fire({
-            type : 'question',
+            type: 'question',
             title: 'Update this class?',
-            text : 'Directing to update form',
+            text: 'Directing to update form',
             showCancelButton: true
         })
         if (action.dismiss) {
@@ -246,8 +249,8 @@
             }
         }
 
-        document.getElementById("txtnameclass").value        = event.target.children[0].innerHTML;
-        document.getElementById("btnUpdate").style.display   = "inline-block";
+        document.getElementById("txtnameclass").value = event.target.children[0].innerHTML;
+        document.getElementById("btnUpdate").style.display = "inline-block";
         document.getElementById("btnRegister").style.display = "none";
 
         selectedClassId = event.target.id;
@@ -255,9 +258,9 @@
 
     async function updateClass() {
         var action = await Swal.fire({
-            type : 'question',
+            type: 'question',
             title: 'Confirm Update?',
-            text : 'This class will be updated into the system',
+            text: 'This class will be updated into the system',
             showCancelButton: true
         })
         if (action.dismiss) {
@@ -268,45 +271,45 @@
         var className = document.getElementById("txtnameclass").value;
 
         var data = {
-            "classId"   : selectedClassId,
-            "className" : className,
-            "accountId" : accountId
+            "classId": selectedClassId,
+            "className": className,
+            "accountId": accountId
         }
 
         Server.request("POST", "/api/class/update", data, false).then(async function (value) {
             console.log('Updated');
 
-            document.getElementById("txtnameclass").value       = "";
-            document.getElementById("selTeacher").value      = "";
-            document.getElementById("btnUpdate").style.display   = "none";
+            document.getElementById("txtnameclass").value = "";
+            document.getElementById("selTeacher").value = "";
+            document.getElementById("btnUpdate").style.display = "none";
             document.getElementById("btnRegister").style.display = "inline-block";
             $('#modal_classDetails').modal('hide');
 
             var action = await Swal.fire({
-                type : 'success',
+                type: 'success',
                 title: 'Updated Successfully!',
-                text : '',
+                text: '',
                 showCancelButton: false
             })
-            
+
             //loadTopic(document.getElementById("selSubjectCode").value);
 
         }).catch(async function (value) {
             var action = await Swal.fire({
-                type : 'error',
+                type: 'error',
                 title: 'Cannot Updated!',
-                text : 'An Error has occured',
+                text: 'An Error has occured',
                 showCancelButton: false
             })
         })
     }
 
-    async function deleteClass(event){
+    async function deleteClass(event) {
 
         var action = await Swal.fire({
-            type : 'question',
+            type: 'question',
             title: 'Confirm Delete?',
-            text : 'This class will be removed from the system',
+            text: 'This class will be removed from the system',
             showCancelButton: true
         })
         if (action.dismiss) {
@@ -314,25 +317,25 @@
         }
 
         var data = {
-            "classId":event.target.id
+            "classId": event.target.id
         }
 
-        Server.request("POST", "/api/class/delete", data, false).then(async function(value){
+        Server.request("POST", "/api/class/delete", data, false).then(async function (value) {
             var action = await Swal.fire({
-                type : 'success',
+                type: 'success',
                 title: 'Deleted Successfully!',
-                text : '',
+                text: '',
                 showCancelButton: false
             })
 
             dtbClassList.row("#" + event.target.parentElement.parentElement.id).remove();
             dtbClassList.draw();
 
-        }).catch(async function(value){
+        }).catch(async function (value) {
             var action = await Swal.fire({
-                type : 'error',
+                type: 'error',
                 title: 'Cannot Deleted!',
-                text : 'An Error has occured',
+                text: 'An Error has occured',
                 showCancelButton: false
             })
         })

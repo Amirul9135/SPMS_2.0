@@ -1,13 +1,13 @@
-const express = require('express'); 
-const router = express.Router(); 
+const express = require('express');
+const Class = require('../Model/entity/Class');
+const router = express.Router();
 const School = require('../Model/entity/School');
-const SchoolTeacher = require('../Model/entity/SchoolTeacher');
 const Staff = require("../Model/entity/Staff");
 //const SchoolStudent = require('../Model/entity/SchoolStudent');
 //const fnStrLength = require("./Middleware/stringLength"); 
 //const Validator = require("./Middleware/Validator");
 
-router.post('/register', function (req, res) {     
+router.post('/register', function (req, res) {
     var newSchool = new School();
     newSchool.setStrFullName(req.body.fullName);
     newSchool.setStrAbbrv(req.body.abbrv);
@@ -15,14 +15,14 @@ router.post('/register', function (req, res) {
 
     var promiseRegister = newSchool.registerSchool();
     //calback function when resolve and reject
-    promiseRegister.then(function(value){ //.then means resolve (no error)
+    promiseRegister.then(function (value) { //.then means resolve (no error)
         res.send("Success");
-    }).catch(function(value){ //.catch means promise is rejected (got some errors)
+    }).catch(function (value) { //.catch means promise is rejected (got some errors)
         res.status(400).send(value);
     });
 });
 
-router.post('/update', function (req, res) { 
+router.post('/update', function (req, res) {
     var updateSchool = new School();
     updateSchool.setIntSchoolId(req.body.schoolId);
     updateSchool.setStrFullName(req.body.fullName);
@@ -50,7 +50,7 @@ router.post('/delete', function (req, res) {
 });
 
 router.get('/getSchool', function (req, res) {
-    var schoolId ="0"
+    var schoolId = "0"
     var promiseAll = School.getSchool(schoolId);
     promiseAll.then(function (value) {
         console.log(value);
@@ -71,5 +71,17 @@ router.get('/allSchool', function (req, res) {
         res.status(400).send(value);
     });
 });
+
+
+router.get('/classList', function (req, res) {
+    if (!req.query.schId) {
+        return res.status(400).send()
+    }
+    Class.getAllClassInSchool(req.query.schId).then(function (result) {
+        return res.status(200).send(result)
+    }).catch(function (err) {
+        return res.status(500).send({ error: err })
+    })
+})
 
 module.exports = router;

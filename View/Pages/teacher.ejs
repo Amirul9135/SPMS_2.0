@@ -2,6 +2,10 @@
     button * {
         pointer-events: none;
     }
+
+    .disabled_acc {
+        background-color: rgba(255, 40, 40, 0.2) !important;
+    }
 </style>
 
 <div class="side-app" onload="setup()">
@@ -16,10 +20,6 @@
             <h1 class="page-title mb-6" style="font-size: 30px;">Teacher</h1>
         </div>
 
-        <div class="col-md-2 col-xl-2 text-right">
-            <button data-toggle="modal" data-target="#ModalAddTeacher" class="btn btn-pill btn-secondary-light"><i
-                    class="fa fa-plus"><b style="font-family: sans-serif;">&nbsp;Teacher</b></i></button>
-        </div>
     </div>
     <!-- /header -->
 
@@ -37,19 +37,39 @@
 
                 <div class="card-body">
                     <div class="row">
-
-                        <div class="col-md-3 col-xl-3">
-                            <label class="form-label mt-0">Choose School</label>
-                            <select id="txtschool" class="form-control select2-show-search" data-placeholder="Semua">
-                                <option value="3">SMK Telok Mas</option>
-                                <option value="4">SMK Lahad Datu</option>
-                                <option value="2">SMKA Sultan Muhammad</option>
-                            </select>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label mt-0">School</label>
+                                <div class="select-search">
+                                    <input id="SSfschool" type="text" autocomplete="off" class="form-control"
+                                        data-list="idListfSchool" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                        onblur="SSFocus(event)">
+                                    <ul onclick="SSItemClick(event)" id="idListfSchool" data-selected="-1">
+                                        <% schoolList.forEach(s=>{ %>
+                                            <li id="<%=s.schoolId%>" title="<%=s.fullName%>">
+                                                <%=s.abbrv%>
+                                            </li>
+                                            <% }) %>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="row">
 
-                        <div class="col-md-1 col-xl-1 text-right">
-                            <label class="form-label mt-0"><br></label>
-                            <button onclick="loadStaff()" class="btn btn-info"><b><i class="fa fa-search"></i></b></a>
+                                <div class="col-md-6">
+                                    <label class="form-label mt-0"><br></label>
+                                    <button onclick="loadStaff()" class="btn btn-pill btn-info-light"><b><i
+                                                class="fa fa-search">&nbsp;Search</i></b></a>
+
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label mt-0"><br></label>
+                                    <button onclick="openCreateNewModal()" class="btn btn-pill btn-secondary-light"><i
+                                            class="fa fa-plus"><b
+                                                style="font-family: sans-serif;">&nbsp;Register</b></i></button>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -72,10 +92,12 @@
                             <thead class="bg-primary">
                                 <tr>
                                     <!--<th width="8%" class="text-center text-white">No</th>-->
-                                    <th width="68%" class="text-white">List of Teacher</th>
+                                    <th width="50%" class="text-white">Name & Id</th>
+                                    <th width="15%" class="text-white">Contact</th>
+                                    <th width="30%" class="text-white">Class</th>
                                     <!--<th width="20%" class="text-center text-white">Sekolah</th>-->
                                     <!--<th width="12%" class="text-center text-white">Tarikh Daftar</th>-->
-                                    <th width="12%" class="text-center text-white"></th>
+                                    <th width="5%" class="text-center text-white"></th>
                                 </tr>
                             </thead>
                             <tbody class="mycustom_tbd">
@@ -99,52 +121,47 @@
 
                 <div class="modal-body">
                     <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-lg-6 col-md-12">
+                                    <div class="form-group">
+                                        <label for="exampleInputname">Name</label>
+                                        <input type="text" class="form-control" id="txtnameteach">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6 col-md-12">
+                                    <div class="form-group">
+                                        <label for="exampleInputnumber">I/C Number</label>
+                                        <input type="text" class="form-control" id="txtstaffId">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-lg-6 col-md-12">
+                                    <div class="form-group">
+                                        <label for="exampleInputnumber1">Phone Number</label>
+                                        <input type="text" class="form-control" id="txtphone">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6 col-md-12">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Email</label>
+                                        <input type="email" class="form-control" id="txtemail">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
 
                         <div class="col-lg-6 col-md-12">
                             <div class="form-group">
-                                <label for="exampleInputname">Name</label>
-                                <input type="text" class="form-control" id="txtnameteach">
-                            </div>
-                        </div>
-
-                        <div class="col-lg-3 col-md-12">
-                            <div class="form-group">
-                                <label for="exampleInputnumber">I/C Number</label>
-                                <input type="text" class="form-control" id="txtstaffId">
-                            </div>
-                        </div>
-
-                        <div class="col-lg-3 col-md-12">
-                            <div class="form-group">
-                                <label for="exampleInputnumber1">Phone Number</label>
-                                <input type="text" class="form-control" id="txtphone">
-                            </div>
-                        </div>
-
-                        <div class="col-lg-4 col-md-12">
-                            <div class="form-group">
-                                <label for="exampleInputEmail1">Email</label>
-                                <input type="email" class="form-control" id="txtemail">
-                            </div>
-                        </div>
-
-                        <div class="col-lg-3 col-md-12">
-                            <div class="form-group">
                                 <label for="exampleInputEmail1">Password</label>
                                 <input type="password" class="form-control" id="txtpassword">
-                            </div>
-                        </div>
-
-                        <div class="col-lg-5 col-md-12">
-                            <div class="form-group">
-                                <label for="exampleInputnumber">School</label>
-                                <select class="form-control select2-show-search" id="txtfullName">
-                                    <optgroup>
-                                        <option value="1">SMKA Sultan Muhammad</option>
-                                        <option value="2">SMK Telok Mas</option>
-                                        <option value="4">SMK Lahad Datu</option>
-                                    </optgroup>
-                                </select>
                             </div>
                         </div>
                     </div>
@@ -216,6 +233,65 @@
         </div>
         <!-- MODAL DIALOG -->
     </div>
+
+
+    <div id="ModalUpdateTeacher" class="modal fade">
+        <div class="modal-dialog modal-md" role="document">
+
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h4 class="modal-title font-weight-bold">Teacher Information</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label for="" class="form-label">Name</label>
+                                        <input type="text" class="form-control" id="txtUpdName" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label for="" class="form-label">Identification No.</label>
+                                        <input type="text" class="form-control" id="txtUpdId" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+
+                                    <div class="form-group">
+                                        <label class="form-label mt-0">School</label>
+                                        <div class="select-search">
+                                            <input id="SSupSchool" type="text" autocomplete="off" class="form-control"
+                                                data-list="idLstUpSchool" onkeyup="SSKeyHandler(event)"
+                                                onfocus="SSFocus(event)" onblur="SSFocus(event)">
+                                            <ul onclick="SSItemClick(event)" id="idLstUpSchool" data-selected="-1">
+                                                <% schoolList.forEach(s=>{ %>
+                                                    <li id="<%=s.schoolId%>" title="<%=s.fullName%>">
+                                                        <%=s.abbrv%>
+                                                    </li>
+                                                    <% }) %>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="justify-content: center;">
+                    <button class="btn btn-pill btn-outline-success" onclick="submitUpdateTeacher()">Save
+                        Change</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -224,15 +300,26 @@
         tableTeach = new DataTable("#TeachTable")
     }
 
+    function openCreateNewModal() {
+        if (document.getElementById("idListfSchool").dataset.selected == '-1') {
+            Swal.fire({
+                type: 'error',
+                title: 'No School choosen'
+            })
+            return
+        }
+        $('#ModalAddTeacher').modal('show')
+    }
+
     async function registerTeach() {
-        var action = await Swal.fire({
-            type: 'question',
-            title: 'Confirm Registration',
-            text: 'Register new teacher into the system?',
-            showCancelButton: true
-        })
-        if (action.dismiss) {
-            return;
+
+        var schoolId = parseInt(document.getElementById("idListfSchool").dataset.selected)
+        if (schoolId == -1) {
+            Swal.fire({
+                type: 'error',
+                title: 'No School choosen'
+            })
+            return
         }
 
         var areaId = document.getElementById("idListArea").dataset.selected;
@@ -240,6 +327,7 @@
             Message.createNew("Warning", "Invalid address", 2)
             return false;
         }
+
 
         var name = document.getElementById("txtnameteach").value;
         var staffId = document.getElementById("txtstaffId").value;
@@ -253,12 +341,11 @@
             "password": password,
             "phone": phone,
             "email": email,
+            "schoolId": schoolId,
             "userType": 2
         }
 
         Server.request("POST", "/api/account/register", data, true).then(function (value) {
-            console.log(value)
-            Message.createNew("Success", "", 0);
             document.getElementById("txtnameteach").value = "";
             document.getElementById("txtstaffId").value = "";
             document.getElementById("txtpassword").value = "";
@@ -266,6 +353,11 @@
             document.getElementById("txtemail").value = "";
             submitAddress(staffId)//ni panggil function ak buat yg akan insertkan address ke address table guna id die
             $('#ModalAddTeacher').modal('hide');
+            Swal.fire({
+                type: 'success',
+                title: 'successfully registered'
+            })
+            loadStaff()
 
         }).catch(function (value) {
             console.log(value);
@@ -285,25 +377,102 @@
         })
     }
 
-    function loadStaff() {
-        console.log("load")
+    function updateStaff(e) {
+        if (e.target.tagName == "BUTTON") {
+            return
+        }
+        var tx = e.target.parentElement.children[0].innerHTML
+        tx = tx.split('<br><span>')
+        document.getElementById('txtUpdName').value = tx[0]
+        document.getElementById('txtUpdId').value = tx[1].replace('</span>', '')
+        $('#ModalUpdateTeacher').modal('show')
+    }
 
-        var school = document.getElementById("txtschool").value;
+    function submitUpdateTeacher() {
+        var nsch = document.getElementById('idLstUpSchool').dataset.selected
+        if (nsch == document.getElementById("idListfSchool").dataset.selected) {
+            return
+        }
+        Server.request("POST", "/api/account/staff/school", {
+            staffId: document.getElementById('txtUpdId').value.trim(),
+            schoolId: parseInt(nsch)
+        }, true).then(function (result) {
+            Swal.fire({
+                type: "success"
+            })
+            loadStaff()
+            $('#ModalUpdateTeacher').modal('hide')
+        }).catch(function (value) {
+            try {
+                value = JSON.parse(value);
+                if (value.hasOwnProperty("validationError")) {
+                    displayValidationError(value);
+                }
+                else {
+                    Message.createNew("Error", value, 3);
+                }
+            }
+            catch {
+
+            }
+            $('#ModalUpdateTeacher').modal('hide')
+        })
+
+
+    }
+
+    function loadStaff() {
+
+        var school = document.getElementById("idListfSchool").dataset.selected;
         console.log(school);
 
 
-        Server.request("GET", "/api/account/allStaff?schoolId=" + school, null, false).then(function (value) {
-            var data = JSON.parse(value);
+        Server.request("GET", "/api/account/allStaff?schoolId=" + school, null, true).then(function (value) {
             tableTeach.clear();
-            var tmpRow;
-            data.forEach(staff => {
-                tmpRow = tableTeach.row.add([
-                    staff.name + '<br><span>' + staff.staffId + '</span>',
-                    //staff.fullName,
-                    '<button onclick="deleteTeach(event)" class="btn btn-danger"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button>'
-                ]).node()
-                tmpRow.id = staff.staffId;
-            })
+            var data = JSON.parse(value);
+            if (data.length == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'no data found'
+                })
+            }
+            else {
+
+                var tmpRow;
+                data.forEach(staff => {
+                    let clist = ""
+                    if (staff.class) {
+
+                        if (staff.class.includes(',')) {
+                            staff.class.split(',').forEach(c => {
+                                clist += c + "<br>"
+                            })
+                        }
+                        else {
+                            clist = staff.class
+                        }
+                    }
+                    else {
+                        clist = 'none'
+                    }
+                    tmpRow = tableTeach.row.add([
+                        staff.name + '<br><span>' + staff.accountId + '</span>',
+                        staff.email + '<br><span>' + staff.phone + '</span>',
+                        clist,
+                        //staff.fullName,
+                        (staff.disabled == null) ? '<button onclick="deleteTeach(event)" class="btn btn-danger"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button>'
+                            : '<button onclick="reActivateAcc(event)" class="btn btn-success"><b><i class="fa fa-check-circle  text-white" style="font-size: 17px;"></i></b></button>'
+                    ]).node()
+                    tmpRow.id = staff.accountId;
+                    if (staff.disabled) {
+                        tmpRow.classList.add('disabled_acc')
+                        tmpRow.title = "This account was disabled on " + new Date(staff.disabled).toLocaleDateString('en-GB')
+                    }
+                    else {
+                        tmpRow.onclick = updateStaff
+                    }
+                })
+            }
             tableTeach.draw();
             console.log(data)
         }
@@ -327,13 +496,38 @@
             "accountId": event.target.parentElement.parentElement.id
         }
 
-        Server.request("POST", "/api/account/delete", data, false).then(function (value) {
-            tableTeach.row("#" + event.target.parentElement.parentElement.id).remove()
-            tableTeach.draw()
-            Message.createNew("Removed", "Teacher has been removed from database", 1);
+        Server.request("POST", "/api/account/delete", data, true).then(function (value) {
+            // tableTeach.row("#" + event.target.parentElement.parentElement.id).remove()
+            // tableTeach.draw()
+            Message.createNew("Success", "Account has been disabled", 1);
+            loadStaff()
 
         }).catch(function (value) {
+
             console.log(value)
+        })
+    }
+
+
+    async function reActivateAcc(e) {
+        console.log(e.target.parentElement.parentElement.id)
+        var chc = await Swal.fire({
+            type: 'question',
+            title: 'Re-Activate Account',
+            html: 'Account Id : ' + e.target.parentElement.parentElement.id + '<br>' + e.target.parentElement.parentElement.title
+        })
+        if (chc.dismiss) {
+            return
+        }
+        Server.request("POST", "/api/account/activate?accountId=" + e.target.parentElement.parentElement.id, null, true).then(function (result) {
+            Swal.fire({
+                type: 'success',
+                title: 'account enabled'
+            })
+            loadStaff()
+        }).catch(function (err) {
+            Message.createNew("Error", "Unable to activate account", 3);
+
         })
     }
 

@@ -123,7 +123,8 @@ module.exports = class Account {
     }
 
     delete() {
-        var strSql = "DELETE FROM account WHERE accountId=" + db.escape(this.#straccountId);
+        var strSql = "UPDATE account SET disabled= CURRENT_DATE WHERE accountId=" + db.escape(this.#straccountId);
+        // var strSql = "DELETE FROM account WHERE accountId=" + db.escape(this.#straccountId);
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {
@@ -156,7 +157,7 @@ module.exports = class Account {
     }
 
     login() {
-        var strSql = "SELECT name,password,userType FROM account WHERE accountId=" + db.escape(this.#straccountId)
+        var strSql = "SELECT name,password,userType FROM account WHERE accountId=" + db.escape(this.#straccountId) + " AND disabled IS NULL"
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {
@@ -177,6 +178,20 @@ module.exports = class Account {
 
     saveNewPassword(encPass) {
         var strSql = "UPDATE account SET password=" + db.escape(encPass)
+        return new Promise(function (resolve, reject) {
+            db.query(strSql, function (err, result) {
+                if (err) {
+                    reject(err.message)
+                }
+                else {
+                    resolve()
+                }
+            })
+        })
+    }
+
+    reActivate() {
+        var strSql = "UPDAtE account SET disabled=NULL WHERE accountId=" + db.escape(this.#straccountId)
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {

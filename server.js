@@ -18,10 +18,10 @@ app.use('/api/questionSet', require("./Controller/questionSetApi"))
 //app.use('/api/schoolteacher', require("./Controller/schoolteacherApi")) 
 app.use('/api/class', require("./Controller/classApi"))
 app.use('/api/topic', require("./Controller/topicApi"))
-app.use('/api/classname', require("./Controller/classnameApi"))
+//app.use('/api/classname', require("./Controller/classnameApi"))
 app.use('/api/class', require("./Controller/classApi"))
-app.use('/api/homeroomteacher', require("./Controller/HomeroomApi"))
-app.use('/api/schoolstudent', require("./Controller/schoolstudentApi"))
+//app.use('/api/homeroomteacher', require("./Controller/HomeroomApi"))
+//app.use('/api/schoolstudent', require("./Controller/schoolstudentApi"))
 app.use('/api/assessment', require('./Controller/assessmentApi'))
 
 

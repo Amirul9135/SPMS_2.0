@@ -168,4 +168,18 @@ module.exports = class Class {
             });
         });
     }
+
+    static getAllClassInSchool(schoolId) {
+        return new Promise(function (resolve, reject) {
+            db.query("SELECT classId,className FROM class WHERE schoolId=" + db.escape(schoolId),
+                function (err, result) {
+                    if (err) {
+                        reject(err.message)
+                    }
+                    else {
+                        resolve(JSON.parse(JSON.stringify(result)))
+                    }
+                })
+        })
+    }
 }

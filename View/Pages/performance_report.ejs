@@ -18,72 +18,83 @@
     </button>
     <div id="ejsData"></div>
     <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h3 class="card-title">
-                        Performance Report Analysis
-                    </h3>
-                    <div class="card-options ">
-                        </button><i class="fe fe-chevron-up text-white" onclick="toggle_card(event)"></i>
-                    </div>
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h3 class="card-title">
+                    Report Configuration
+                </h3>
+                <div class="card-options ">
+                    </button><i class="fe fe-chevron-up text-white" onclick="toggle_card(event)"></i>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label">
-                                        Report Type
-                                    </label>
-                                    <select class="form-control" onchange="rtypeChange(event)">
-                                        <option value="1">Overall Performance</option>
-                                        <option value="2">Performance for Specific Subject</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">
-                                        Subject
-                                    </label>
-                                    <div class="select-search">
-                                        <input disabled id="selectSubject" type="text" class="form-control"
-                                            data-list="idListSubj" onkeyup="SSKeyHandler(event)"
-                                            onfocus="SSFocus(event)" onblur="SSFocus(event)"
-                                            onchange="resetChartData()">
-                                        <ul onclick="SSItemClick(event)" id="idListSubj" data-selected="-1">
-                                            <% subjects.forEach(subj=> {%>
-                                                <li id="<%= subj['subjectCode']%>">
-                                                    <%=subj["title"]%>
-                                                </li>
-                                                <%});%>
-                                        </ul>
-                                    </div>
-                                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    Report Type
+                                </label>
+                                <select class="form-control" onchange="rtypeChange(event)">
+                                    <option value="1">Overall Performance</option>
+                                    <option value="2">Performance for Specific Subject</option>
+                                </select>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6">
 
-                                    <label class="form-label">Month Range</label> <input
-                                        class="form-control fc-datepicker hasDatepicker" placeholder="MM/DD/YYYY"
-                                        type="text" name="daterange" id="txtAsDateRange" />
-                                    <label class="form-label mt-0 text-muted" id="lblDtDura"></label>
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    Subject
+                                </label>
+                                <div class="select-search">
+                                    <input disabled id="selectSubject" type="text" class="form-control"
+                                        data-list="idListSubj" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                        onblur="SSFocus(event)" onchange="resetChartData()">
+                                    <ul onclick="SSItemClick(event)" id="idListSubj" data-selected="-1">
+                                        <% subjects.forEach(subj=> {%>
+                                            <li id="<%= subj['subjectCode']%>">
+                                                <%=subj["title"]%>
+                                            </li>
+                                            <%});%>
+                                    </ul>
                                 </div>
-                            </div>
-                            <div class="row text-center mt-1" style="justify-content: center;">
-                                <button class="btn btn-pill btn-outline-primary" onclick="btnAddDataHandler()"><i
-                                        class="fa fa-plus" aria-hidden="true"></i> Data</button>
                             </div>
                         </div>
-                        <div class="col-md-12 mt-5" style="justify-content: center;">
-                            <div id="LineChart" style="height: 80vh;width: 100%;"></div>
+                        <div class="row">
+                            <div class="col-md-6">
+
+                                <label class="form-label">Month Range</label> <input
+                                    class="form-control fc-datepicker hasDatepicker" placeholder="MM/DD/YYYY"
+                                    type="text" name="daterange" id="txtAsDateRange" />
+                                <label class="form-label mt-0 text-muted" id="lblDtDura"></label>
+                            </div>
                         </div>
-
+                        <div class="row text-center mt-1" style="justify-content: center;">
+                            <button class="btn btn-pill btn-outline-primary" onclick="addArea()"><i class="fa fa-plus"
+                                    aria-hidden="true"></i> Data by Specific Area</button>
+                        </div>
                     </div>
-                </div>
 
+                </div>
+            </div>
+
+        </div>
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h3 class="card-title">
+                    Performance Analysis
+                </h3>
+                <div class="card-options ">
+                    </button><i class="fe fe-chevron-up text-white" onclick="toggle_card(event)"></i>
+                </div>
+            </div>
+            <div class="card-body">
+
+                <div class="col-md-12 mt-5" style="justify-content: center;">
+                    <div id="LineChart" style="height: 80vh;width: 100%;"></div>
+                </div>
             </div>
         </div>
+
     </div>
 </div>
 <div class="modal fade" id="ModalAreaInput" tabindex="-1">
@@ -101,15 +112,17 @@
 
                 <div class="form-group">
                     <div class="row">
+
                         <div class="col-md-4">
-                            <label for="exampleInputnumber">Area</label>
-                            <div class="select-search">
-                                <input id="SSArea" type="text" autocomplete="off" disabled class="form-control"
-                                    data-list="idListArea" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
-                                    onblur="SSFocus(event)">
-                                <ul onclick="SSItemClick(event)" id="idListArea" data-selected="-1">
-                                </ul>
-                            </div>
+                            <label for="exampleInputnumber">State</label>
+                            <select id="selectState" class="form-control select2" onchange="changeState(event)">
+                                <option value="-1">Choose State</option>
+                                <% states.forEach(state=> {%>
+                                    <option value="<%= state['state_code']%>">
+                                        <%=state["state_name"]%>
+                                    </option>
+                                    <%});%>
+                            </select>
                         </div>
                         <div class="col-md-4">
                             <label for="exampleInputnumber">Postcode</label>
@@ -123,15 +136,14 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <label for="exampleInputnumber">State</label>
-                            <select id="selectState" class="form-control select2" onchange="changeState(event)">
-                                <option value="-1">Choose State</option>
-                                <% states.forEach(state=> {%>
-                                    <option value="<%= state['state_code']%>">
-                                        <%=state["state_name"]%>
-                                    </option>
-                                    <%});%>
-                            </select>
+                            <label for="exampleInputnumber">Area</label>
+                            <div class="select-search">
+                                <input id="SSArea" type="text" autocomplete="off" disabled class="form-control"
+                                    data-list="idListArea" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                    onblur="SSFocus(event)">
+                                <ul onclick="SSItemClick(event)" id="idListArea" data-selected="-1">
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -155,7 +167,7 @@
         endDate: new Date(),
         maxDate: new Date(),
         locale: {
-            format: 'MMM YYYY'
+            format: 'DD/MM/YYYY'
         }
     }, function (start, end, label) {
         if (start.year() == end.year()) {
@@ -192,7 +204,7 @@
         redrawChart()
     }
 
-    function btnAddDataHandler() {
+    function addArea() {
         $('#ModalAreaInput').modal('show')
     }
 
@@ -225,34 +237,35 @@
 
     //chart stuff
     var data = [
-        { '2017-04-10T20:40:33Z': [{ "1": 50 }, { "2": 80 }] },
-        { '2017-04-10T20:40:33Z': [{ "1": 50 }, { "2": 80 }] },
-        { '2017-04-10T20:40:33Z': [{ "1": 50 }, { "2": 80 }] },
-        { '2017-04-10T20:40:33Z': [{ "1": 50 }, { "2": 80 }] },
-        { '2017-04-10T20:40:33Z': [{ "1": 50 }, { "2": 80 }] },
-        { '2017-04-10T20:40:33Z': [{ "1": 50 }, { "2": 80 }] }
+        { '0000-04-10T20:40:33Z': [{ "1": 50 }, { "2": 80 }] },
+        { '0000-04-10T20:40:33Z': [{ "1": 50 }, { "2": 80 }] },
+        { '0000-04-10T20:40:33Z': [{ "1": 50 }, { "2": 80 }] },
+        { '0000-04-10T20:40:33Z': [{ "1": 50 }, { "2": 80 }] },
+        { '0000-04-10T20:40:33Z': [{ "1": 50 }, { "2": 80 }] },
+        { '0000-04-10T20:40:33Z': [{ "1": 50 }, { "2": 80 }] }
     ];
 
     var data1 = [
-        ['2017-05-10T20:40:33Z', 33],
-        ['2017-08-10T20:40:53Z', 19],
-        ['2018-08-10T20:44:03Z', 9],
-        ['2018-09-10T20:41:03Z', 18],
-        ['2019-04-10T20:45:03Z', 11]
+        ['0000-05-10T20:40:33Z', 33],
+        ['0000-08-10T20:40:53Z', 19],
+        ['0000-08-10T20:44:03Z', 9],
+        ['0000-09-10T20:41:03Z', 18],
+        ['0000-04-10T20:45:03Z', 11]
     ]
     var data2 = [
-        ['2017-05-20T20:40:33Z', 33],
-        ['2017-07-10T20:40:53Z', 19],
-        ['2018-09-10T20:44:03Z', 50],
-        ['2018-12-10T20:41:03Z', 55],
-        ['2019-04-10T20:45:03Z', 22]
+        ['2021-05-20T20:40:33Z', 33, 'lbl'],
+        ['2021-07-10T20:40:53Z', 19, 'lbl2'],
+        ['2021-09-10T20:44:03Z', 50, 'lbl3'],
+        ['2021-12-10T20:41:03Z', 55, 'lbl4'],
+        ['2022-04-10T20:45:03Z', 22, 'lbl5']
     ]
     var data3 = [
-        ['2017-05-20T20:40:33Z', 13],
-        ['2017-07-10T20:40:53Z', 19],
-        ['2018-09-10T20:44:03Z', 66],
-        ['2018-12-10T20:41:03Z', 98],
-        ['2019-04-10T20:45:03Z', 33]
+        //3rd value letak assessment/student name
+        ['2021-05-20T20:40:33Z', 13, 'testlabel'],
+        ['2021-07-10T20:40:53Z', 19, '2dsad'],
+        ['2021-09-10T20:44:03Z', 66, 'sdsadsa'],
+        ['2021-12-10T20:41:03Z', 98, 'z2312'],
+        ['2021-10T20:45:03Z', 33, 'czxcxz']
     ]
 
     var data = [
@@ -264,10 +277,19 @@
     ];
     var lineChartOption = {
         title: {
-            text: 'Performance Analysis'
+            text: 'Performance Over Time'
         },
         tooltip: {
-            trigger: 'axis'
+            trigger: 'axis',
+            formatter: function (d) {
+                console.log(d)
+                let ttip = ""
+                d.forEach(s => {
+                    ttip += "<u><b>" + s.seriesName + "</u></b><br>" + s.data[2] + "<br>" + new Date(s.data[0]).toLocaleDateString('en-GB') + "<br>" + s.data[1] + " %<br>"
+                })
+                return ttip;
+
+            }
         },
         grid: {
             left: '3%',
@@ -286,13 +308,13 @@
         yAxis: {
             type: 'value'
         },
-        series: [
+        series: [/*
             {
                 name: 'mine',
                 type: 'line',
                 smooth: true,
                 data: data1
-            },
+            },*/
             {
                 name: 'lain panjang panjang nama',
                 type: 'line',
