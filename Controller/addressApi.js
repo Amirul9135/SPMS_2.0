@@ -65,6 +65,18 @@ router.get("/area", function (req, res) {
     })
 })
 
+router.get('/county', function (req, res) {
+    if (!req.query.stateCode) {
+        return res.status(400).send("invalid stateCode")
+    }
+    Address.getCountyInState(req.query.stateCode).then(function (result) {
+        return res.status(200).send(result)
+    }).catch(function (err) {
+        console.log(err)
+        return res.status(500).send({ error: err })
+    })
+})
+
 
 router.get("/geo/area", function (req, res) {
     if (!req.query.id) {
@@ -125,5 +137,6 @@ function validateCoord(coordObj) { //long lat x y as key
     }
     return true
 }
+
 
 module.exports = router;

@@ -138,4 +138,24 @@ module.exports = class Address {
                 })
         })
     }
+
+    static getCountyInState(stateCode) {
+        return new Promise(function (resolve, reject) {
+            db.query('SELECT countyId,name FROM county WHERE stateCode=' + db.escape(stateCode),
+                function (err, result) {
+                    if (err) {
+                        reject(err.message)
+                    }
+                    else {
+                        result = JSON.parse(JSON.stringify(result))
+                        if (result.length == 0) {
+                            reject('notfound')
+                        }
+                        else {
+                            resolve(result)
+                        }
+                    }
+                })
+        })
+    }
 }

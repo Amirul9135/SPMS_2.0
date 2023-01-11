@@ -347,6 +347,12 @@
         title: {
             text: 'Performance Over Time'
         },
+        legend: {
+            // Try 'horizontal'
+            orient: 'horizontal',
+            top: 0,
+            right: 0
+        },
         tooltip: {
             trigger: 'axis',
             formatter: function (d) {
@@ -355,6 +361,7 @@
                 d.forEach(s => {
                     ttip += "<u><b>" + s.seriesName + "</u></b><br>" + new Date(s.data[0]).toLocaleDateString('en-GB') + "<br>" + s.data[1] + " %<br>"
                 })
+
                 return ttip;
 
             }
