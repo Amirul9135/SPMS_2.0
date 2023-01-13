@@ -156,7 +156,6 @@ module.exports = class Assessment {
                 }
                 else {
                     var result = JSON.parse(JSON.stringify(result))
-                    console.log(result)
                     if (result.length == 0) {
                         return reject('nomark')
                     }
@@ -719,9 +718,34 @@ module.exports = class Assessment {
         })
     }
 
+    static getSchoolReport(schoolId, subjectCode, year) {
+        let sDt, eDt;
+        sDt = year + '-01-01'
+        eDt = year + '-12-31'
+        var strSql = "SELECT (SUM(aq.mark) / SUM(aq.fullMark)) AS percent, CAST(a.close AS DATE) AS date,ads.areaId,aa.areaName  FROM assessment a JOIN assigned_question aq ON a.assessmentId=aq.assessmentId JOIN class_student cs ON aq.studentId=cs.studentId JOIN class c ON cs.classId=c.classId JOIN address ads ON aq.studentId=ads.accountId JOIN area aa ON ads.areaId=aa.areaId"
+            + " WHERE a.open >= " + db.escape(sDt) + " AND a.close <= " + db.escape(eDt) + " AND c.schoolId=" + db.escape(schoolId) + " AND a.subject=" + db.escape(subjectCode)
+            + " AND cs.startDate < a.close AND cs.endDate >= a.close GROUP BY a.assessmentId, ads.areaId"
+        return new Promise(function (resolve, reject) {
+            db.query(strSql, function (err, result) {
+                if (err) {
+                    reject(err.message)
+                }
+                else {
+                    result = JSON.parse(JSON.stringify(result))
+                    if (result.length == 0) {
+                        reject('no data')
+                    }
+                    else {
+                        resolve(result)
+                    }
+                }
+            })
+        })
+    }
+
     static getAreaReport(areaId, subjectCode, year) {//areaId,subjectId,year string
         let sDt, eDt;
-        sDt = year + '-01-01';
+        sDt = year + '-01-01'
         eDt = year + '-12-31'
         //for now average kalau ada assessment same date, later bole max min
         var strSql = "SELECT AVG(a.percent) as percent, date FROM (SELECT (SUM(aq.mark) / SUM(aq.fullMark)) AS percent, CAST(a.close AS DATE) As date FROM assigned_question aq JOIN assessment a ON aq.assessmentId=a.assessmentId JOIN address ad ON aq.studentId=ad.accountId"
