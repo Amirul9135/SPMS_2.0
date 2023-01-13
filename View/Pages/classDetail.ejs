@@ -49,7 +49,11 @@
                         <button type="button" class="btn btn-orange btn-sm ml-2">
                             <i class="fa fa-trash"><b style="font-family: sans-serif;">&nbsp;List</b></i>
                         </button>
+
                         <button type="button" class="btn btn-primary btn-sm ml-2" data-toggle="modal"data-target="#modal_addStudents" onclick="listStudents();">
+
+                        <button type="button" class="btn btn-primary btn-sm ml-2" data-toggle="modal"
+                            data-target="#modal_addStudents">
                             <i class="fa fa-plus mr-2"><b style="font-family: sans-serif;">&nbsp;Student</b></i>
                         </button>
                     </div>
@@ -98,8 +102,8 @@
                                     <label class="form-label mt-0">Student</label>
                                     <select id="selectState" class="form-control select2">
                                         <option value="-1">Choose Student</option>
-                                            <option>
-                                            </option>
+                                        <option>
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -112,7 +116,8 @@
                                             <label class="form-label mt-0">&nbsp;</label>
 
                                             <button id="btnReg" type="button" class="btn btn-pill btn-success-light">
-                                                <i class="fa fa-plus mr-2"><b style="font-family: sans-serif;">&nbsp;Student</b></i>
+                                                <i class="fa fa-plus mr-2"><b
+                                                        style="font-family: sans-serif;">&nbsp;Student</b></i>
                                             </button>
                                         </div>
                                     </div>
@@ -150,6 +155,7 @@
     var dtbStudents
 
     function setup() {
+        console.log('st')
         ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
 
         document.getElementById("ejsData").remove()
@@ -224,6 +230,8 @@
 
     function loadStudent() {
         console.log("load")
+    }
+        function changeStudent(event) {
 
         classId = JSON.stringify(classData.classId);
         school = JSON.stringify(classData.schoolId);
@@ -251,7 +259,7 @@
     function loadStudentList() {
         classId = JSON.stringify(classData.classId);
         school = JSON.stringify(classData.schoolId);
-        
+
         Server.request("GET", "/api/account/allStudent?schoolId=" + school + "&classId=" + classId, null, true).then(function (value) {
             var data = JSON.parse(value);
             var strHtmlRads = "";

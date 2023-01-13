@@ -171,7 +171,6 @@ router.get('/allStudent', function (req, res) {
     }
     var promiseAll = Student.getStudent(schoolId, req.query.classId);
     promiseAll.then(function (value) {
-        console.log(value);
         res.send(value);
     }).catch(function (value) {
         console.log(value);
