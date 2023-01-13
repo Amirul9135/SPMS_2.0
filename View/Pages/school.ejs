@@ -288,6 +288,9 @@
             console.log(data)
         }
         ).catch(function (value) {
+            console.log(value);
+            tableSchool.clear();
+            tableSchool.draw();
             try {
                 value = JSON.parse(value)
                 if (value.error) {
@@ -299,7 +302,6 @@
             } catch {
 
             }
-            console.log(value);
         });
     }
 

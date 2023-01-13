@@ -401,6 +401,14 @@
         Server.request("GET", "/api/school/county?id=" + countyId, null, true).then(function (value) {
             var data = JSON.parse(value);
             console.log(data)
+
+            if (data.length == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'No Data',
+                    text: "There's no existing school data in selected county"
+                })
+            }
             tableSchool.clear();
             var tmpRow;
 
@@ -417,6 +425,19 @@
         }
         ).catch(function (value) {
             console.log(value);
+            tableSchool.clear();
+            tableSchool.draw();
+            try {
+                value = JSON.parse(value)
+                if (value.error) {
+                    Swal.fire({
+                        type: 'warning',
+                        title: value.error
+                    })
+                }
+            } catch {
+
+            }
         });
     }
 
