@@ -372,12 +372,22 @@
 
         var school = document.getElementById("SSfschool").dataset.selected;
         var classId = document.getElementById("SSfclass").dataset.selected;
+
         console.log(school);
 
 
         Server.request("GET", "/api/account/allStudent?schoolId=" + school + "&classId=" + classId, null, true).then(function (value) {
             var data = JSON.parse(value);
             tableStud.clear();
+
+            if (data.length == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'No data',
+                    text: 'Currently There is no student in selected class'
+                })
+            }
+
             var tmpRow;
             data.forEach(student => { //temporary
                 tmpRow = tableStud.row.add([

@@ -263,6 +263,15 @@
             var data = JSON.parse(value);
             console.log(data)
             tableSchool.clear();
+
+            if (data.length == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'No Data',
+                    text: "There's no existing school data in selected county"
+                })
+            }
+
             var tmpRow;
 
             data.forEach(qSchool => { //temporary
@@ -279,6 +288,17 @@
             console.log(data)
         }
         ).catch(function (value) {
+            try {
+                value = JSON.parse(value)
+                if (value.error) {
+                    Swal.fire({
+                        type: 'warning',
+                        title: value.error
+                    })
+                }
+            } catch {
+
+            }
             console.log(value);
         });
     }
