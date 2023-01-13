@@ -46,33 +46,34 @@
                 <div class="card-header">
                     <h3 class="card-title">Student List</h3>
                     <div class="card-options">
-                        <a href="#" class="btn btn-orange btn-sm ml-2"><i class="fa fa-trash"></i>
-                            List</a>&nbsp;&nbsp;&nbsp;&nbsp;
-                        <a href="#" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Student</a>
+                        <button type="button" class="btn btn-orange btn-sm ml-2">
+                            <i class="fa fa-trash"><b style="font-family: sans-serif;">&nbsp;List</b></i>
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm ml-2" data-toggle="modal"data-target="#modal_addStudents">
+                            <i class="fa fa-plus mr-2"><b style="font-family: sans-serif;">&nbsp;Student</b></i>
+                        </button>
                     </div>
                 </div>
-                <div>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover text-nowrap mb-0">
-                            <thead class="bg-primary">
-                                <tr>
-                                    <th width="15%" class="text-white text-center">ID</th>
-                                    <th width="50%" class="text-white">Name</th>
-                                    <th width="10%" class="text-white text-center">Age</th>
-                                    <th width="15%" class="text-center text-white">Registered Date</th>
-                                    <th width="10%"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-center">160928072140</td>
-                                    <td ><b>Nurin Aina Syafiqah Binti Muhamad Baharom</b></td>
-                                    <td class="text-center">7</td>
-                                    <td class="text-center">07/12/2022</td>
-                                    <td class="text-center"><a href="" class="btn btn-danger"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></a></td>
-                                </tr>
-                            </tbody>
-                        </table>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover text-nowrap mb-0" id="dtbClassStudents">
+                                    <thead class="bg-primary">
+                                        <tr>
+                                            <th width="15%" class="text-white text-center">ID</th>
+                                            <th width="50%" class="text-white">Name</th>
+                                            <th width="10%" class="text-white text-center">Age</th>
+                                            <th width="15%" class="text-center text-white">Registered Date</th>
+                                            <th width="10%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="mycustom_tbd">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -80,38 +81,132 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal_addStudents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" onload="setup();">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content modal-md">
+            <div class="modal-header bg-info">
+                <h5 class="modal-title text-white" id="exampleModalLabel">Class Registration</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12 col-xl-12">
+                        <div class="row">
+
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label class="form-label mt-0">Student</label>
+                                    <select id="selectState" class="form-control select2">
+                                        <option value="-1">Choose Student</option>
+                                            <option>
+                                            </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="row">
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label mt-0">&nbsp;</label>
+
+                                            <button id="btnReg" type="button" class="btn btn-pill btn-success-light">
+                                                <i class="fa fa-plus mr-2"><b style="font-family: sans-serif;">&nbsp;Student</b></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover text-nowrap mb-0" id="dtbClassStudents">
+                                <thead class="bg-primary">
+                                    <tr>
+                                        <th width="15%" class="text-white text-center">ID</th>
+                                        <th width="50%" class="text-white">Name</th>
+                                        <th width="10%" class="text-white text-center">Age</th>
+                                        <th width="15%" class="text-center text-white">Registered Date</th>
+                                        <th width="10%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="mycustom_tbd">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     var classData
+    var dtbClassStudents
+
     function setup() {
         ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
 
         document.getElementById("ejsData").remove()
         classData = JSON.parse(ejsData.curclass)
         console.log(classData)
+
+        dtbClassStudents = new DataTable('#dtbClassStudents', {
+            "columnDefs": [{
+                "targets": [2, 3],
+                "searchable": false
+            },
+            {
+                "targets": [0, 2, 3, 4],
+                "targets": [0, 2, 3, 4],
+                "className": "text-center"
+            }
+            ]
+        })
+
+        loadClassStudent();
     }
 
-    function loadStudentClass() {
-        console.log("load")
+    function loadClassStudent() {
+        console.log("load");
 
-        Server.request("POST", "/api/topic/getTopicBySubject", null, false).then(function (value) {
+        classId = JSON.stringify(classData.classId);
+        var data = {
+            "classId": classId
+        }
+
+        Server.request("POST", "/api/class/getClassStudent", data, false).then(function (value) {
             var data = JSON.parse(value);
-            tableTopic.clear();
+            dtbClassStudents.clear();
             var tmpRow;
-
-            data.forEach(qTopic => {
-                tmpRow = tableTopic.row.add([
-                    '<a class="text-center">' + qTopic.subjectCode + '</a>',
-                    '<button style="vertical-align: middle;" onclick="getTopic(event);" id="' + qTopic.topicId + '"><b>' + qTopic.title + '</b></button>',
-                    '<button class="btn btn-danger text-center" style="vertical-align: middle;" onclick="deleteTopic(event);" id="' + qTopic.topicId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>'
-                ]).node()
-                tmpRow.id = qTopic.topicId; //letak id
-            });
-            tableTopic .draw();
             console.log(data)
+
+            data.forEach(qClassStud => { //temporary
+                tmpRow = dtbClassStudents.row.add([
+                    qClassStud.studentId,
+                    '<b>' + qClassStud.name + '</b>',
+                    qClassStud.age,
+                    qClassStud.rDate,
+                    '<button class="btn btn-danger" style="vertical-align: middle;" onclick="deleteClass(event);" id="' + qClassStud.studentId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>'
+                ]).node()
+                tmpRow.id = qClassStud.studentId; //letak id 
+            })
+            dtbClassStudents.draw();
         }
         ).catch(function (value) {
             console.log(value);
         });
     }
 
+    function changeStudent(event)
+    {
+
+    }
 </script>
