@@ -49,31 +49,25 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label mt-0">&nbsp;</label>
-                                        <button onclick="loadSchool()" class="btn btn-pill btn-info-light"><b><i
-                                                    class="fa fa-search">&nbsp;Search</i></b>
+                                <div class="form-group">
+                                    <label class="form-label mt-0">&nbsp;</label>
+                                    <button onclick="loadSchool()" class="btn btn-pill btn-info-light"><b><i
+                                                class="fa fa-search">&nbsp;Search</i></b>
 
-                                        </button>
-                                    </div>
+                                    </button>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label mt-0">&nbsp;</label>
+                                <div class="form-group">
+                                    <label class="form-label mt-0">&nbsp;</label>
 
-                                        <button id="btnReg" type="button" class="btn btn-pill btn-secondary-light"
-                                            disabled data-toggle="modal" data-target="#modal_schoolForm"
-                                            onclick="clearForm()">
-                                            <i class="fa fa-plus mr-2"><b
-                                                    style="font-family: sans-serif;">&nbsp;Register</b></i>
-                                        </button>
+                                    <button id="btnReg" type="button" class="btn btn-pill btn-secondary-light"
+                                        onclick="openForm()">
+                                        <i class="fa fa-plus mr-2"><b
+                                                style="font-family: sans-serif;">&nbsp;Register</b></i>
+                                    </button>
 
-                                        </button>
-                                    </div>
-
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -181,10 +175,19 @@
         });
     }
 
-    function clearForm() {
+    function openForm() {
+        if (!document.getElementById('selectCounty').value) {
+            Swal.fire({
+                type: 'error',
+                title: 'No County Selected',
+                text: 'Please select state & county First'
+            })
+            return
+        }
         document.getElementById("txtSchoolName").value = ""
         document.getElementById("txtSchoolAbbrv").value = ""
         document.getElementById("txtDescription").value = ""
+        $('#modal_schoolForm').modal('show')
     }
 
     async function registerSchool() {
@@ -270,7 +273,7 @@
                     '<button class="btn btn-danger" style="vertical-align: middle;" onclick="deleteSchool(event);" id="' + qSchool.schoolId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>',
                     '<button class="btn btn-secondary" style="vertical-align: middle;" onclick="goToClassList(event)" id="' + qSchool.schoolId + '"><b><i class="fa fa-list-ul" style="font-size: 17px;"></i></b></button>'
                 ]).node()
-                tmpRow.id = qSchool.subjectCode; //letak id
+                // tmpRow.id = qSchool.subjectCode; //letak id
             })
             tableSchool.draw();
             console.log(data)
@@ -319,11 +322,6 @@
     }
 
     function changeState(e) {
-        if (e.target.value == '-1') {
-            document.getElementById('btnReg').disabled = true
-            return;
-        }
-        document.getElementById('btnReg').disabled = false
         Server.request('GET', '/api/address/county?stateCode=' + e.target.value, null, true).then(function (result) {
             result = JSON.parse(result)
             console.log(result)

@@ -516,18 +516,35 @@ router.get('/QAanalysis',
 
 router.get('/areaReport', function (req, res) {
     if (!req.query.areaId) {
-        return res.status(400).send()
+        return res.status(400).send({ validationError: { areaId: 'invalid' } })
     }
     if (!req.query.subjCode) {
-        return res.status(400).send()
+        return res.status(400).send({ validationError: { subjectCode: 'invalid' } })
     }
     if (!req.query.year) {
-        return res.status(400).send()
+        return res.status(400).send({ validationError: { year: 'invalid' } })
     }
     Assessment.getAreaReport(req.query.areaId, req.query.subjCode, req.query.year).then(function (result) {
         return res.status(200).send(result)
     }).catch(function (err) {
         console.log(err)
+        return res.status(500).send({ error: err })
+    })
+})
+
+router.get('/schoolReport', function (req, res) {
+    if (!req.query.schoolId) {
+        return res.status(400).send({ validationError: { schoolId: 'invalid school id' } })
+    }
+    if (!req.query.subjCode) {
+        return res.status(400).send({ validationError: { subjCode: 'invalid' } })
+    }
+    if (!req.query.year) {
+        return res.status(400).send({ validationError: { year: 'invalid' } })
+    }
+    Assessment.getSchoolReport(req.query.schoolId, req.query.subjCode, req.query.year).then(function (result) {
+        return res.status(200).send(result)
+    }).catch(function (err) {
         return res.status(500).send({ error: err })
     })
 })
