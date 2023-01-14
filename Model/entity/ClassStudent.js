@@ -51,8 +51,8 @@ module.exports = class ClassStudent {
             console.log(strsql);
             db.query(strsql, function (err, result) {
                 if (err) {
-                    console.log("error:" + err.message);
-                    reject(err.message);
+                    if(err.errno == 1062)
+                    reject("duplicate");
                 }
                 else {
                     resolve();
@@ -96,6 +96,25 @@ module.exports = class ClassStudent {
             });
         });
     }
+
+    static getStudent(schoolId)
+    {
+        return new Promise(function (resolve, reject) {
+            var strSql = "SELECT cs.studentId AS studentId, c.className AS className, a.name AS name FROM class_student cs INNER JOIN account a ON a.accountId = cs.studentId INNER JOIN class c ON c.classId = cs.classId INNER JOIN school s ON s.schoolId = c.schoolId WHERE cs.endDate < CURRENT_DATE AND s.schoolId =" 
+            + db.escape(schoolId) + " GROUP BY cs.studentId";
+
+            db.query(strSql, function (err, result) {
+                if (err) {
+                    console.log("error:" + err.message);
+                    reject(err.message);
+                }
+                else {
+                    resolve(JSON.parse(JSON.stringify(result)));
+                }
+            });
+        });
+    }
+    
 
     deleteStudent()
     {

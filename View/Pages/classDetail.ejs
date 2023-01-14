@@ -1,3 +1,9 @@
+<style>
+    button * {
+        pointer-events: none;
+    }
+</style>
+
 <div class="side-app" onload="setup()">
 
     <div id="ejsData" data-curclass="<%= JSON.stringify(classData) %> "></div>
@@ -9,34 +15,36 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12">
-            <div class="card bg-white">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover text-nowrap mb-0 p-0">
-                        <thead class="bg-info">
-                            <tr>
-                                <th width="60%" class="text-white">Teacher</th>
-                                <th width="15%" class="text-center text-white">CLass</th>
-                                <th width="10%" class="text-center text-white">Total Students</th>
-                                <th width="10%" class="text-center text-white">Year</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td width="50%">
-                                    <a href=""><b>Nurin Aina Syafiqah Binti Muhamad
-                                            Baharom</b></a><br>
-                                    <t class="text-muted">SK Lahad Datu</t>
-                                </td>
-                                <td width="15%" class="text-center" style="vertical-align: middle;">5 Arif
-                                </td>
-                                <td width="12%" class="text-center" style="vertical-align: middle;">45</td>
-                                <td width="12%" class="text-center" style="vertical-align: middle;">2022
-                                </td>
-                            </tr>
+        <div class="col-md-7 col-lg-7 col-xl-7">
+            <div class="card banner">
+                <div class="card-body">
+                    <div class="text-left text-white mt-xl-4">
+                        <h4 class="font-weight-normal" id=""><b>NURUL AISYAH BINTI ARIS</b></h4>
+                        <p class="mb-lg-0 text-white">SEKOLAH MENENGAH KEBANGSAAN AGAMA SHARIFAH RODZIAH</p>
+                        <p class="mb-lg-0 text-white">5 ARIF</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        </tbody>
-                    </table>
+        <div class="col-md-3 col-lg-3 col-xl-3">
+            <div class="card banner">
+                <div class="card-body">
+                    <div class="text-center text-white mt-xl-4">
+                        <h4 class="font-weight-normal" id="">TOTAL STUDENTS:</h4>
+                        <h3 class="font-weight-normal" id=""><b>10</b></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2 col-lg-2 col-xl-2">
+            <div class="card banner">
+                <div class="card-body">
+                    <div class="text-center text-white mt-xl-4">
+                        <h4 class="font-weight-normal" id="">YEAR:</h4>
+                        <h3 class="font-weight-normal" id=""><b>2022</b></h3>
+                    </div>
                 </div>
             </div>
         </div>
@@ -50,7 +58,7 @@
                             <i class="fa fa-trash"><b style="font-family: sans-serif;">&nbsp;List</b></i>
                         </button>
 
-                        <button type="button" class="btn btn-primary btn-sm ml-2" data-toggle="modal"data-target="#modal_addStudents" onclick="tableStudent();">
+                        <button type="button" class="btn btn-primary btn-sm ml-2" data-toggle="modal" onclick="tableStudent();">
                             <i class="fa fa-plus mr-2"><b style="font-family: sans-serif;">&nbsp;Student</b></i>
                         </button>
                     </div>
@@ -100,7 +108,6 @@
                                 <thead class="bg-primary">
                                     <tr>
                                         <th width="50%" class="text-white">Student Name</th>
-                                        <th width="20%" class="text-center text-white">School</th>
                                         <th width="20%" class="text-center text-white">Class</th>
                                         <th width="10%" class="text-center text-white"></th>
                                     </tr>
@@ -180,15 +187,13 @@
 
             Message.createNew("Success", "s", 0);
 
-        }).catch(function (value) {
-            console.log(value);
-            value = JSON.parse(value);
-            if (value.hasOwnProperty("validationError")) {
-                displayValidationError(value);
-            }
-            else {
-                Message.createNew("Error", value, 3);
-            }
+        }).catch(async function (value) {
+            var action = await Swal.fire({
+            type: 'error',
+            title: 'Student Already Registered!',
+            text: '',
+            showCancelButton: true
+        })
 
         })
     }
@@ -270,7 +275,7 @@
 
         tableStud = new DataTable('#StudTable', {
             "columnDefs": [{
-                "targets": [1,2,3],
+                "targets": [1,2],
                 "className": "text-center"
             }
             ]
@@ -282,13 +287,18 @@
     function loadStudent() {
         console.log("load")
 
+        $('#modal_addStudents').modal('show');
+
         //var classId = JSON.stringify(classData.classId);
         var school  = JSON.stringify(classData.schoolId);
 
         console.log(school);
 
+        var data = {
+            "schoolId"  : school
+        }
 
-        Server.request("GET", "/api/account/allStudent?schoolId=" + school, null, true).then(function (value) {
+        Server.request("POST", "/api/class/getStudent", data, true).then(function (value) {
             var data = JSON.parse(value);
             tableStud.clear();
 
@@ -304,9 +314,8 @@
             data.forEach(student => { //temporary
                 tmpRow = tableStud.row.add([
                     student.name + '<br><span>' + student.studentId + '</span>',
-                    student.fullName,
                     student.className,
-                    '<button class="btn btn-success" style="vertical-align: middle;" onclick="showId(event);" id="' + student.studentId + '"><b><i class="fa fa-plus" style="font-size: 17px;"></i></b></button>'
+                    '<button class="btn btn-success" style="vertical-align: middle;" onclick="register(event);" id="' + student.studentId + '"><b><i class="fa fa-plus" style="font-size: 17px;"></i></b></button>'
 
                 ]).node()
                 tmpRow.id = student.studentId; //letak id

@@ -97,6 +97,16 @@ router.post('/getClassTeacher', function (req, res) {
     })
 })
 
+router.post('/getStudent', function (req, res) {
+    ClassStudent.getStudent(req.body.schoolId).then(
+        function (value) {
+            return res.status(200).send(value);
+        }
+    ).catch(function (value) {
+        return res.status(500).send(value);
+    })
+})
+
 router.post('/registerStudent', function (req, res) {     
     var newStud = new ClassStudent();
     newStud.setIntClassId(req.body.classId);
