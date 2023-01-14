@@ -3,10 +3,7 @@
         pointer-events: none;
     }
 </style>
-
 <div class="side-app" onload="setup()">
-
-    <div id="ejsData" data-curclass="<%= JSON.stringify(classData) %> "></div>
 
     <div class="row">
         <div class="col-md-10 col-xl-10">
@@ -156,14 +153,12 @@
         loadClassStudent();
     }
 
-    function showId(event)
-    {
+    function showId(event) {
         alert(event.target.id);
     }
 
 
-    async function register(event)
-    {
+    async function register(event) {
         alert(event.target.id)
         var action = await Swal.fire({
             type: 'question',
@@ -175,10 +170,10 @@
             return;
         }
 
-        var classId    = JSON.stringify(classData.classId);
+        var classId = JSON.stringify(classData.classId);
 
         var data = {
-            "classId"  : classId,
+            "classId": classId,
             "studentId": event.target.id
         }
 
@@ -205,7 +200,7 @@
         var data = {
             "classId": classId
         }
-        
+
 
         Server.request("POST", "/api/class/getClassStudent", data, false).then(function (value) {
             var data = JSON.parse(value);
@@ -230,8 +225,7 @@
         });
     }
 
-    async function deleteStudent(event)
-    {
+    async function deleteStudent(event) {
         alert(event.target.id);
         var action = await Swal.fire({
             type: 'question',
@@ -246,7 +240,7 @@
         var classId = JSON.stringify(classData.classId);
         var data = {
             "studentId": event.target.id,
-            "classId"  : classId
+            "classId": classId
         }
 
         Server.request("POST", "/api/class/deleteStudent", data, false).then(async function (value) {
@@ -270,12 +264,12 @@
         })
 
     }
-    
+
     function tableStudent() {
 
         tableStud = new DataTable('#StudTable', {
             "columnDefs": [{
-                "targets": [1,2],
+                "targets": [1, 2, 3],
                 "className": "text-center"
             }
             ]
@@ -290,7 +284,7 @@
         $('#modal_addStudents').modal('show');
 
         //var classId = JSON.stringify(classData.classId);
-        var school  = JSON.stringify(classData.schoolId);
+        var school = JSON.stringify(classData.schoolId);
 
         console.log(school);
 
@@ -329,8 +323,7 @@
         });
     }
 
-    async function deleteList()
-    {
+    async function deleteList() {
         var action = await Swal.fire({
             type: 'question',
             title: 'Confirm Delete?',
@@ -343,7 +336,7 @@
 
         var classId = JSON.stringify(classData.classId);
         var data = {
-            "classId"  : classId
+            "classId": classId
         }
 
         Server.request("POST", "/api/class/deleteStudentList", data, false).then(async function (value) {

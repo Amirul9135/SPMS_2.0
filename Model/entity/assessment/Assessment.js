@@ -722,9 +722,11 @@ module.exports = class Assessment {
         let sDt, eDt;
         sDt = year + '-01-01'
         eDt = year + '-12-31'
-        var strSql = "SELECT (SUM(aq.mark) / SUM(aq.fullMark)) AS percent, CAST(a.close AS DATE) AS date,ads.areaId,aa.areaName  FROM assessment a JOIN assigned_question aq ON a.assessmentId=aq.assessmentId JOIN class_student cs ON aq.studentId=cs.studentId JOIN class c ON cs.classId=c.classId JOIN address ads ON aq.studentId=ads.accountId JOIN area aa ON ads.areaId=aa.areaId"
-            + " WHERE a.open >= " + db.escape(sDt) + " AND a.close <= " + db.escape(eDt) + " AND c.schoolId=" + db.escape(schoolId) + " AND a.subject=" + db.escape(subjectCode)
-            + " AND cs.startDate < a.close AND cs.endDate >= a.close GROUP BY a.assessmentId, ads.areaId"
+
+        var strSql = "SELECT (SUM(aq.mark) / SUM(aq.fullMark)) AS percent, CAST(a.close AS DATE) AS date,ads.areaId,aa.areaName,count(DISTINCT aq.studentId) AS studentCount FROM assessment a JOIN assigned_question aq ON a.assessmentId=aq.assessmentId JOIN class_student cs ON aq.studentId=cs.studentId JOIN class c ON cs.classId=c.classId JOIN address ads ON aq.studentId=ads.accountId JOIN area aa ON ads.areaId=aa.areaId "
+            + " WHERE a.open >= " + db.escape(sDt) + " AND a.close <= " + db.escape(eDt) + " AND ads.dateStart < a.close AND(ads.dateEnd IS NULL OR ads.dateEnd > a.close)  AND c.schoolId = " + db.escape(schoolId) + " AND a.subject = " + db.escape(subjectCode)
+            + " AND cs.startDate < a.close AND cs.endDate >= a.close GROUP BY a.assessmentId, ads.areaId ORDER BY a.close ASC"
+
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {
@@ -748,8 +750,11 @@ module.exports = class Assessment {
         sDt = year + '-01-01'
         eDt = year + '-12-31'
         //for now average kalau ada assessment same date, later bole max min
-        var strSql = "SELECT AVG(a.percent) as percent, date FROM (SELECT (SUM(aq.mark) / SUM(aq.fullMark)) AS percent, CAST(a.close AS DATE) As date FROM assigned_question aq JOIN assessment a ON aq.assessmentId=a.assessmentId JOIN address ad ON aq.studentId=ad.accountId"
-            + " WHERE a.open >= " + db.escape(sDt) + " AND a.close <= " + db.escape(eDt) + " AND ad.areaId =" + db.escape(areaId) + " AND a.subject= " + db.escape(subjectCode) + " GROUP BY aq.assessmentId ORDER BY a.close ASC)  a GROUP BY a.date"
+        var strSql = "SELECT  (SUM(aq.mark) / SUM(aq.fullMark)) AS percent, CAST(a.close AS DATE) As date,count(DISTINCT aq.studentId) AS studentCount FROM assigned_question aq JOIN assessment a ON aq.assessmentId=a.assessmentId JOIN address ad ON aq.studentId=ad.accountId "
+            + "WHERE a.open >= " + db.escape(sDt) + " AND a.close <= " + db.escape(eDt) + "AND ad.dateStart < a.close AND(ad.dateEnd IS NULL OR ad.dateEnd < a.close) AND ad.areaId =" + db.escape(areaId) + " AND a.subject =" + db.escape(subjectCode) + " GROUP BY aq.assessmentId ORDER BY a.close ASC"
+
+        // var strSql = "SELECT AVG(a.percent) as percent, date FROM (SELECT (SUM(aq.mark) / SUM(aq.fullMark)) AS percent, CAST(a.close AS DATE) As date FROM assigned_question aq JOIN assessment a ON aq.assessmentId=a.assessmentId JOIN address ad ON aq.studentId=ad.accountId"
+        //    + " WHERE a.open >= " + db.escape(sDt) + " AND a.close <= " + db.escape(eDt) + " AND ad.areaId =" + db.escape(areaId) + " AND a.subject= " + db.escape(subjectCode) + " GROUP BY aq.assessmentId ORDER BY a.close ASC)  a GROUP BY a.date"
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {
