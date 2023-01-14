@@ -96,4 +96,42 @@ module.exports = class ClassStudent {
             });
         });
     }
+
+    deleteStudent()
+    {
+        var strSql = "DELETE FROM class_student WHERE classId= " + db.escape(this.#intclasslId) + " AND studentId=" + db.escape(this.#strstudentId);
+        return new Promise(function (resolve, reject) {
+            db.query(strSql, function (err, result) {
+                if (err) {
+                    console.log("error:" + err.message);
+                    reject(err.message);
+                }
+                else if (result.affectedRows == 0) {
+                    reject("no changes")
+                }
+                else {
+                    resolve("success");
+                }
+            });
+        });
+    }
+
+    deleteStudentList()
+    {
+        var strSql = "DELETE FROM class_student WHERE YEAR(endDate) = YEAR(CURRENT_DATE) AND classId=" + db.escape(this.#intclasslId);
+        return new Promise(function (resolve, reject) {
+            db.query(strSql, function (err, result) {
+                if (err) {
+                    console.log("error:" + err.message);
+                    reject(err.message);
+                }
+                else if (result.affectedRows == 0) {
+                    reject("no changes")
+                }
+                else {
+                    resolve("success");
+                }
+            });
+        });
+    }
 }

@@ -46,14 +46,11 @@
                 <div class="card-header">
                     <h3 class="card-title">Student List</h3>
                     <div class="card-options">
-                        <button type="button" class="btn btn-orange btn-sm ml-2">
+                        <button type="button" class="btn btn-orange btn-sm ml-2" onclick="deleteList();">
                             <i class="fa fa-trash"><b style="font-family: sans-serif;">&nbsp;List</b></i>
                         </button>
 
-                        <button type="button" class="btn btn-primary btn-sm ml-2" data-toggle="modal"data-target="#modal_addStudents" onclick="listStudents();">
-
-                        <button type="button" class="btn btn-primary btn-sm ml-2" data-toggle="modal"
-                            data-target="#modal_addStudents">
+                        <button type="button" class="btn btn-primary btn-sm ml-2" data-toggle="modal"data-target="#modal_addStudents" onclick="tableStudent();">
                             <i class="fa fa-plus mr-2"><b style="font-family: sans-serif;">&nbsp;Student</b></i>
                         </button>
                     </div>
@@ -95,44 +92,17 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12 col-xl-12">
-                        <div class="row">
-
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label class="form-label mt-0">Student</label>
-                                    <select id="selectState" class="form-control select2">
-                                        <option value="-1">Choose Student</option>
-                                        <option>
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-md-3">
-                                <div class="row">
-
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label mt-0">&nbsp;</label>
-
-                                            <button id="btnReg" type="button" class="btn btn-pill btn-success-light">
-                                                <i class="fa fa-plus mr-2"><b
-                                                        style="font-family: sans-serif;">&nbsp;Student</b></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="col-md-12">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover text-nowrap mb-0" id="dtbStudents">
+                            <table class="table table-bordered table-hover text-nowrap mb-0" id="StudTable">
                                 <thead class="bg-primary">
                                     <tr>
-                                        <th width="70%" class="text-white">Name</th>
-                                        <th width="30%" class="text-center text-white">Class</th>
+                                        <th width="50%" class="text-white">Student Name</th>
+                                        <th width="20%" class="text-center text-white">School</th>
+                                        <th width="20%" class="text-center text-white">Class</th>
+                                        <th width="10%" class="text-center text-white"></th>
                                     </tr>
                                 </thead>
                                 <tbody class="mycustom_tbd">
@@ -152,7 +122,8 @@
 <script>
     var classData
     var dtbClassStudents
-    var dtbStudents
+    var tableStud
+    var studId
 
     function setup() {
         console.log('st')
@@ -178,23 +149,49 @@
         loadClassStudent();
     }
 
-    function listStudents(){
-        dtbStudents = new DataTable('#dtbStudents', {
-            "columnDefs": [{
-                "targets": [2, 3],
-                "searchable": false
-            },
-            {
-                "targets": [0, 2, 3, 4],
-                "targets": [0, 2, 3, 4],
-                "className": "text-center"
-            }
-            ]
-        })
-
-        loadStudent();
+    function showId(event)
+    {
+        alert(event.target.id);
     }
 
+
+    async function register(event)
+    {
+        alert(event.target.id)
+        var action = await Swal.fire({
+            type: 'question',
+            title: 'Confirm Registration',
+            text: 'Register new student into the class?',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+
+        var classId    = JSON.stringify(classData.classId);
+
+        var data = {
+            "classId"  : classId,
+            "studentId": event.target.id
+        }
+
+        Server.request("POST", "/api/class/registerStudent", data, true).then(function (value) {
+            console.log(value)
+
+            Message.createNew("Success", "s", 0);
+
+        }).catch(function (value) {
+            console.log(value);
+            value = JSON.parse(value);
+            if (value.hasOwnProperty("validationError")) {
+                displayValidationError(value);
+            }
+            else {
+                Message.createNew("Error", value, 3);
+            }
+
+        })
+    }
 
     function loadClassStudent() {
         console.log("load");
@@ -217,7 +214,7 @@
                     '<b>' + qClassStud.name + '</b>',
                     qClassStud.age,
                     qClassStud.rDate,
-                    '<button class="btn btn-danger" style="vertical-align: middle;" onclick="deleteClass(event);" id="' + qClassStud.studentId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>'
+                    '<button class="btn btn-danger" style="vertical-align: middle;" onclick="deleteStudent(event);" id="' + qClassStud.studentId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>'
                 ]).node()
                 tmpRow.id = qClassStud.studentId; //letak id 
             })
@@ -228,25 +225,92 @@
         });
     }
 
+    async function deleteStudent(event)
+    {
+        alert(event.target.id);
+        var action = await Swal.fire({
+            type: 'question',
+            title: 'Confirm Delete?',
+            text: 'This student will be removed from the system',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+
+        var classId = JSON.stringify(classData.classId);
+        var data = {
+            "studentId": event.target.id,
+            "classId"  : classId
+        }
+
+        Server.request("POST", "/api/class/deleteStudent", data, false).then(async function (value) {
+            var action = await Swal.fire({
+                type: 'success',
+                title: 'Deleted Successfully!',
+                text: '',
+                showCancelButton: false
+            })
+
+            dtbClassStudents.row("#" + event.target.parentElement.parentElement.id).remove();
+            dtbClassStudents.draw();
+
+        }).catch(async function (value) {
+            var action = await Swal.fire({
+                type: 'error',
+                title: 'Cannot Deleted!',
+                text: 'An Error has occured',
+                showCancelButton: false
+            })
+        })
+
+    }
+    
+    function tableStudent() {
+
+        tableStud = new DataTable('#StudTable', {
+            "columnDefs": [{
+                "targets": [1,2,3],
+                "className": "text-center"
+            }
+            ]
+        })
+
+        loadStudent();
+    }
+
     function loadStudent() {
         console.log("load")
-    }
-        function changeStudent(event) {
 
-        classId = JSON.stringify(classData.classId);
-        school = JSON.stringify(classData.schoolId);
+        //var classId = JSON.stringify(classData.classId);
+        var school  = JSON.stringify(classData.schoolId);
 
-        Server.request("GET", "/api/account/allStudent?schoolId=" + school + "&classId=" + classId, null, true).then(function (value) {
+        console.log(school);
+
+
+        Server.request("GET", "/api/account/allStudent?schoolId=" + school, null, true).then(function (value) {
             var data = JSON.parse(value);
             tableStud.clear();
+
+            if (data.length == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'No data',
+                    text: 'Currently There is no student in selected class'
+                })
+            }
+
             var tmpRow;
             data.forEach(student => { //temporary
                 tmpRow = tableStud.row.add([
                     student.name + '<br><span>' + student.studentId + '</span>',
                     student.fullName,
-                    student.className
+                    student.className,
+                    '<button class="btn btn-success" style="vertical-align: middle;" onclick="showId(event);" id="' + student.studentId + '"><b><i class="fa fa-plus" style="font-size: 17px;"></i></b></button>'
+
                 ]).node()
-                tmpRow.id = student.studentId; 
+                tmpRow.id = student.studentId; //letak id
+
             })
             tableStud.draw();
             console.log(data)
@@ -256,20 +320,42 @@
         });
     }
 
-    function loadStudentList() {
-        classId = JSON.stringify(classData.classId);
-        school = JSON.stringify(classData.schoolId);
+    async function deleteList()
+    {
+        var action = await Swal.fire({
+            type: 'question',
+            title: 'Confirm Delete?',
+            text: 'All student will be removed from this list',
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
 
-        Server.request("GET", "/api/account/allStudent?schoolId=" + school + "&classId=" + classId, null, true).then(function (value) {
-            var data = JSON.parse(value);
-            var strHtmlRads = "";
-            strHtmlRads += '<option value="-1" selected>Select Students</option>'
+        var classId = JSON.stringify(classData.classId);
+        var data = {
+            "classId"  : classId
+        }
 
-            data.forEach(qStudents => {
-                strHtmlRads += '<option value="' + qStudents.accountId + '">' + qStudents.name + '</option>'
+        Server.request("POST", "/api/class/deleteStudentList", data, false).then(async function (value) {
+            var action = await Swal.fire({
+                type: 'success',
+                title: 'Deleted Successfully!',
+                text: '',
+                showCancelButton: false
             })
 
-            document.getElementById("selTeacher").innerHTML = strHtmlRads;
+            dtbClassStudents.row("#" + event.target.parentElement.parentElement.id).remove();
+            dtbClassStudents.draw();
+
+        }).catch(async function (value) {
+            var action = await Swal.fire({
+                type: 'error',
+                title: 'Cannot Deleted!',
+                text: 'An Error has occured',
+                showCancelButton: false
+            })
         })
     }
+
 </script>

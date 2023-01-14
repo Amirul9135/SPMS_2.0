@@ -109,4 +109,29 @@ router.post('/registerStudent', function (req, res) {
     });
 });
 
+router.post('/deleteStudent', function (req, res) {
+    var delStud = new ClassStudent();
+    delStud.setIntClassId(req.body.classId);
+    delStud.setStrStudentId(req.body.studentId);
+
+    var del = delStud.deleteStudent();
+    del.then(function (value) {//berjaya 
+        res.status(200).send();
+    }).catch(function (value) {//no change atau error 
+        res.status(400).send(value);
+    });
+});
+
+router.post('/deleteStudentList', function (req, res) {
+    var delStud = new ClassStudent();
+    delStud.setIntClassId(req.body.classId);
+
+    var del = delStud.deleteStudentList();
+    del.then(function (value) {//berjaya 
+        res.status(200).send();
+    }).catch(function (value) {//no change atau error 
+        res.status(400).send(value);
+    });
+});
+
 module.exports = router;
