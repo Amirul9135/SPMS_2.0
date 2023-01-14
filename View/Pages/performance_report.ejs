@@ -13,6 +13,10 @@
     .modal-xl {
         max-width: 80%;
     }
+
+    button * {
+        pointer-events: none;
+    }
 </style>
 <div class="side-app" onload="setup()">
     <button onclick="testFunc()">test</button>
@@ -51,7 +55,19 @@
         <div class="card">
             <div class="card-header bg-info text-white">
                 <h3 class="card-title">
-                    Performance Analysis
+                    <div class="row">
+                        <div>
+                            <div class="form-label">
+                                <h4>Performance Analysis For Year &nbsp;</h4>
+
+                            </div>
+                        </div>
+                        <div>
+                            <select class="form-control MyYearSelect" id="selYear" style="display: inline-block;">
+                            </select>
+                        </div>
+                    </div>
+
                 </h3>
                 <div class="card-options ">
                     </button><i class="fe fe-chevron-up text-white" onclick="toggle_card(event)"></i>
@@ -134,11 +150,6 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Year</label>
-                            <select class="form-control MyYearSelect" id="selYear">
-                            </select>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -163,12 +174,34 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+
+                        <div class="col-md-4">
+                            <label class="form-label">
+                                Subject
+                            </label>
+                            <div class="select-search">
+                                <input id="selectSubjectMSCH" type="text" class="form-control"
+                                    data-list="idListSubjMSCH" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                    onblur="SSFocus(event)" onchange="resetChartData()">
+                                <ul onclick="SSItemClick(event)" id="idListSubjMSCH" data-selected="-1">
+                                    <% subjects.forEach(subj=> {%>
+                                        <li id="<%= subj['subjectCode']%>">
+                                            <%=subj["title"]%>
+                                        </li>
+                                        <%});%>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="card">
                     <div class="card-header text-white bg-info">
                         <h3 class="card-title">Find School</h3>
                         <div class="card-options">
-                            <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i
+                            <a class="card-options-collapse" data-toggle="card-collapse" onclick="toggle_card(event)"><i
                                     class="fe fe-chevron-up text-white"></i></a>
                         </div>
                     </div>
@@ -287,51 +320,6 @@
         })
     }
 
-    function loadNewAreaData() {
-        var areaId = document.getElementById('idListArea').dataset.selected
-        var areaname = document.getElementById('SSArea').value
-        if (areaId == '-1') {
-            Message.createNew('Invalid Area id', '', 3)
-            return
-        }
-        var subjcode = document.getElementById('idListSubj').dataset.selected
-        if (subjcode == '-1') {
-            Message.createNew('No subject Selected', '', 3)
-            return
-        }
-        var year = document.getElementById('selYear').value
-        console.log(year)
-        Server.request('GET', '/api/assessment/areaReport?areaId=' + areaId + '&subjCode=' + subjcode + '&year=' + year, null, true).then(function (result) {
-            result = JSON.parse(result)
-            console.log(result)
-            if (result.length == 0) {
-                return
-            }
-            let converted = []
-            result.forEach(res => {
-                converted.push([res.date, res.percent * 100])
-            })
-            let newData = newSeries(areaname, converted, subjcode)
-            lineChartOption.series.push(newData)
-            LineChart.setOption(lineChartOption)
-            console.log(converted)
-        }).catch(function (err) {
-            console.log(err)
-            try {
-                err = JSON.parse(err)
-                if (err.error == "no data") {
-                    Swal.fire({
-                        type: 'warning',
-                        title: 'No record meets the criteria'
-                    })
-                }
-            } catch {
-
-            }
-        })
-
-
-    }
     var ii = 0
     function testFunc() {
         ii++
@@ -441,6 +429,99 @@
         });
     }
 
+
+    //analysis data loading
+
+    function loadNewAreaData() {
+        var areaId = document.getElementById('idListArea').dataset.selected
+        var areaname = document.getElementById('SSArea').value
+        if (areaId == '-1') {
+            Message.createNew('Invalid Area id', '', 3)
+            return
+        }
+        var subjcode = document.getElementById('idListSubj').dataset.selected
+        if (subjcode == '-1') {
+            Message.createNew('No subject Selected', '', 3)
+            return
+        }
+        var year = document.getElementById('selYear').value
+        console.log(year)
+        Server.request('GET', '/api/assessment/areaReport?areaId=' + areaId + '&subjCode=' + subjcode + '&year=' + year, null, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            if (result.length == 0) {
+                return
+            }
+            let converted = []
+            result.forEach(res => {
+                converted.push([res.date, res.percent * 100])
+            })
+            let newData = newSeries(areaname, converted, subjcode)
+            lineChartOption.series.push(newData)
+            LineChart.setOption(lineChartOption)
+            console.log(converted)
+        }).catch(function (err) {
+            console.log(err)
+            try {
+                err = JSON.parse(err)
+                if (err.error == "no data") {
+                    Swal.fire({
+                        type: 'warning',
+                        title: 'No record meets the criteria'
+                    })
+                }
+            } catch {
+
+            }
+        })
+
+
+    }
+
+
+    function addSchoolData(e) {
+        console.log(e.target.id)
+        var year = document.getElementById('selYear').value
+        var subjCode = document.getElementById('idListSubjMSCH').dataset.selected
+        if (subjCode == '-1') {
+            Swal.fire({
+                type: 'error',
+                title: 'Invalid Subject',
+                text: 'Please select a subject first'
+            })
+            return
+        }
+        Server.request("GET", "/api/assessment/schoolReport?schoolId=" + e.target.id + "&subjCode=" + subjCode + "&year=" + year, null, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            let converteds = {}
+            result.forEach(d => {
+                if (!converteds.hasOwnProperty(d.areaName)) {
+                    converteds[d.areaName] = []
+                }
+                converteds[d.areaName].push([d.date, d.percent * 100])
+            })
+            console.log(converteds)
+            Object.keys(converteds).forEach(k => {
+                let newData = new newSeries(k, converteds[k], subjCode)
+                lineChartOption.series.push(newData)
+                LineChart.setOption(lineChartOption)
+            })
+        }).catch(function (err) {
+            console.log(err)
+            try {
+                err = JSON.parse(err)
+                if (err.error == "no data") {
+                    Swal.fire({
+                        type: 'warning',
+                        title: 'No record meets the criteria'
+                    })
+                }
+            } catch {
+
+            }
+        })
+    }
 
     function rtypeChange(e) {
         if (e.target.value == '2') {
@@ -562,7 +643,6 @@
         return {
             name: name + "\nSubject: " + subj,
             type: 'line',
-            smooth: true,
             data: inpData
         }
 

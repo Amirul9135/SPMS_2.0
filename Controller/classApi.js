@@ -1,24 +1,24 @@
-const express = require('express'); 
-const router = express.Router(); 
-const Class = require ('../Model/entity/Class');
-const ClassStudent = require ('../Model/entity/ClassStudent');
+const express = require('express');
+const router = express.Router();
+const Class = require('../Model/entity/Class');
+const ClassStudent = require('../Model/entity/ClassStudent');
 
 
-router.post('/register', function (req, res) {     
+router.post('/register', function (req, res) {
     var newcls = new Class();
     // newcls.setIntClassId(req.body.classId);
     newcls.setIntSchoolId(req.body.schoolId);
     newcls.setIntClassName(req.body.className);
     newcls.setStrAccountId(req.body.accountId);
-   
-    newcls.register().then(function(value){ //.then means resolve (no error)
+
+    newcls.register().then(function (value) { //.then means resolve (no error)
         res.send("Success");
-    }).catch(function(value){ //.catch means promise is rejected (got some errors)
+    }).catch(function (value) { //.catch means promise is rejected (got some errors)
         res.status(400).send(value);
     });
 });
 
-router.post('/update', function (req, res) { 
+router.post('/update', function (req, res) {
     var updatecls = new Class();
     updatecls.setIntClassId(req.body.classId);
     updatecls.setStrAccountId(req.body.accountId);
@@ -45,6 +45,8 @@ router.post('/delete', function (req, res) {
 });
 
 router.post('/getClassBySchool', function (req, res) {
+    console.log('get school')
+    console.log(req.body)
     Class.getClassBySchool(req.body.schoolId).then(
         function (value) {
             return res.status(200).send(value);
@@ -55,7 +57,7 @@ router.post('/getClassBySchool', function (req, res) {
 })
 
 router.get('/getstudentclass', function (req, res) {
-    var classId="2"
+    var classId = "2"
     var promiseAll = Class.getstudentclass(classId);
     promiseAll.then(function (value) {
         console.log(value);
@@ -97,14 +99,14 @@ router.post('/getClassTeacher', function (req, res) {
     })
 })
 
-router.post('/registerStudent', function (req, res) {     
+router.post('/registerStudent', function (req, res) {
     var newStud = new ClassStudent();
     newStud.setIntClassId(req.body.classId);
     newStud.setStrStudentId(req.body.studentId);
-   
-    newStud.register().then(function(value){ //.then means resolve (no error)
+
+    newStud.register().then(function (value) { //.then means resolve (no error)
         res.send("Success");
-    }).catch(function(value){ //.catch means promise is rejected (got some errors)
+    }).catch(function (value) { //.catch means promise is rejected (got some errors)
         res.status(400).send(value);
     });
 });
