@@ -75,7 +75,6 @@
   function loadOngoingAssessment() {
     Server.request("GET", "/api/assessment/?status=ongoing", null, true).then(function (result) {
       result = JSON.parse(result)
-      console.log(result)
       dtbOnAssessment.clear();
       var tmpRow;
       result.forEach(assm => {

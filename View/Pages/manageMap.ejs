@@ -82,9 +82,7 @@
                         onclick="btnEmodeHandler(event)">Remove Point</button>
                     &nbsp;&nbsp;
                     <button class="btn btn-outline-primary" style="width: 110px;" onclick="submitGeo()">Save</button>
-
                 </div>
-
             </div>
             <div class="card-body">
                 <div id="mapdiv" style="height: 60vh;width: 100%;"></div>
@@ -101,10 +99,11 @@
     var polygon
     var CenterMark
     var rclickmode = 0;
+    var initialCoord = new L.LatLng(4.123425, 102.240730)
 
     var popup
     function setup() {
-        var initialCoord = new L.LatLng(4.123425, 102.240730)
+
         map = L.map('mapdiv').setView([51.505, -0.09], 7); //(?,?) z
         map.panTo(initialCoord)
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -214,11 +213,14 @@
                     //   mapLayer.addData(polygon)
                 }
                 else {
-
                     Swal.fire({
                         type: 'info',
                         title: 'There is no mapping data on this area yet'
                     })
+
+                    CenterMark.setLatLng(initialCoord);
+                    polygon = newData()
+                    redrawPolygon()
                 }
                 editMode = true
 

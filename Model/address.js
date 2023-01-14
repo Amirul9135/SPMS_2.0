@@ -1,3 +1,4 @@
+
 const Utils = require("../Controller/Utils")
 const db = require("./DBConn")
 
@@ -7,19 +8,52 @@ module.exports = class Address {
 
     static saveAddress(addressObj) { //obj with accountId,addressText, areaId
         return new Promise(function (resolve, reject) {
-            db.query(
-                "INSERT INTO address (accountId,addressText,areaId) VALUES(" + db.escape(addressObj["accountId"])
-                + "," + db.escape(addressObj["addressText"]) + "," + db.escape(addressObj["areaId"])
-                + ") ON DUPLICATE KEY UPDATE addressText = VALUES(addressText), areaId = VALUES(areaId)",
-                function (err, result) {
-                    if (err) {
-                        reject(err.message)
-                    }
-                    else {
-                        resolve()
-                    }
+            db.getConnection(async function (err, conn) {
+                var cur = await new Promise(function (resolve, reject) {
+                    conn.query("SELECT COUNT(*) AS count FROM address WHERE accountId=" + db.escape(addressObj["accountId"]) + " AND areaId=" + db.escape(addressObj["areaId"]) + " AND dateEnd = '0000-00-00'",
+                        function (err, result) {
+                            if (err) {
+                                console.log(err)
+                                reject(err.message)
+                            }
+                            else {
+                                result = JSON.parse(JSON.stringify(result))
+                                console.log(result)
+                                resolve(result[0].count)
+                            }
+                        })
+                })
+                if (cur && cur != 0) {
+                    return reject('nochange')
                 }
-            )
+                console.log('up')
+                await new Promise(function (resolve, reject) {
+                    conn.query("UPDATE address SET dateEnd=CURRENT_DATE WHERE accountId=" + db.escape(addressObj["accountId"]) + " AND dateEnd = '0000-00-00'",
+                        function (err, result) {
+                            if (err) {
+                                reject(err)
+                            }
+                            else {
+                                resolve()
+                            }
+                        })
+                }).catch(function (err) {
+                    console.log('sni')
+                    console.log(err)
+                })
+                conn.query(
+                    "INSERT INTO address (accountId,addressText,areaId,dateStart) VALUES(" + db.escape(addressObj["accountId"])
+                    + "," + db.escape(addressObj["addressText"]) + "," + db.escape(addressObj["areaId"])
+                    + ",CURRENT_DATE)",
+                    function (err, result) {
+                        if (err) {
+                            reject(err.message)
+                        }
+                        else {
+                            resolve()
+                        }
+                    })
+            })
         })
 
     }
@@ -30,7 +64,7 @@ module.exports = class Address {
                 + "SELECT p.postcode,p.postOffice,s.state_code,s.state_name FROM postcode p JOIN state s ON p.stateCode = s.state_code"
                 + ") qa JOIN ("
                 + "SELECT ad.accountId, ad.addressText,ad.areaId,ar.areaName,ar.postcode FROM address ad "
-                + "JOIN area ar ON ad.areaId = ar.areaId WHERE ad.accountId=" + db.escape(accountId)
+                + "JOIN area ar ON ad.areaId = ar.areaId WHERE ad.accountId=" + db.escape(accountId) + " AND dateEnd='0000-00-00'"
                 + ") qb ON qa.postcode=qb.postcode"
             db.query(strSql, function (err, result) {
                 if (err) {

@@ -68,8 +68,12 @@
         height: 80px;
         width: 80px;
         border-radius: 50%;
-        left: 50%;
-        transform: translateX(-50%);
+        right: 1em;
+        cursor: grab;
+    }
+
+    #dv_clock>* {
+        pointer-events: none;
     }
 
     #dv_clock>div {
@@ -100,9 +104,36 @@
         background-color: cornflowerblue;
         color: white;
     }
+
+
+    .overlayHide::before {
+        content: " ";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9999999;
+        background-color: #4d4d4d;
+    }
+
+    .overlayHide::after {
+        content: "CONFIDENTIAL";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 3em;
+        color: red;
+        padding: 20px;
+        border: 5px solid red;
+        border-radius: 10px;
+        z-index: 99999999;
+    }
 </style>
 
 <div class="side-app" onload="setup()">
+    <!--<div id="overlayHide"></div>-->
 
     <div id="dv_clock" onclick="dragElStart(event)">
         <div>
@@ -224,127 +255,248 @@
                     <% })%>
         </div>
     </div>
-    <div class="modal fade" id="ModalAssessmentDetail" data-asid="<%= assessment.assessmentId %>" tabindex="-1"
-        aria-hidden="true" data-asId="<%= assessment.assessmentId %>">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header text-center">
-                    <h5 class="modal-title w-100">
-                        <%=assessment.title%>
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12  border-bottom  border-top  p-2">
-                            <%=assessment.description%>
-                        </div>
-                        <div class="col-md-12  border-bottom  border-top p-2">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label">Subject Code</label>
-                                    <input type="text" disabled class="form-control" value="<%=assessment.subject%> ">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Allowed Attempt Duration (minutes)</label>
-                                    <input type="text" disabled class="form-control" value="<%=assessment.duration%> ">
-                                </div>
+</div>
+
+<div class="modal fade" id="ModalAssessmentDetail" data-asid="<%= assessment.assessmentId %>" tabindex="-1"
+    aria-hidden="true" data-asId="<%= assessment.assessmentId %>">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title w-100">
+                    <%=assessment.title%>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12  border-bottom  border-top  p-2">
+                        <%=assessment.description%>
+                    </div>
+                    <div class="col-md-12  border-bottom  border-top p-2">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Subject Code</label>
+                                <input type="text" disabled class="form-control" value="<%=assessment.subject%> ">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Allowed Attempt Duration (minutes)</label>
+                                <input type="text" disabled class="form-control" value="<%=assessment.duration%> ">
                             </div>
                         </div>
-                        <div class="col-md-12  border-bottom  border-top p-2">
-                            <% var dtOpen=new Date(assessment.open)%>
-                                <% var dtClose=new Date(assessment.close)%>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Open Time</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <div class="input-group-text">
-                                                        <i class="fa fa-calendar tx-16 lh-0 op-6 text-info"></i>
-                                                    </div>
-                                                </div><!-- input-group-prepend -->
-                                                <input class="form-control " type="text" autocomplete="off" disabled
-                                                    value="<%=dtOpen.toLocaleDateString('en-GB')%>">
-                                            </div>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <div class="input-group-text">
-                                                        <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
-                                                    </div>
-                                                </div><!-- input-group-prepend -->
-                                                <input class="form-control" type="text" autocomplete="off" disabled
-                                                    value="<%=dtOpen.toLocaleTimeString()%>">
-                                            </div>
+                    </div>
+                    <div class="col-md-12  border-bottom  border-top p-2">
+                        <% var dtOpen=new Date(assessment.open)%>
+                            <% var dtClose=new Date(assessment.close)%>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Open Time</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fa fa-calendar tx-16 lh-0 op-6 text-info"></i>
+                                                </div>
+                                            </div><!-- input-group-prepend -->
+                                            <input class="form-control " type="text" autocomplete="off" disabled
+                                                value="<%=dtOpen.toLocaleDateString('en-GB')%>">
                                         </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Close Time</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <div class="input-group-text">
-                                                        <i class="fa fa-calendar tx-16 lh-0 op-6 text-warning"></i>
-                                                    </div>
-                                                </div><!-- input-group-prepend -->
-                                                <input class="form-control " type="text" autocomplete="off" disabled
-                                                    value="<%=dtClose.toLocaleDateString('en-GB')%>">
-                                            </div>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <div class="input-group-text">
-                                                        <i class="fa fa-clock-o tx-16 lh-0 op-6 text-warning"></i>
-                                                    </div>
-                                                </div><!-- input-group-prepend -->
-                                                <input class="form-control" type="text" autocomplete="off" disabled
-                                                    value="<%=dtClose.toLocaleTimeString()%>">
-                                            </div>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
+                                                </div>
+                                            </div><!-- input-group-prepend -->
+                                            <input class="form-control" type="text" autocomplete="off" disabled
+                                                value="<%=dtOpen.toLocaleTimeString()%>">
                                         </div>
                                     </div>
-                        </div>
-
-                        <div class="col-md-12  border-bottom  border-top p-2">
-                            <label class="form-label">Student Details</label>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label">Student Id</label>
-                                    <input type="text" disabled class="form-control" value="<%=student.id%> ">
-                                    <label class="form-label">Name</label>
-                                    <input type="text" disabled class="form-control" value="<%=student.name%> ">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Close Time</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fa fa-calendar tx-16 lh-0 op-6 text-warning"></i>
+                                                </div>
+                                            </div><!-- input-group-prepend -->
+                                            <input class="form-control " type="text" autocomplete="off" disabled
+                                                value="<%=dtClose.toLocaleDateString('en-GB')%>">
+                                        </div>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fa fa-clock-o tx-16 lh-0 op-6 text-warning"></i>
+                                                </div>
+                                            </div><!-- input-group-prepend -->
+                                            <input class="form-control" type="text" autocomplete="off" disabled
+                                                value="<%=dtClose.toLocaleTimeString()%>">
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Start Attempt</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">
-                                                <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
-                                            </div>
-                                        </div><!-- input-group-prepend -->
-                                        <input class="form-control" type="text" autocomplete="off" disabled
-                                            value="<%=atTime.startAttempt%>">
-                                    </div>
-                                    <label class="form-label">End Attempt</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">
-                                                <i class="fa fa-clock-o tx-16 lh-0 op-6 text-danger"></i>
-                                            </div>
-                                        </div><!-- input-group-prepend -->
-                                        <input id="dtEndAttempt" data-real="<%=atTime.realEnd%>" class="form-control"
-                                            type="text" autocomplete="off" disabled value="<%=atTime.endAttempt%>">
-                                    </div>
+                    </div>
+
+                    <div class="col-md-12  border-bottom  border-top p-2">
+                        <label class="form-label">Student Details</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Student Id</label>
+                                <input type="text" disabled class="form-control" value="<%=student.id%> ">
+                                <label class="form-label">Name</label>
+                                <input type="text" disabled class="form-control" value="<%=student.name%> ">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Start Attempt</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
+                                        </div>
+                                    </div><!-- input-group-prepend -->
+                                    <input class="form-control" type="text" autocomplete="off" disabled
+                                        value="<%=atTime.startAttempt%>">
+                                </div>
+                                <label class="form-label">End Attempt</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <i class="fa fa-clock-o tx-16 lh-0 op-6 text-danger"></i>
+                                        </div>
+                                    </div><!-- input-group-prepend -->
+                                    <input id="dtEndAttempt" data-real="<%=atTime.realEnd%>" class="form-control"
+                                        type="text" autocomplete="off" disabled value="<%=atTime.endAttempt%>">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer text-center" style="justify-content: center;">
-                    <button class="btn btn-primary" onclick="$('#ModalAssessmentDetail').modal('hide');"> OK </button>
-                </div>
+            </div>
+            <div class="modal-footer text-center" style="justify-content: center;">
+                <button class="btn btn-primary" onclick="$('#ModalAssessmentDetail').modal('hide');"> OK </button>
             </div>
         </div>
     </div>
 </div>
 
+
+<div class="modal fade" id="ModalAssessmentDetail" data-asid="<%= assessment.assessmentId %>" tabindex="-1"
+    aria-hidden="true" data-asId="<%= assessment.assessmentId %>">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title w-100">
+                    <%=assessment.title%>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12  border-bottom  border-top  p-2">
+                        <%=assessment.description%>
+                    </div>
+                    <div class="col-md-12  border-bottom  border-top p-2">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Subject Code</label>
+                                <input type="text" disabled class="form-control" value="<%=assessment.subject%> ">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Allowed Attempt Duration (minutes)</label>
+                                <input type="text" disabled class="form-control" value="<%=assessment.duration%> ">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12  border-bottom  border-top p-2">
+                        <% var dtOpen=new Date(assessment.open)%>
+                            <% var dtClose=new Date(assessment.close)%>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Open Time</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fa fa-calendar tx-16 lh-0 op-6 text-info"></i>
+                                                </div>
+                                            </div><!-- input-group-prepend -->
+                                            <input class="form-control " type="text" autocomplete="off" disabled
+                                                value="<%=dtOpen.toLocaleDateString('en-GB')%>">
+                                        </div>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
+                                                </div>
+                                            </div><!-- input-group-prepend -->
+                                            <input class="form-control" type="text" autocomplete="off" disabled
+                                                value="<%=dtOpen.toLocaleTimeString()%>">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Close Time</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fa fa-calendar tx-16 lh-0 op-6 text-warning"></i>
+                                                </div>
+                                            </div><!-- input-group-prepend -->
+                                            <input class="form-control " type="text" autocomplete="off" disabled
+                                                value="<%=dtClose.toLocaleDateString('en-GB')%>">
+                                        </div>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fa fa-clock-o tx-16 lh-0 op-6 text-warning"></i>
+                                                </div>
+                                            </div><!-- input-group-prepend -->
+                                            <input class="form-control" type="text" autocomplete="off" disabled
+                                                value="<%=dtClose.toLocaleTimeString()%>">
+                                        </div>
+                                    </div>
+                                </div>
+                    </div>
+
+                    <div class="col-md-12  border-bottom  border-top p-2">
+                        <label class="form-label">Student Details</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Student Id</label>
+                                <input type="text" disabled class="form-control" value="<%=student.id%> ">
+                                <label class="form-label">Name</label>
+                                <input type="text" disabled class="form-control" value="<%=student.name%> ">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Start Attempt</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
+                                        </div>
+                                    </div><!-- input-group-prepend -->
+                                    <input class="form-control" type="text" autocomplete="off" disabled
+                                        value="<%=atTime.startAttempt%>">
+                                </div>
+                                <label class="form-label">End Attempt</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <i class="fa fa-clock-o tx-16 lh-0 op-6 text-danger"></i>
+                                        </div>
+                                    </div><!-- input-group-prepend -->
+                                    <input id="dtEndAttempt" data-real="<%=atTime.realEnd%>" class="form-control"
+                                        type="text" autocomplete="off" disabled value="<%=atTime.endAttempt%>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer text-center" style="justify-content: center;">
+                <button class="btn btn-primary" onclick="$('#ModalAssessmentDetail').modal('hide');"> OK </button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     document.addEventListener("contextmenu", (e) => {
         e.preventDefault();
@@ -374,11 +526,34 @@
     var timeLeft;
 
     window.onblur = function () {
+        ws.send(JSON.stringify({ status: 2 }))
+
+        document.body.classList.add('overlayHide')
         console.log("focusout")
         //  tElapsed = timePoint() - tPrev
     }
-
+    document.addEventListener('copy', function (e) {
+        e.preventDefault();
+    })
+    window.onkeydown = function (e) {
+        console.log(e)
+        if (e.key == "Meta") {
+            document.body.classList.add('overlayHide')
+            window.blur()
+        } if (e.keyCode == 44) {
+            console.log('apekah')
+            $("body").hide();
+        }
+    }
+    window.onkeyup = function (e) {
+        if (e.code == "PrintScreen") {
+            navigator.clipboard.writeText('')
+        }
+    }
     window.onfocus = function () {
+        ws.send(JSON.stringify({ status: 1 }))
+
+        document.body.classList.remove('overlayHide')
         // tPrev = timePoint()
     }
 
@@ -400,6 +575,7 @@
         assessmentId = parseInt(document.getElementById('ModalAssessmentDetail').dataset.asid)
         resetTimer()
         updateClock()
+        WS()
     }
 
     var percentTime
@@ -414,8 +590,25 @@
             updateClock()
         }, 1000);
     }
-
-
+    var ws;
+    function WS() {
+        ws = new WebSocket('ws:/' + window.location.hostname + ':5000/');
+        if (localStorage.getItem("jwtT") != null && localStorage.getItem("uid") != null && localStorage.getItem("jwtP") != null) {
+            ws.onopen = () => {
+                ws.send(JSON.stringify({
+                    "verify": {
+                        "uId": localStorage.getItem("uid"),
+                        "jwtP": localStorage.getItem("jwtP"),
+                        "jwtT": localStorage.getItem("jwtT"),
+                        "assessment": assessmentId
+                    }
+                }))
+            };
+            ws.onmessage = function (message) {
+                var jsonData = JSON.parse(message.data)
+            }
+        }
+    }
 
     function resetTimer() {
         tPrev = timePoint()
@@ -428,6 +621,7 @@
             title: 'Attempt Time Ended'
         })
         navigate('/')
+        ws.send(JSON.stringify({ status: 3 }))
     }
 
     function btnQuestion(e) {
@@ -535,6 +729,7 @@
         if (action.value) {
             if (action.value == true) {
                 Server.request('POST', '/api/assessment/finishAttempt', { "assessmentId": assessmentId }, true).then(function (result) {
+                    ws.send(JSON.stringify({ status: 3 }))
                     clearTimeout(mainTimeout)
                     navigate('/')
                 }).catch(function (err) {
