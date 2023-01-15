@@ -440,7 +440,13 @@ module.exports = class Assessment {
             db.query('INSERT INTO assessment_students (assessmentId,studentId) VALUES(' + db.escape(asId) + ',' + db.escape(studentId) + ')',
                 function (err, result) {
                     if (err) {
-                        reject(err.message)
+                        if (err.errno == 1062) {
+                            reject('duplicate')
+                        }
+                        else {
+
+                            reject(err.message)
+                        }
                     }
                     else {
                         resolve(result.affectedRows)

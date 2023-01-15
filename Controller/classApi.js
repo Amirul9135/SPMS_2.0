@@ -108,7 +108,7 @@ router.post('/getStudent', function (req, res) {
         return res.status(500).send(value);
     })
 })
-   
+
 router.post('/registerStudent', function (req, res) {
     var newStud = new ClassStudent();
     newStud.setIntClassId(req.body.classId);

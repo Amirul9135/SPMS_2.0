@@ -63,6 +63,15 @@ router.get('/student', Auth.userType([2, 3]), async function (req, res) {
     if (!schoolList) {
         return res.status(500).send({ error: "failed to load school list data" })
     }
+    if (req.user.type == 2) {
+        let tmp = []
+        for (var i = 0; i < schoolList.length; i++) {
+            if (schoolList[i].schoolId === req.user.schoolId) {
+                tmp.push(schoolList[i])
+            }
+        }
+        schoolList = tmp
+    }
     return res.render("student.ejs", {
         states: statesdata,
         schoolList: schoolList
@@ -135,10 +144,27 @@ router.get('/topic', Auth.userType([3]), function (req, res) {
 router.get('/assessment', Auth.userType(), async function (req, res) {
     var subjects = await Subject.getAll()
     var answerType = await QuestionType.getAll();
+
+    var schoolList = await School.getAll().catch(function (err) {
+        console.log(err)
+    })
+    if (!schoolList) {
+        return res.status(500).send({ error: "failed to load school list data" })
+    }
+    if (req.user.type == 2) {
+        let tmp = []
+        for (var i = 0; i < schoolList.length; i++) {
+            if (schoolList[i].schoolId === req.user.schoolId) {
+                tmp.push(schoolList[i])
+            }
+        }
+        schoolList = tmp
+    }
     return res.render("assessment.ejs",
         {
             ansType: answerType,
-            subjects: subjects
+            subjects: subjects,
+            schoolList: schoolList
         })
 })
 router.get('/pastAssessment', Auth.userType(), async function (req, res) {

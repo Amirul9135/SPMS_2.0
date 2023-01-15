@@ -195,12 +195,14 @@
             Message.createNew("Success", "s", 0);
 
         }).catch(async function (value) {
-            var action = await Swal.fire({
-                type: 'error',
-                title: 'Student Already Registered!',
-                text: '',
-                showCancelButton: true
-            })
+            if (value == 'duplicate')
+                Swal.fire({
+                    type: 'error',
+                    title: 'Student Already Registered!',
+                    text: '',
+                    showCancelButton: true
+                })
+            console.log(value)
 
         })
     }

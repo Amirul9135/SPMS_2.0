@@ -562,6 +562,97 @@
     </div>
 </div>
 
+<!--Find Student-->
+
+<div class="modal fade" id="ModalFindStudent" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title w-100">
+                    Find Student
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="card">
+                        <div class="card-body">
+
+                            <div class="row">
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label mt-0">School</label>
+                                        <div class="select-search">
+                                            <input id="SSfschool" type="text" autocomplete="off" class="form-control"
+                                                data-list="idListfSchool" onkeyup="SSKeyHandler(event)"
+                                                onfocus="SSFocus(event)" onblur="SSFocus(event)"
+                                                onplay="fSchoolChange(event)">
+                                            <ul onclick="SSItemClick(event)" id="idListfSchool" data-selected="-1">
+                                                <% schoolList.forEach(s=>{ %>
+                                                    <li id="<%=s.schoolId%>" title="<%=s.fullName%>">
+                                                        <%=s.abbrv%>
+                                                    </li>
+                                                    <% }) %>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="form-label mt-0">Class</label>
+                                        <div class="select-search">
+                                            <input id="SSfclass" type="text" autocomplete="off" disabled
+                                                class="form-control" data-list="LstFClass" onkeyup="SSKeyHandler(event)"
+                                                onfocus="SSFocus(event)" onblur="SSFocus(event)">
+                                            <ul onclick="SSItemClick(event)" id="LstFClass" data-selected="-1">
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="row">
+                                        <div class="form-group">
+
+                                            <label class="form-label mt-0">&nbsp;</label>
+                                            <button onclick="findStudent()" class="btn btn-pill btn-info-light"><b><i
+                                                        class="fa fa-search">&nbsp;Search</i></b></button>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover text-nowrap mb-0" id="tbFindStudent">
+                                    <thead class="bg-primary">
+                                        <tr>
+                                            <th width="40%" class="text-white">Name</th>
+                                            <th width="40%" class=" text-white">Identification No.</th>
+                                            <th width="10%" class="text-white">Class</th>
+                                            <th width="10%" class="text-center text-white">Add</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="mySchool_tbd">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <!--Question Detail-->
 <div class="modal fade staffOnly" id="ModalQuestionDetail" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -656,7 +747,7 @@
     var QBtable;
     var tbASStudents;
     var tbASStaff;
-
+    var tbFindStudent;
     var tableSetItems;
     var userType = null;
     async function setup() {
@@ -707,6 +798,14 @@
                 ]
         }
         );
+
+        tbFindStudent = new DataTable("#tbFindStudent", {
+            // options 
+            "columnDefs":
+                [
+                    { "targets": [3], "className": "text-center" }
+                ]
+        })
 
         //disable focus locking in modal
         jQuery('#ModalQuestionSets').on('shown.bs.modal', function () {
@@ -810,6 +909,46 @@
         })
     }
 
+    function findStudent() {
+        var school = document.getElementById("SSfschool").dataset.selected;
+        if (school == "-1") {
+            Swal.fire({
+                type: 'error',
+                title: 'invalid school',
+                text: 'Please Select school first'
+            })
+            return
+        }
+        var classId = document.getElementById("SSfclass").dataset.selected;
+        Server.request("GET", "/api/account/allStudent?schoolId=" + school + "&classId=" + classId, null, true).then(
+            function (result) {
+                result = JSON.parse(result)
+                console.log(result)
+                tbFindStudent.clear();
+
+                if (result.length == 0) {
+                    Swal.fire({
+                        type: 'warning',
+                        title: 'No data',
+                        text: 'At ' + year + ' There is no student in selected school/class '
+                    })
+                }
+                var tmpRow;
+                result.forEach(student => { //temporary
+                    console.log('ad')
+                    tmpRow = tbFindStudent.row.add([
+                        student.name,
+                        student.studentId,
+                        student.className,
+                        '<button onclick="selectStudHandler(event)" id="' + student.studentId + '" class="btn btn-outline-success" style="border-radius:50%" ><i class="fa fa-plus"></i></button>'
+                    ]).node()
+                })
+                tbFindStudent.draw();
+            }
+        ).catch(function (err) {
+            console.log(err)
+        })
+    }
     function togglePage() {
         var setList = document.getElementById("dvAssessmentList");
         var setDetail = document.getElementById("dvAssessmentDetail");
@@ -985,6 +1124,10 @@
             })
     }
 
+    function selectStudHandler(e) {
+        registerStudentInAssessment(e.target.id)
+    }
+
     async function btnAddStudent(e) {
 
         var action = await Swal.fire({
@@ -1012,30 +1155,70 @@
             if (addByid.dismiss) {
                 return;
             }
-            Server.request('POST', '/api/assessment/student', {
-                "assessmentId": selectedAssessmentId,
-                "studentId": addByid.value[0]
-            }, true).then(function (result) {
-                Swal.fire({
-                    type: 'success',
-                    title: 'student added'
-                })
-                loadStudentList()
-            }).catch(function (err) {
-                console.log(err)
-                var jsonErr = JSON.parse(err)
-                if (jsonErr.hasOwnProperty("validationError")) {
-                    displayValidationError(jsonErr);
-                }
-                else {
-                    Message.createNew("Error", "invalid Student Id", 3);
-                }
-            })
+            registerStudentInAssessment(addByid.value[0])
         }
         else if (action.value == true) {
             console.log("find student")
+            $('#ModalFindStudent').modal('show')
         }
     }
+
+    function registerStudentInAssessment(studentId) {
+
+        Server.request('POST', '/api/assessment/student', {
+            "assessmentId": selectedAssessmentId,
+            "studentId": studentId
+        }, true).then(function (result) {
+            Swal.fire({
+                type: 'success',
+                title: 'student added'
+            })
+            loadStudentList()
+        }).catch(function (err) {
+            console.log(err)
+            var jsonErr = JSON.parse(err)
+            if (jsonErr.hasOwnProperty("validationError")) {
+                displayValidationError(jsonErr);
+            }
+            else if (jsonErr.error == 'duplicate') {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'duplicate entry',
+                    text: 'Student is already added into the assessment'
+                })
+            }
+            else {
+                Message.createNew("Error", "invalid Student Id", 3);
+            }
+        })
+    }
+    function fSchoolChange(e) {
+        console.log(e.target.dataset.selected)
+        Server.request('GET', '/api/school/classList?schId=' + e.target.dataset.selected, null, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            if (result.length == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'No class in selected school'
+                })
+                tableStud.clear();
+                tableStud.draw();
+                document.getElementById('SSfclass').disabled = true
+                return
+            }
+            var strhtml = '<li id="null">ALL</li>'
+            result.forEach(cls => {
+                strhtml += '<li id="' + cls.classId + '">' + cls.className + '</li>'
+            })
+            document.getElementById('LstFClass').innerHTML = strhtml
+            document.getElementById('SSfclass').disabled = false
+        }).catch(function (err) {
+            console.log(err)
+            Message.createNew("Error", "Failed to load class list in selected school", 3)
+        })
+    }
+
 
     async function removeStudent(e) {
 

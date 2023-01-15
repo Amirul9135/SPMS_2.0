@@ -263,10 +263,10 @@
     }
 
     function registerModal() {
-        if (document.getElementById('LstFClass').dataset.selected == '-1') {
+        if (document.getElementById('LstFClass').dataset.selected == '-1' || document.getElementById('LstFClass').dataset.selected == 'null') {
             Swal.fire({
                 type: 'error',
-                title: 'No class selected'
+                title: 'No specific class selected'
             })
             return
         }
@@ -290,6 +290,14 @@
         if (areaId == "-1" || document.getElementById("txtalamat").value.length < 3) {
             Message.createNew("Warning", "Invalid address", 2)
             return false;
+        }
+        var classId = document.getElementById('LstFClass').dataset.selected
+        if (classId == "-1" || classId == "null" || classId == null) {
+            Swal.fire({
+                type: 'error',
+                title: 'invalid class',
+                text: 'Please Select specifi class for registration'
+            })
         }
 
         var name = document.getElementById("txtname").value;
@@ -316,8 +324,24 @@
             document.getElementById("txtphone").value = "";
             document.getElementById("txtemail").value = "";
             submitAddress(studentId)//ni panggil function ak buat yg akan insertkan address ke address table guna id die
-            $('#modal_studentForm').modal('hide');//ni auto tutup balek modal after register
-            loadStudent()
+
+
+            Server.request("POST", "/api/class/registerStudent", {
+                "classId": classId,
+                "studentId": studentId
+            }, true).then(function (value) {
+
+                $('#modal_studentForm').modal('hide');//ni auto tutup balek modal after register
+                loadStudent()
+            }).catch(async function (value) {
+                Swal.fire({
+                    type: 'error',
+                    title: 'Unable to register student into class',
+                    text: '',
+                    showCancelButton: true
+                })
+
+            })
 
         }).catch(function (value) {
             console.log(value);
