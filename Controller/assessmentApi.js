@@ -526,7 +526,7 @@ router.get('/QAanalysis',
         })
     })
 
-router.get('/areaReport', function (req, res) {
+router.get('/report/area', function (req, res) {
     if (!req.query.areaId) {
         return res.status(400).send({ validationError: { areaId: 'invalid' } })
     }
@@ -544,7 +544,25 @@ router.get('/areaReport', function (req, res) {
     })
 })
 
-router.get('/schoolReport', function (req, res) {
+router.get('/report/individual', function (req, res) {
+    if (!req.query.studentId) {
+        return res.status(400).send({ validationError: { studentId: 'invalid' } })
+    }
+    if (!req.query.subjCode) {
+        return res.status(400).send({ validationError: { subjectCode: 'invalid' } })
+    }
+    if (!req.query.year) {
+        return res.status(400).send({ validationError: { year: 'invalid' } })
+    }
+    Assessment.individualReport(req.query.studentId, req.query.subjCode, req.query.year).then(function (result) {
+        return res.status(200).send(result)
+    }).catch(function (err) {
+        return res.status(500).send({ error: err })
+    })
+
+})
+
+router.get('/report/school', function (req, res) {
     if (!req.query.schoolId) {
         return res.status(400).send({ validationError: { schoolId: 'invalid school id' } })
     }

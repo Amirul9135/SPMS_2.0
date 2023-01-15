@@ -116,6 +116,8 @@
                                 data-target="#ModalAddSchool"><i class="fa fa-plus" aria-hidden="true"></i> School
                                 Data</button>
                             &nbsp;
+                            <button class="btn btn-pill btn-outline-primary" onclick="addStudentHandler()"><i
+                                    class="fa fa-plus" aria-hidden="true"></i> Student</button>
                         </div>
                     </div>
                 </div>
@@ -472,6 +474,9 @@
                         curcolor = c.seriesColor
                     }
                 })
+                if (data.name.includes('<br>')) {
+                    data.name = data.name.split('<br>')[0]
+                }
                 loadAreaPolygon(data.id, curcolor, data.name)
             }
         })
@@ -550,6 +555,25 @@
                 }, 'color')
             }
         }))
+    }
+
+    async function addStudentHandler() {
+        var addByid = await Swal.fire({
+            title: 'Insert Identification No.',
+            html: '<input  class="form-control text-center" type="text"  id="swalStudentId"/>',
+            showCancelButton: true,
+            preConfirm: function () {
+                return new Promise(function (resolve) {
+                    resolve([
+                        $('#swalStudentId').val()
+                    ])
+                })
+            }
+        })
+        if (addByid.dismiss) {
+            return;
+        }
+        loadNewIndividualData(addByid.value[0])
     }
 
     //school
@@ -642,7 +666,7 @@
         }
         var year = document.getElementById('selYear').value
         console.log(year)
-        Server.request('GET', '/api/assessment/areaReport?areaId=' + areaId + '&subjCode=' + subjcode + '&year=' + year, null, true).then(function (result) {
+        Server.request('GET', '/api/assessment/report/area?areaId=' + areaId + '&subjCode=' + subjcode + '&year=' + year, null, true).then(function (result) {
             result = JSON.parse(result)
             console.log(result)
             if (result.length == 0) {
@@ -652,6 +676,8 @@
             result.forEach(res => {
                 converted.push([res.date, res.percent * 100, res.studentCount])
             })
+            console.log('conv')
+            console.log(converted)
             let newData = newSeries(areaId, areaname, converted)
             lineChartOption.series.push(newData)
             redrawChart()
@@ -674,6 +700,42 @@
 
     }
 
+    function loadNewIndividualData(studentId) {
+        var subjcode = document.getElementById('idListSubj').dataset.selected
+        if (subjcode == '-1') {
+            Message.createNew('No subject Selected', '', 3)
+            return
+        }
+        var year = document.getElementById('selYear').value
+        Server.request('GET', '/api/assessment/report/individual?studentId=' + studentId + '&subjCode=' + subjcode + '&year=' + year, null, true).then(
+            function (result) {
+                result = JSON.parse(result)
+                console.log(result)
+                let converted = []
+                result.forEach(res => {
+                    converted.push([res.date, res.percent * 100, 1])
+                })
+                let newData = newSeries(null, result[0].studentId + '<br>' + result[0].name, converted)
+                lineChartOption.series.push(newData)
+                redrawChart()
+                loadedDataDone()
+
+            }
+        ).catch(function (err) {
+            console.log(err)
+            try {
+                err = JSON.parse(err)
+                if (err.error == "no data") {
+                    Swal.fire({
+                        type: 'warning',
+                        title: 'No record meets the criteria'
+                    })
+                }
+            } catch {
+
+            }
+        })
+    }
 
     function loadedDataDone() {
         //document.getElementById('btnData').style.display = "none"
@@ -682,6 +744,8 @@
 
     function addSchoolData(e) {
         console.log(e.target.id)
+        var sname = e.target.parentElement.parentElement.children[1].innerHTML.trim()
+        console.log(sname)
         var year = document.getElementById('selYear').value
         var subjCode = document.getElementById('idListSubj').dataset.selected
         if (subjCode == '-1') {
@@ -692,7 +756,7 @@
             })
             return
         }
-        Server.request("GET", "/api/assessment/schoolReport?schoolId=" + e.target.id + "&subjCode=" + subjCode + "&year=" + year, null, true).then(function (result) {
+        Server.request("GET", "/api/assessment/report/school?schoolId=" + e.target.id + "&subjCode=" + subjCode + "&year=" + year, null, true).then(function (result) {
             result = JSON.parse(result)
             let converteds = {}
             result.forEach(d => {
@@ -703,7 +767,7 @@
                 converteds[d.areaName].data.push([d.date, d.percent * 100, d.studentCount])
             })
             Object.keys(converteds).forEach(k => {
-                let newData = new newSeries(converteds[k].areaId, k, converteds[k].data)
+                let newData = new newSeries(converteds[k].areaId, k + "<br>" + sname, converteds[k].data)
 
                 lineChartOption.series.push(newData)
             })
@@ -766,7 +830,14 @@
             // Try 'horizontal'
             type: 'scroll',
             orient: 'horizontal',
-            right: 10
+            right: 10,
+            formatter: function (name) {
+                if (name.includes('<br>')) {
+                    name = name.split('<br>')
+                    name = name[0] + '\n' + name[1]
+                }
+                return name
+            }
         }, grid: { containLabel: true },
         tooltip: {
             trigger: 'axis',
@@ -779,14 +850,15 @@
                     if (!dt) {
                         dt = s.data[0]
                     }
-                    ttip += '<u style="color:' + s.color + '"><b>' + s.seriesName + "</u></b><br>Average: "
+                    ttip += '<u style="color:' + s.color + '"><b>' + s.seriesName + "</u></b><br>Average Mark: "
                         + s.data[1].toFixed(2) + "%<br>Student Count: " + s.data[2] + "<br>"
+
                     avg += s.data[1]
                     tcount += s.data[2]
 
                 })
                 ttip += "<br><b>Total Of " + tcount + " student" + ((tcount > 1) ? 's' : '') + "</b>"
-                ttip += "<br><b>Overall Average: " + (avg / d.length).toFixed(1) + "%</b>"
+                ttip += "<br><b>Overall Average Percentage: " + (avg / d.length).toFixed(1) + "%</b>"
                 ttip += "<br><b>Date Assessed: " + new Date(dt).toLocaleDateString('en-GB', { timeZone: "Asia/Kuala_Lumpur" }) + "</b>"
                 return ttip;
 
