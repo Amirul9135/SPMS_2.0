@@ -96,7 +96,13 @@
   }
 
   function clickAssessment(e) {
-    startAttempt(e.target.parentElement.id)
+    if (localStorage.getItem('utype') == 1) {
+
+      startAttempt(e.target.parentElement.id)
+    }
+    else {
+      navigate('/assessment_monitor?asId=' + e.target.parentElement.id)
+    }
   }
 
   function startAttempt(asId) {

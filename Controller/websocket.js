@@ -8,8 +8,8 @@ module.exports = function (ws, req) {
     ws.on('message', message => {
         if (isJson(message)) {
             message = JSON.parse(message);
-            console.log(message)
             if (message.hasOwnProperty("verify")) {
+                console.log('vrf')
                 if (!req.headers.cookie) {
                     return;
                 }
@@ -23,28 +23,45 @@ module.exports = function (ws, req) {
                 }
                 try {
                     const decoded = jwt.verify(fullToken, global.jwts[message.verify.uId]);
-                    console.log(decoded)
                     ws.user = decoded.user;
                     ws.assessment = message.verify.assessment
-                    ws.studentstats = 1
                     if (decoded.user.type == 1) {
+                        ws.studentstats = 1
                         if (!global.students.hasOwnProperty(message.verify.assessment.toString())) {
                             global.students[message.verify.assessment.toString()] = []
                         }
                         ws.on('close', function (p) {
+                            if (ws.studentstats != 3) {
+                                ws.studentstats = 0
+                            }
                             global.students[ws.assessment.toString()] = global.students[ws.assessment.toString()].filter(socket => { socket.user.id != ws.user.id })
                             if (global.students[ws.assessment.toString()].length == 0) {
                                 delete global.students[ws.assessment.toString()]
                             }
-                            broadCastStudentStatus(ws.assessment)
-                            console.log('closed')
-                            console.log(global.students)
+                            broadcastMe(ws)
+                            console.log(ws.studentstats)
+                            console.log('close')
                         })
                         global.students[message.verify.assessment.toString()].push(ws)
-                        ws.send(JSON.stringify({
-                            "status": 200,
-                            "message": "kiosk connected"
-                        }))
+                        broadcastMe(ws)
+                        console.log('connected')
+                    }
+                    else if (decoded.user.type == 2 || decoded.user.type == 3) {
+                        console.log('stf')
+                        console.log(global.staff)
+
+                        if (!global.staff.hasOwnProperty(message.verify.assessment.toString())) {
+                            global.staff[message.verify.assessment.toString()] = []
+                        }
+                        ws.on('close', function (p) {
+                            global.staff[ws.assessment.toString()] = global.staff[ws.assessment.toString()].filter(socket => { socket.user.id != ws.user.id })
+                            if (global.staff[ws.assessment.toString()].length == 0) {
+                                delete global.staff[ws.assessment.toString()]
+                            }
+                        })
+                        global.staff[message.verify.assessment.toString()].push(ws)
+                        fetchAllStudentStatus(ws)
+
                     }
                     return;
                 }
@@ -56,12 +73,14 @@ module.exports = function (ws, req) {
                 }
             }
             else if (message.hasOwnProperty("status")) {
+                console.log(message.status)
                 ws.studentstats = message.status
                 if (message.status == 3) {//finish
+
                     ws.close()
                 }
                 else {
-                    broadCastStudentStatus(ws.assessment)
+                    broadcastMe(ws)
                 }
             }
         }
@@ -80,6 +99,26 @@ function currentStudentStatus(assessmentId) {
         })
     }
     return studStats
+}
+
+function broadcastMe(ws) {
+    let strasid = ws.assessment.toString()
+    if (!global.staff.hasOwnProperty(strasid)) {
+        return
+    }
+    global.staff[strasid].forEach(s => {
+        s.send(JSON.stringify([{ id: ws.user.id, status: ws.studentstats }]))
+    });
+
+}
+
+function fetchAllStudentStatus(ws) {//staff
+    let strasid = ws.assessment.toString()
+    if (!global.students.hasOwnProperty(strasid)) {
+        return
+    }
+    ws.send(JSON.stringify(currentStudentStatus(ws.assessment)))
+
 }
 
 function broadCastStudentStatus(assessmentId) {

@@ -304,6 +304,18 @@ router.get('/student',
             return res.status(500).send(err)
         })
     })
+router.get('/student/finished',
+    [Auth.userType([2, 3])]
+    , function (req, res) {
+        if (!req.query.asId) {
+            return res.status(400).send()
+        }
+        Assessment.finishedStudent(req.query.asId).then(function (result) {
+            return res.status(200).send(result)
+        }).catch(function (err) {
+            returnres.status(500).send({ error: err })
+        })
+    })
 
 router.post('/student', [
     Auth.userType([2, 3]),

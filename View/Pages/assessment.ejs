@@ -235,11 +235,13 @@
                                                 id="tbASStudents">
                                                 <thead class="bg-primary">
                                                     <tr>
-                                                        <th width="25%" class="text-white">Id</th>
-                                                        <th width="50%" class="text-center text-white">Name</th>
+                                                        <th width="20%" class="text-white">Id</th>
+                                                        <th width="40%" class="text-center text-white">Name</th>
                                                         <th width="20%" class="text-center text-white">
                                                             Class & School
                                                         </th>
+                                                        <th width="15%" class="text-center text-white">Contact</th>
+
                                                         <th width="5%" class="text-center text-white"></th>
                                                     </tr>
                                                 </thead>
@@ -300,8 +302,9 @@
                                                 id="tbASStaff">
                                                 <thead class="bg-primary">
                                                     <tr>
-                                                        <th width="30%" class="text-white">Id</th>
-                                                        <th width="60%" class="text-center text-white">Name</th>
+                                                        <th width="25%" class="text-white">Id</th>
+                                                        <th width="45%" class="text-center text-white">Name</th>
+                                                        <th width="20%" class="text-center text-white">Contact</th>
                                                         <th width="10%" class="text-center text-white"></th>
                                                     </tr>
                                                 </thead>
@@ -683,14 +686,14 @@
             // options 
             "columnDefs":
                 [
-                    { "targets": [3], "className": "text-center" }
+                    { "targets": [4], "className": "text-center" }
                 ]
         })
         tbASStaff = new DataTable('#tbASStaff', {
             // options 
             "columnDefs":
                 [
-                    { "targets": [2], "className": "text-center" }
+                    { "targets": [3], "className": "text-center" }
                 ]
         })
         tableSetItems = new DataTable('#tbSetitems');
@@ -959,10 +962,20 @@
                     tmpRow = tbASStudents.row.add([
                         student.studentId,
                         student.name,
-                        '<span class="text-muted">' + student.school + "</span><br>" + student.className,
+                        '<span class="text-muted">' + student.abbrv + "</span><br>" + student.className,
+                        student.email + "<br>" + student.phone,
                         '<button class="btn btn-danger" onclick="removeStudent(event)"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button>'
                     ]).node()
                     tmpRow.classList.add('assessmentStudents')
+                    tmpRow.onclick = function (e) {
+                        console.log(e)
+                        if (e.target.tagName == "TD")
+                            Swal.fire({
+                                type: "info",
+                                title: student.name,
+                                html: '<div style="text-align:left;padding-left:2.5em">Identification No. : ' + student.studentId + "<br><b>Address : </b><br>" + student.addressText + ",<br> " + student.areaName + ",<br> " + student.postOffice + " " + student.postcode + ",<br>" + student.state_name + "</div>"
+                            })
+                    }
                 })
                 tbASStudents.draw()
                 countStudentList()
@@ -1660,6 +1673,7 @@
                     tbASStaff.row.add([
                         staff.staffId,
                         staff.name,
+                        staff.email + '<br>' + staff.phone,
                         '<button class="btn btn-danger" onclick="removeStaff(event)"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button>'
                     ]).node().classList.add('staffRow')
                 })

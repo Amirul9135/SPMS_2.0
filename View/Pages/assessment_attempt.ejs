@@ -297,7 +297,7 @@
                                                 <div class="input-group-text">
                                                     <i class="fa fa-calendar tx-16 lh-0 op-6 text-info"></i>
                                                 </div>
-                                            </div><!-- input-group-prepend -->
+                                            </div>
                                             <input class="form-control " type="text" autocomplete="off" disabled
                                                 value="<%=dtOpen.toLocaleDateString('en-GB')%>">
                                         </div>
@@ -306,7 +306,7 @@
                                                 <div class="input-group-text">
                                                     <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
                                                 </div>
-                                            </div><!-- input-group-prepend -->
+                                            </div>
                                             <input class="form-control" type="text" autocomplete="off" disabled
                                                 value="<%=dtOpen.toLocaleTimeString()%>">
                                         </div>
@@ -318,7 +318,7 @@
                                                 <div class="input-group-text">
                                                     <i class="fa fa-calendar tx-16 lh-0 op-6 text-warning"></i>
                                                 </div>
-                                            </div><!-- input-group-prepend -->
+                                            </div>
                                             <input class="form-control " type="text" autocomplete="off" disabled
                                                 value="<%=dtClose.toLocaleDateString('en-GB')%>">
                                         </div>
@@ -327,7 +327,7 @@
                                                 <div class="input-group-text">
                                                     <i class="fa fa-clock-o tx-16 lh-0 op-6 text-warning"></i>
                                                 </div>
-                                            </div><!-- input-group-prepend -->
+                                            </div>
                                             <input class="form-control" type="text" autocomplete="off" disabled
                                                 value="<%=dtClose.toLocaleTimeString()%>">
                                         </div>
@@ -351,7 +351,7 @@
                                         <div class="input-group-text">
                                             <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
                                         </div>
-                                    </div><!-- input-group-prepend -->
+                                    </div>
                                     <input class="form-control" type="text" autocomplete="off" disabled
                                         value="<%=atTime.startAttempt%>">
                                 </div>
@@ -361,7 +361,7 @@
                                         <div class="input-group-text">
                                             <i class="fa fa-clock-o tx-16 lh-0 op-6 text-danger"></i>
                                         </div>
-                                    </div><!-- input-group-prepend -->
+                                    </div>
                                     <input id="dtEndAttempt" data-real="<%=atTime.realEnd%>" class="form-control"
                                         type="text" autocomplete="off" disabled value="<%=atTime.endAttempt%>">
                                 </div>
@@ -418,7 +418,7 @@
                                                 <div class="input-group-text">
                                                     <i class="fa fa-calendar tx-16 lh-0 op-6 text-info"></i>
                                                 </div>
-                                            </div><!-- input-group-prepend -->
+                                            </div>
                                             <input class="form-control " type="text" autocomplete="off" disabled
                                                 value="<%=dtOpen.toLocaleDateString('en-GB')%>">
                                         </div>
@@ -427,7 +427,7 @@
                                                 <div class="input-group-text">
                                                     <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
                                                 </div>
-                                            </div><!-- input-group-prepend -->
+                                            </div>
                                             <input class="form-control" type="text" autocomplete="off" disabled
                                                 value="<%=dtOpen.toLocaleTimeString()%>">
                                         </div>
@@ -439,7 +439,7 @@
                                                 <div class="input-group-text">
                                                     <i class="fa fa-calendar tx-16 lh-0 op-6 text-warning"></i>
                                                 </div>
-                                            </div><!-- input-group-prepend -->
+                                            </div>
                                             <input class="form-control " type="text" autocomplete="off" disabled
                                                 value="<%=dtClose.toLocaleDateString('en-GB')%>">
                                         </div>
@@ -448,7 +448,7 @@
                                                 <div class="input-group-text">
                                                     <i class="fa fa-clock-o tx-16 lh-0 op-6 text-warning"></i>
                                                 </div>
-                                            </div><!-- input-group-prepend -->
+                                            </div>
                                             <input class="form-control" type="text" autocomplete="off" disabled
                                                 value="<%=dtClose.toLocaleTimeString()%>">
                                         </div>
@@ -472,7 +472,7 @@
                                         <div class="input-group-text">
                                             <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
                                         </div>
-                                    </div><!-- input-group-prepend -->
+                                    </div>
                                     <input class="form-control" type="text" autocomplete="off" disabled
                                         value="<%=atTime.startAttempt%>">
                                 </div>
@@ -482,7 +482,7 @@
                                         <div class="input-group-text">
                                             <i class="fa fa-clock-o tx-16 lh-0 op-6 text-danger"></i>
                                         </div>
-                                    </div><!-- input-group-prepend -->
+                                    </div>
                                     <input id="dtEndAttempt" data-real="<%=atTime.realEnd%>" class="form-control"
                                         type="text" autocomplete="off" disabled value="<%=atTime.endAttempt%>">
                                 </div>
@@ -616,12 +616,12 @@
     }
 
     async function endAssessment() {
+        ws.send(JSON.stringify({ status: 3 }))
         await Swal.fire({
             type: 'warning',
             title: 'Attempt Time Ended'
         })
         navigate('/')
-        ws.send(JSON.stringify({ status: 3 }))
     }
 
     function btnQuestion(e) {

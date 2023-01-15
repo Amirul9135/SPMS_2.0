@@ -143,6 +143,30 @@ router.get('/pastAssessment', async function (req, res) {
     return res.render("assessment_Past.ejs")
 })
 
+router.get('/assessment_monitor', Auth.userType([2, 3]), async function (req, res) {
+    if (!req.query.asId) {
+        return res.status(400).send()
+    }
+
+    var As = new Assessment()
+    As.assessmentId = req.query.asId;
+    As = await As.load().catch(function (err) {
+        return res.status(400).send({ error: err })
+    })
+    var ASC = new AssessmentController(req.query.asId, req.user.id);
+    var stats = await ASC.checkStatus();
+    if (stats == -1) {
+        return res.status(401).send({ error: 'closed' })
+    }
+    else if (stats == 1) {
+        return res.status(401).send({ error: 'assessment not started yet' })
+    }
+    return res.render("assessment_monitoring.ejs", {
+        staff: req.user,
+        assessment: As[0],
+    })
+})
+
 router.get('/assessment_attempt', Auth.userType([1]), async function (req, res) {
     if (!req.query.asId) {
         return res.status(400).send()

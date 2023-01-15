@@ -1,0 +1,267 @@
+<style>
+    .mdi {
+        font-size: 1.5em;
+    }
+
+    /*
+    .mdi-account-off {}
+*/
+    .mdi-account {
+        color: #28a745;
+    }
+
+    .mdi-account-alert {
+        color: red;
+    }
+
+    .mdi-account-check {
+        color: cornflowerblue;
+    }
+</style>
+
+<div class="side-app" onload="setup()">
+    <div class="row">
+        <div class="card" data-asid="<%= assessment.assessmentId %>" id="asCard">
+            <div class="card-header bg-info text-white">
+                <h3 class="card-title">
+                    <%=assessment.title%>
+                </h3>
+            </div>
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-md-12  border-bottom  border-top  p-2">
+                        <%=assessment.description%>
+                    </div>
+                    <div class="col-md-12  border-bottom  border-top p-2">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Subject Code</label>
+                                <input type="text" disabled class="form-control" value="<%=assessment.subject%> ">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Allowed Attempt Duration (minutes)</label>
+                                <input type="text" disabled class="form-control" value="<%=assessment.duration%> ">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12  border-bottom  border-top p-2">
+                        <% var dtOpen=new Date(assessment.open)%>
+                            <% var dtClose=new Date(assessment.close)%>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Open Time</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fa fa-calendar tx-16 lh-0 op-6 text-info"></i>
+                                                </div>
+                                            </div>
+                                            <input class="form-control " type="text" autocomplete="off" disabled
+                                                value="<%=dtOpen.toLocaleDateString('en-GB')%>">
+                                        </div>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fa fa-clock-o tx-16 lh-0 op-6 text-info"></i>
+                                                </div>
+                                            </div>
+                                            <input class="form-control" type="text" autocomplete="off" disabled
+                                                value="<%=dtOpen.toLocaleTimeString()%>">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Close Time</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fa fa-calendar tx-16 lh-0 op-6 text-warning"></i>
+                                                </div>
+                                            </div>
+                                            <input class="form-control " type="text" autocomplete="off" disabled
+                                                value="<%=dtClose.toLocaleDateString('en-GB')%>">
+                                        </div>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fa fa-clock-o tx-16 lh-0 op-6 text-warning"></i>
+                                                </div>
+                                            </div>
+                                            <input class="form-control" type="text" autocomplete="off" disabled
+                                                value="<%=dtClose.toLocaleTimeString()%>">
+                                        </div>
+                                    </div>
+                                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+
+            <div class="card-header bg-info text-white">
+                <h3 class="card-title">
+                    Student Information
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="col-12">
+                    Student Status <i class="fa fa-info-circle" title="use the check boxes to filter"></i>
+                    <div class="col-md-12">
+                        <input type="checkbox" checked id="chkOff" onchange="statsVisibility()">
+                        <i class="mdi mdi-account-off"> Offline</i>
+                        : Student is currently not attempting the assessment
+                    </div>
+                    <div class="col-md-12">
+                        <input type="checkbox" checked id="chkOnn" onchange="statsVisibility()">
+                        <i class="mdi mdi mdi-account"> Online</i>
+                        : Student is online and attempting the assessment
+                    </div>
+
+                    <div class="col-md-12">
+                        <input type="checkbox" checked id="chkAway" onchange="statsVisibility()">
+                        <i class="mdi mdi-account-alert"> Away</i>
+                        : Student is attempting the assessment but currently looking at different tab/window
+                        <i class="fa fa-info-circle">Student might be trying to cheat</i>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="checkbox" checked id="chkFn" onchange="statsVisibility()">
+                        <i class="mdi mdi-account-check"> Finished</i>
+                        : Student have already finish/end his/her attempt
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover text-nowrap mb-0" id="tbASStudents">
+                        <thead class="bg-primary">
+                            <tr>
+                                <th width="20%" class="text-white">Id</th>
+                                <th width="40%" class="text-center text-white">Name</th>
+                                <th width="20%" class="text-center text-white">
+                                    Class & School
+                                </th>
+                                <th width="15%" class="text-center text-white">Contact</th>
+
+                                <th width="5%" class="text-center text-white">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="mycustom_tbd">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var assessmentId
+    var tbASStudents
+    var domtable
+    var statsClass = ["mdi-account-off", "mdi-account", "mdi-account-alert", "mdi-account-check"]
+    var chkstats
+    function setup() {
+        assessmentId = document.getElementById('asCard').dataset.asid
+        domtable = document.getElementById('tbASStudents')
+        tbASStudents = new DataTable('#tbASStudents', {
+            // options 
+            "columnDefs":
+                [
+                    { "targets": [4], "className": "text-center" },
+                    { "targets": "_all", "orderable": false }
+                ]
+        })
+        loadStudentList()
+        WS()
+        checkFinished()
+        checkbox = [document.getElementById('chkOff'), document.getElementById('chkOnn'), document.getElementById('chkAway'), document.getElementById('chkFn')]
+
+    }
+
+    function statsVisibility() {
+        for (var i = 0; i < checkbox.length; i++) {
+            domtable.querySelectorAll('.' + statsClass[i]).forEach(e => {
+                e.parentElement.parentElement.hidden = !checkbox[i].checked
+            })
+        }
+
+    }
+    function loadStudentList() {
+        Server.request('GET', '/api/assessment/student?asId=' + assessmentId, null, true).then(
+            function (result) {
+                tbASStudents.clear()
+                result = JSON.parse(result)
+                var tmpRow;
+                result.forEach(student => {
+                    tmpRow = tbASStudents.row.add([
+                        student.studentId,
+                        student.name,
+                        '<span class="text-muted">' + student.abbrv + "</span><br>" + student.className,
+                        student.email + "<br>" + student.phone,
+                        '<i id="' + student.studentId + '" class="mdi mdi-account-off" style="font-size:2em"></i>'
+                    ]).node()
+                    tmpRow.onclick = function (e) {
+                        if (e.target.tagName == "TD")
+                            Swal.fire({
+                                type: "info",
+                                title: student.name,
+                                html: '<div style="text-align:left;padding-left:2.5em">Identification No. : ' + student.studentId + "<br><b>Address : </b><br>" + student.addressText + ",<br> " + student.areaName + ",<br> " + student.postOffice + " " + student.postcode + ",<br>" + student.state_name + "</div>"
+                            })
+                    }
+                })
+                tbASStudents.draw()
+            }).catch(function (err) {
+                Message.createNew('Error', 'Failed to load student List', 3)
+            })
+    }
+
+    function WS() {
+
+        ws = new WebSocket('ws:/' + window.location.hostname + ':5000/');
+        if (localStorage.getItem("jwtT") != null && localStorage.getItem("uid") != null && localStorage.getItem("jwtP") != null) {
+            ws.onopen = () => {
+                ws.send(JSON.stringify({
+                    "verify": {
+                        "uId": localStorage.getItem("uid"),
+                        "jwtP": localStorage.getItem("jwtP"),
+                        "jwtT": localStorage.getItem("jwtT"),
+                        "assessment": assessmentId
+                    }
+                }))
+            };
+            ws.onmessage = function (message) {
+                var jsonData = JSON.parse(message.data)
+                updateStudentStats(jsonData)
+            }
+        }
+    }
+
+
+    function checkFinished() {
+        Server.request("GET", "/api/assessment/student/finished?asId=" + assessmentId, null, true).then(
+            function (result) {
+                result = JSON.parse(result)
+                result.forEach(s => {
+                    setStudentStats(s.studentId, 3)
+                })
+            }
+        ).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    function updateStudentStats(statsArr) {
+        statsArr.forEach(s => {
+            setStudentStats(s.id, s.status)
+        })
+    }
+
+    function setStudentStats(studentId, intStats) {
+        let istd = document.getElementById(studentId)
+        istd.className = ""
+        istd.classList.add("mdi")
+        istd.classList.add(statsClass[intStats])
+        statsVisibility()
+    }
+
+</script>

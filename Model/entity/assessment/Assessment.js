@@ -171,8 +171,7 @@ module.exports = class Assessment {
 
 
     static fetchStaffList(asId) {
-        var strSql = "SELECT s.* FROM (SELECT s.staffId, a.name FROM staff s JOIN account a ON a.accountId=s.staffId) s JOIN (SELECT staffId FROM assessment_staff WHERE assessmentId="
-            + db.escape(asId) + ") a ON s.staffId=a.staffId"
+        var strSql = "SELECT s.staffId, a.name,a.phone,a.email FROM assessment_staff s JOIN account a ON s.staffId=a.accountId WHERE s.assessmentId=" + db.escape(asId)
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {
@@ -406,8 +405,10 @@ module.exports = class Assessment {
 
     static fetchStudentList(asId) {
         return new Promise(function (resolve, reject) {
-            var strSql = "SELECT s.* FROM (SELECT studentId FROM assessment_students WHERE assessmentId=" + db.escape(asId)
-                + ") a JOIN (SELECT s.*,c.abbrv as school,c.className,MAX(cs.endDate) AS endDate FROM (SELECT s.studentId,a.name FROM account a JOIN student s ON a.accountId=s.studentId) s JOIN class_student cs ON cs.studentId=s.studentId JOIN (SELECT s.abbrv, c.className, c.classId FROM school s JOIN class c ON s.schoolId=c.schoolId) c ON cs.classId=c.classId GROUP BY cs.studentId) s ON a.studentId=s.studentId"
+            var strSql = "SELECT astd.studentId,a.name,a.phone,a.email,ads.addressText,arr.areaName,pst.postcode,pst.postOffice,st.state_name,c.className,sc.abbrv,MAX(cs.endDate) FROM account a JOIN assessment_students astd ON a.accountId = astd.studentId LEFT JOIN address ads ON ads.accountId=astd.studentId JOIN area arr ON ads.areaId = arr.areaId JOIN postcode pst ON arr.postcode=pst.postcode JOIN state st ON pst.stateCode = st.state_code LEFT JOIN class_student cs ON cs.studentId=astd.studentId JOIN class c ON cs.classId=c.classId JOIN school sc ON sc.schoolId=c.schoolId "
+                + " WHERE astd.assessmentId = " + db.escape(asId) + " AND ads.dateEnd IS NULL GROUP BY astd.studentId"
+            //  var strSql = "SELECT s.* FROM (SELECT studentId FROM assessment_students WHERE assessmentId=" + db.escape(asId)
+            //   + ") a JOIN (SELECT s.*,c.abbrv as school,c.className,MAX(cs.endDate) AS endDate FROM (SELECT s.studentId,a.name,a.phone,a.email FROM account a JOIN student s ON a.accountId=s.studentId) s JOIN class_student cs ON cs.studentId=s.studentId JOIN (SELECT s.abbrv, c.className, c.classId FROM school s JOIN class c ON s.schoolId=c.schoolId) c ON cs.classId=c.classId GROUP BY cs.studentId) s ON a.studentId=s.studentId"
             db.query(strSql, function (err, result) {
                 if (err) {
                     reject(err.message)
@@ -443,6 +444,19 @@ module.exports = class Assessment {
                     }
                     else {
                         resolve(result.affectedRows)
+                    }
+                })
+        })
+    }
+
+    static finishedStudent(asId) {
+        return new Promise(function (resolve, reject) {
+            db.query("SELECT studentId FROM assessment_students WHERE assessmentId=" + db.escape(asId) + " AND  endAttempt <= CURRENT_TIMESTAMP",
+                function (err, result) {
+                    if (err) {
+                        reject(err.message)
+                    } else {
+                        resolve(JSON.parse(JSON.stringify(result)))
                     }
                 })
         })
