@@ -693,7 +693,7 @@
             for (var j = 0; j < allQuestion.length; j++) {
                 if (allQuestion[j].questionId == curQ) {
                     // tft[i].innerHTML = allQuestion[j].totalMark + '<br>[' + timeString(allQuestion[j].totalTime * 1000) + ']'
-                    tfo[i].innerHTML = allQuestion[j].totalMark / studCount + '<br>[' + timeString(allQuestion[j].totalTime / studCount * 1000) + ']'
+                    tfo[i].innerHTML = (allQuestion[j].totalMark / studCount).toFixed(2) + '<br>[' + timeString(allQuestion[j].totalTime / studCount * 1000) + ']'
                 }
             }
         }

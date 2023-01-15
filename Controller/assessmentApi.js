@@ -572,7 +572,11 @@ router.get('/report/school', function (req, res) {
     if (!req.query.year) {
         return res.status(400).send({ validationError: { year: 'invalid' } })
     }
-    Assessment.getSchoolReport(req.query.schoolId, req.query.subjCode, req.query.year).then(function (result) {
+    let split = true
+    if (req.query.split) {
+        split = !(req.query.split == "false")
+    }
+    Assessment.getSchoolReport(req.query.schoolId, req.query.subjCode, req.query.year, split).then(function (result) {
         return res.status(200).send(result)
     }).catch(function (err) {
         return res.status(500).send({ error: err })

@@ -732,15 +732,20 @@ module.exports = class Assessment {
         })
     }
 
-    static getSchoolReport(schoolId, subjectCode, year) {
+    static getSchoolReport(schoolId, subjectCode, year, splitArea = true) {
         let sDt, eDt;
         sDt = year + '-01-01'
         eDt = year + '-12-31'
-
-        var strSql = "SELECT (SUM(aq.mark) / SUM(aq.fullMark)) AS percent, CAST(a.close AS DATE) AS date,ads.areaId,aa.areaName,count(DISTINCT aq.studentId) AS studentCount FROM assessment a JOIN assigned_question aq ON a.assessmentId=aq.assessmentId JOIN class_student cs ON aq.studentId=cs.studentId JOIN class c ON cs.classId=c.classId JOIN address ads ON aq.studentId=ads.accountId JOIN area aa ON ads.areaId=aa.areaId "
-            + " WHERE a.open >= " + db.escape(sDt) + " AND a.close <= " + db.escape(eDt) + " AND ads.dateStart < a.close AND(ads.dateEnd IS NULL OR ads.dateEnd > a.close)  AND c.schoolId = " + db.escape(schoolId) + " AND a.subject = " + db.escape(subjectCode)
-            + " AND cs.startDate < a.close AND cs.endDate >= a.close GROUP BY a.assessmentId, ads.areaId ORDER BY a.close ASC"
-
+        var strSql = ""
+        if (splitArea) {
+            strSql = "SELECT (SUM(aq.mark) / SUM(aq.fullMark)) AS percent, CAST(a.close AS DATE) AS date,ads.areaId,aa.areaName,count(DISTINCT aq.studentId) AS studentCount FROM assessment a JOIN assigned_question aq ON a.assessmentId=aq.assessmentId JOIN class_student cs ON aq.studentId=cs.studentId JOIN class c ON cs.classId=c.classId JOIN address ads ON aq.studentId=ads.accountId JOIN area aa ON ads.areaId=aa.areaId "
+                + " WHERE a.open >= " + db.escape(sDt) + " AND a.close <= " + db.escape(eDt) + " AND ads.dateStart < a.close AND(ads.dateEnd IS NULL OR ads.dateEnd > a.close)  AND c.schoolId = " + db.escape(schoolId) + " AND a.subject = " + db.escape(subjectCode)
+                + " AND cs.startDate < a.close AND cs.endDate >= a.close GROUP BY a.assessmentId, ads.areaId ORDER BY a.close ASC"
+        } else {
+            strSql = "SELECT (SUM(aq.mark) / SUM(aq.fullMark)) AS percent, CAST(a.close AS DATE) AS date,count(DISTINCT aq.studentId) AS studentCount FROM assessment a JOIN assigned_question aq ON a.assessmentId=aq.assessmentId JOIN class_student cs ON aq.studentId=cs.studentId JOIN class c ON cs.classId=c.classId  "
+                + " WHERE a.open >= " + db.escape(sDt) + " AND a.close <= " + db.escape(eDt) + " AND c.schoolId=" + db.escape(schoolId) + " AND a.subject=" + db.escape(subjectCode)
+                + " AND cs.startDate < a.close AND cs.endDate >= a.close GROUP BY a.assessmentId ORDER BY a.close ASC"
+        }
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {

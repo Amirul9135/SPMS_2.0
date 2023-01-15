@@ -169,7 +169,17 @@ router.get('/allStudent', function (req, res) {
     if (!schoolId) {
         return res.status(400).send("invalid id");
     }
-    var promiseAll = Student.getStudent(schoolId, req.query.classId);
+    let year = null
+    if (req.query.year) {
+        year = req.query.year
+    }
+    if (req.query.classId) {
+        if (req.query.classId == "null") {
+            req.query.classId = null
+        }
+    }
+
+    var promiseAll = Student.getStudent(schoolId, req.query.classId, year);
     promiseAll.then(function (value) {
         res.send(value);
     }).catch(function (value) {

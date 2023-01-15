@@ -21,7 +21,7 @@
     }
 </style>
 <div class="side-app" onload="setup()">
-
+    <button onclick="testFunc()">Test</button>
     <button class="btnPrint btn btn-pill btn-outline-danger" type="button" onclick="printReport(event)">
         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp; Save PDF
     </button>
@@ -274,6 +274,21 @@
 
 
                         </div>
+                        <div class="row">
+                            <div class="col-md-12">
+
+
+                                <div class="form-group">
+                                    <label class="form-label mt-0">&nbsp;</label>
+                                    <button class="btn btn-pill btn-primary-light" onclick="addSchoolInCounty()">
+                                        <i class="fa fa-plus">
+                                            &nbsp; All Schools
+                                        </i>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
                 <div class="card">
@@ -467,6 +482,12 @@
         var curData = JSON.parse(JSON.stringify(LineChart.getOption().series))
         curData.forEach(data => {
             if (data.id) {
+                if (typeof data.id === 'string' || data.id instanceof String) {
+
+                    if (data.id.includes('|')) {
+                        return
+                    }
+                }
                 haveMapData = true
                 let curcolor = "#f0f0f0"
                 color.forEach(c => {
@@ -536,25 +557,9 @@
     }
     var ii = 0
     function testFunc() {
+        console.log(LineChart.getOption().series)
         //    loadArea()
         return
-        console.log(LineChart.getOption().series)
-        console.log(
-            LineChart.getOption().series[0].id)
-        resetChartData()
-        return
-        ii++
-        var newt = newSeries('btn' + ii, data3)
-        lineChartOption.series.push(newt)
-        LineChart.setOption(lineChartOption)
-        console.log(LineChart.getModel().getSeries().map(s => {
-            return {
-                seriesIndex: s.seriesIndex,
-                seriesColor: LineChart.getVisual({
-                    seriesIndex: s.seriesIndex
-                }, 'color')
-            }
-        }))
     }
 
     async function addStudentHandler() {
@@ -623,7 +628,7 @@
                 tmpRow = tableSchool.row.add([
                     qSchool.fullName,
                     qSchool.abbrv,
-                    '<button class="btn btn-outline-success" style="vertical-align: middle;border-radius:50%" onclick="addSchoolData(event);" id="' + qSchool.schoolId + '"><b><i class="fa fa-plus" style="font-size: 17px;"></i></b></button>'
+                    '<button class="btn btn-outline-success" style="vertical-align: middle;border-radius:50%" onclick="addSchoolHandler(event);" id="' + qSchool.schoolId + '"><b><i class="fa fa-plus" style="font-size: 17px;"></i></b></button>'
                 ]).node()
                 // tmpRow.id = qSchool.subjectCode; //letak id
             })
@@ -678,7 +683,7 @@
             })
             console.log('conv')
             console.log(converted)
-            let newData = newSeries(areaId, areaname, converted)
+            let newData = newSeries(areaId.toString(), areaname, converted)
             lineChartOption.series.push(newData)
             redrawChart()
             loadedDataDone()
@@ -742,10 +747,96 @@
         document.getElementById('btnReset').style.display = "inline-block"
     }
 
+    function addSchoolInCounty() {
+
+        var countyId = document.getElementById('selectCounty').value
+        if (!countyId) {
+            Swal.fire({
+                type: 'error',
+                title: 'no county selected'
+            })
+            return
+        }
+        let count = 0
+        tableSchool.rows().every(function (rowIdx, tableLoop, rowLoop) {
+            var data = this.data();
+            count++;
+            let id = data[2].split('id="')[1]
+            id = id.split('"')[0]
+            addSingleSchool({ id: id, name: data[1].trim() })
+            // ... do something with data(), or this.node(), etc
+        });
+        if (count == 0) {
+            Swal.fire({
+                type: 'error',
+                title: 'no school in list, please try searching first before using the add all button'
+            })
+            return
+        }
+    }
+
+    async function addSchoolHandler(e) {
+        var action = await Swal.fire({
+            type: 'question',
+            title: 'Report Type',
+            text: '',
+            showCancelButton: true,
+            showCloseButton: true,
+            cancelButtonText: "Group by Area",
+            confirmButtonText: "Combine As Average",
+        })
+        if (action.dismiss == "cancel") {
+            //by area
+            addSchoolData(e)
+        }
+        else if (action.value == true) {
+            console.log('by school')
+            addSingleSchool({ id: e.target.id, name: e.target.parentElement.parentElement.children[1].innerHTML.trim() })
+        }
+    }
+
+    function addSingleSchool(sch) { //school obj with .id and .name
+        console.log(sch)
+        var subjCode = document.getElementById('idListSubj').dataset.selected
+        if (subjCode == '-1') {
+            Swal.fire({
+                type: 'error',
+                title: 'Invalid Subject',
+                text: 'Please select a subject first'
+            })
+            return
+        }
+        var year = document.getElementById('selYear').value
+        Server.request("GET", "/api/assessment/report/school?schoolId=" + sch.id + "&subjCode=" + subjCode + "&year=" + year + "&split=false", null, true).then(
+            function (result) {
+                result = JSON.parse(result)
+                console.log(result)
+                let converted = []
+                result.forEach(res => {
+                    converted.push([res.date, res.percent * 100, res.studentCount])
+                })
+                let newData = newSeries(sch.id + "|", sch.name, converted)
+                lineChartOption.series.push(newData)
+                redrawChart()
+                loadedDataDone()
+
+            }
+        ).catch(function (err) {
+            console.log(err)
+            try {
+                err = JSON.parse(err)
+                if (err.error == "no data") {
+                    Message.createNew("No Data", "There's no specified data for school " + sch.id + " : " + sch.name, 2)
+                }
+            } catch {
+
+            }
+        })
+
+    }
+
     function addSchoolData(e) {
-        console.log(e.target.id)
         var sname = e.target.parentElement.parentElement.children[1].innerHTML.trim()
-        console.log(sname)
         var year = document.getElementById('selYear').value
         var subjCode = document.getElementById('idListSubj').dataset.selected
         if (subjCode == '-1') {
@@ -767,7 +858,7 @@
                 converteds[d.areaName].data.push([d.date, d.percent * 100, d.studentCount])
             })
             Object.keys(converteds).forEach(k => {
-                let newData = new newSeries(converteds[k].areaId, k + "<br>" + sname, converteds[k].data)
+                let newData = new newSeries(converteds[k].areaId.toString(), k + "<br>" + sname, converteds[k].data)
 
                 lineChartOption.series.push(newData)
             })
@@ -880,7 +971,29 @@
         ]
     }
 
+    function genSeriesId(seriesId) {
+        let srs = JSON.parse(JSON.stringify(LineChart.getOption().series))
+        let count = 0;
+        if (srs.length == 0) {
+            return seriesId
+        }
+        for (var i = 0; i < srs.length; i++) {
+            if (srs[i].id.includes('|')) {
+                srs[i].id = srs[i].id.split('|')[0]
+            }
+            if (srs[i].id == seriesId) {
+                count++;
+            }
+        }
+        if (count == 0) {
+            return seriesId
+        }
+        else {
+            return seriesId.toString() + "|" + count.toString()
+        }
+    }
     function newSeries(seriesId, name, inpData) {
+
         MergeDate(inpData)
         if (!seriesId) {
             return {
@@ -893,7 +1006,7 @@
         }
         return {
             name: name,
-            id: seriesId,
+            id: genSeriesId(seriesId),
             type: 'line',
             smooth: true,
             connectNulls: true,
