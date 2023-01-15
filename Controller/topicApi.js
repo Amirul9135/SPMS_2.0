@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Topic = require("../Model/entity/Topic");
+const Auth = require("./Middleware/Authenticate")
 
-router.post('/register', function (req, res) {
-    console.log('try');
+router.post('/register', Auth.userType([3]), function (req, res) {
     var newTopic = new Topic();
     newTopic.setStrSubjectCode(req.body.subjectCode);
     newTopic.setStrTopicTitle(req.body.topicTitle);
@@ -17,7 +17,7 @@ router.post('/register', function (req, res) {
     });
 });
 
-router.post('/update', function (req, res) { 
+router.post('/update', Auth.userType([3]), function (req, res) {
     var updateTopic = new Topic();
     updateTopic.setStrTopicTitle(req.body.topicTitle);
     updateTopic.setIntTopicId(req.body.topicId);
@@ -30,7 +30,7 @@ router.post('/update', function (req, res) {
     });
 });
 
-router.post('/getTopic', function (req, res) {
+router.post('/getTopic', Auth.userType(), function (req, res) {
     var topicId = req.query.topicId;
     var promiseAll = Topic.getTopic(topicId);
 
@@ -44,7 +44,7 @@ router.post('/getTopic', function (req, res) {
 });
 
 
-router.post('/delete', function (req, res) {
+router.post('/delete', Auth.userType([3]), function (req, res) {
     var delTopic = new Topic();
     delTopic.setIntTopicId(req.body.topicId);
 
@@ -56,7 +56,7 @@ router.post('/delete', function (req, res) {
     });
 });
 
-router.get('/', function (req, res) {
+router.get('/', Auth.userType(), function (req, res) {
     //get topic by id
     var id = req.query.id;
     if (!id || id < 0) {
@@ -70,7 +70,7 @@ router.get('/', function (req, res) {
     })
 })
 
-router.get('/allTopic', function (req, res) {
+router.get('/allTopic', Auth.userType(), function (req, res) {
     var promiseAll = Topic.getAll();
 
     promiseAll.then(function (value) {
@@ -82,7 +82,7 @@ router.get('/allTopic', function (req, res) {
     });
 });
 
-router.post('/getTopicBySubject', function (req, res) {
+router.post('/getTopicBySubject', Auth.userType(), function (req, res) {
     Topic.getTopicBySub(req.body.subjectCode).then(
         function (value) {
             return res.status(200).send(value);

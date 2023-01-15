@@ -143,7 +143,7 @@ module.exports = class Account {
 
     static getAccount(accountId) {
         return new Promise(function (resolve, reject) {
-            var strSql = "SELECT accountId,name,email,phone FROM account WHERE accountId=" + db.escape(accountId);
+            var strSql = "SELECT accountId,name,email,phone,userType FROM account WHERE accountId=" + db.escape(accountId);
             db.query(strSql, function (err, result) {
                 if (err) {
                     console.log("error:" + err.message);
@@ -157,7 +157,7 @@ module.exports = class Account {
     }
 
     login() {
-        var strSql = "SELECT name,password,userType FROM account WHERE accountId=" + db.escape(this.#straccountId) + " AND disabled IS NULL"
+        var strSql = "SELECT a.name,a.password,a.userType,s.schoolId FROM account a LEFT JOIN staff s ON a.accountId = s.staffId WHERE accountId=" + db.escape(this.#straccountId) + "AND disabled IS NULL;"
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {

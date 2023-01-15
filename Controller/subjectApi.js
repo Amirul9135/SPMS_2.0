@@ -1,22 +1,23 @@
-const express = require('express'); 
-const router = express.Router(); 
+const express = require('express');
+const router = express.Router();
 const Subject = require("../Model/entity/Subject");
+const Auth = require("./Middleware/Authenticate")
 
-router.post('/register', function (req, res) {     
+router.post('/register', Auth.userType([3]), function (req, res) {
     var newSubject = new Subject();
     newSubject.setSubjectCode(req.body.subjectCode);
     newSubject.setSubjectTitle(req.body.subjectTitle);
 
     var promiseRegister = newSubject.register();
     //calback function when resolve and reject
-    promiseRegister.then(function(value){ //.then means resolve (no error)
+    promiseRegister.then(function (value) { //.then means resolve (no error)
         res.send("Success");
-    }).catch(function(value){ //.catch means promise is rejected (got some errors)
+    }).catch(function (value) { //.catch means promise is rejected (got some errors)
         res.status(400).send(value);
     });
 });
 
-router.post('/update', function (req, res) { 
+router.post('/update', Auth.userType([3]), function (req, res) {
     var updateSubject = new Subject();
     updateSubject.setSubjectTitle(req.body.subjectTitle);
     updateSubject.setSubjectCode(req.body.subjectCode);
@@ -29,7 +30,7 @@ router.post('/update', function (req, res) {
     });
 });
 
-router.get('/', function (req, res) {
+router.get('/', Auth.userType(), function (req, res) {
     var subjectCode = req.query.subjectCode;
     var promiseAll = Subject.getSubject(subjectCode);
 
@@ -42,7 +43,7 @@ router.get('/', function (req, res) {
     });
 });
 
-router.post('/delete', function (req, res) {
+router.post('/delete', Auth.userType([3]), function (req, res) {
     var delSubj = new Subject();
     delSubj.setSubjectCode(req.body.subjectCode);
     var del = delSubj.deleteThis();
@@ -53,7 +54,7 @@ router.post('/delete', function (req, res) {
     });
 });
 
-router.get('/allSubject', function (req, res) {
+router.get('/allSubject', Auth.userType(), function (req, res) {
     var promiseAll = Subject.getAll();
     promiseAll.then(function (value) {
         console.log(value);

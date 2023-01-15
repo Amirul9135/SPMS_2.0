@@ -110,7 +110,7 @@ router.get('/',
         }
         console.log(qstatus)
         //console.log(req.user)
-        if (req.user.type == 2) {//staff
+        if (req.user.type == 2 || req.user.type == 3) {//staff
             Assessment.findByStaff({ staffId: req.user.id, status: qstatus }).then(function (result) {
                 return res.status(200).send(result)
             }).catch(function (err) {
@@ -526,7 +526,7 @@ router.get('/QAanalysis',
         })
     })
 
-router.get('/report/area', function (req, res) {
+router.get('/report/area', Auth.userType([2, 3]), function (req, res) {
     if (!req.query.areaId) {
         return res.status(400).send({ validationError: { areaId: 'invalid' } })
     }
@@ -544,7 +544,7 @@ router.get('/report/area', function (req, res) {
     })
 })
 
-router.get('/report/individual', function (req, res) {
+router.get('/report/individual', Auth.userType([1, 2, 3]), function (req, res) {
     if (!req.query.studentId) {
         return res.status(400).send({ validationError: { studentId: 'invalid' } })
     }
@@ -562,7 +562,7 @@ router.get('/report/individual', function (req, res) {
 
 })
 
-router.get('/report/school', function (req, res) {
+router.get('/report/school', Auth.userType([2, 3]), function (req, res) {
     if (!req.query.schoolId) {
         return res.status(400).send({ validationError: { schoolId: 'invalid school id' } })
     }

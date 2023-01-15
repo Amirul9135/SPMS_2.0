@@ -40,11 +40,11 @@
               <label for="exampleInputnumber">Phone Number</label>
               <input type="number" class="form-control" id="txtphone" placeholder="Phone Number" />
             </div>
-            <div class="form-group">
+            <div class="form-group addrs">
               <label for="exampleInputnumber">Address</label>
               <input type="text" class="form-control" id="txtalamat" placeholder="Address" />
             </div>
-            <div class="form-group">
+            <div class="form-group addrs">
               <div class="row">
                 <div class="col-md-4">
                   <label for="exampleInputnumber">Area</label>
@@ -210,7 +210,14 @@
         document.getElementById("txtEmail").value = value.email;
         document.getElementById("txtphone").value = value.phone;
         console.log(value)
-        loadAddress()
+        if (value.userType == 3) {
+          document.querySelectorAll('.addrs').forEach(s => {
+            s.remove()
+          })
+        }
+        else {
+          loadAddress()
+        }
       }).catch(function (value) {
         console.log(value)
       })

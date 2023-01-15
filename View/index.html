@@ -278,7 +278,19 @@
   <script>
 
     async function verification() {
-      await verifyAccount()
+      var acc = await verifyAccount()
+      console.log(acc)
+      if (acc.type == 1) {
+        //student
+        document.querySelectorAll('.NF_student').forEach(elm => [
+          elm.remove()
+        ])
+      }
+      else if (acc.type == 2) {
+        document.querySelectorAll('.NF_teacher').forEach(elm => {
+          elm.remove()
+        })
+      }
     }
     function toggle_card(e) {//from card header option
       var card = e.target.parentElement.parentElement.parentElement;
@@ -329,42 +341,13 @@
           </li>
 
           <li class="slide">
-            <a class="side-menu__item" data-toggle="slide" href="#">
+            <p class="side-menu__item" title="/assessment" onclick="navigate('/assessment')">
               <i style="font-size: 14pt" class="fa fa-file-text-o"></i>
-              <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assessment</span><i
-                class="angle fa fa-angle-right"></i>
-            </a>
-            <ul class="slide-menu">
-              <li>
-                <p class="slide-item" title="/assessment" onclick="navigate('/assessment')">
-                  <span>Assessment</span>
-                </p>
-              </li>
-              <!--
-              <li>
-                <p class="slide-item" title="/assessmentView" onclick="navigate('/assessmentView')">
-                  <span>List of Assessment</span>
-                </p>
-              </li>
-              <li>
-                <p class="slide-item" title="/assessmentForm" onclick="navigate('/assessmentForm')">
-                  <span>Create Assessment</span>
-                </p>
-              </li>
-              <li>
-                <p class="slide-item">
-                  <span><s>Penilaian Tugasan</s></span>
-                </p>
-              </li>
-              <li>
-                <p class="slide-item" title="/assessmentOngoings" onclick="navigate('/assessmentOngoings')">
-                  <span>Tugasan Langsung</span>
-                </p>
-              </li>-->
-            </ul>
+              <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp;Upcoming Assessment</span>
+            </p>
           </li>
 
-          <li class="slide">
+          <li class="slide NF_student">
             <p class="side-menu__item" data-toggle="slide" href="#">
               <i style="font-size: 14pt" class="fa fa-list"></i>
               <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp;Question Bank</span><i
@@ -395,28 +378,21 @@
             </ul>
           </li>
 
-          <li class="slide">
+          <li class="slide NF_student NF_teacher">
             <p class="side-menu__item" class="slide-item" title="/teacher" onclick="navigate('/teacher')">
               <i style="font-size: 16pt" class="fa fa-user"></i>
               <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Teacher</span>
             </p>
           </li>
-          <!--
-          <li class="slide">
-            <p class="side-menu__item" title="/guardian" onclick="navigate('/guardian')">
-              <i style="font-size: 16pt" class="fa fa-users"></i>
-              <span class="side-menu__label">&nbsp;&nbsp;&nbsp;Guardian</span>
-            </p>
-          </li>-->
 
-          <li class="slide">
+          <li class="slide NF_student">
             <p class="side-menu__item" title="/student" onclick="navigate('/student')">
               <i style="font-size: 14pt" class="fa fa-graduation-cap"></i>
               <span class="side-menu__label">&nbsp;&nbsp;&nbsp;Student</span>
             </p>
           </li>
 
-          <li class="slide">
+          <li class="slide NF_student NF_teacher">
             <p class="side-menu__item" data-toggle="slide">
               <i style="font-size: 14pt;" class="fa fa-book"></i>
               <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Subject/Topic</span><i
@@ -432,7 +408,7 @@
             </ul>
           </li>
 
-          <li class="slide">
+          <li class="slide NF_student">
             <p class="side-menu__item" title="/school" onclick="navigate('/school')">
               <i style="font-size: 14pt" class="fa fa-university"></i>
               <span class="side-menu__label">&nbsp;&nbsp;&nbsp;School/Class</span>
@@ -459,7 +435,7 @@
             </ul>
           </li>
 
-          <li class="slide">
+          <li class="slide NF_student NF_teacher">
             <p class="side-menu__item" title="/mapping" onclick="navigate('/mapping')">
               <i style="font-size: 14pt" class="fa fa-map"></i>
               <span class="side-menu__label">&nbsp;&nbsp;&nbsp;&nbsp; Map</span>

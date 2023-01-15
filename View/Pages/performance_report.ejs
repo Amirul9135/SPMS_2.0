@@ -13,7 +13,7 @@
     }
 
     .modal-xl {
-        max-width: 80%;
+        max-width: 70%;
     }
 
     button * {
@@ -21,7 +21,6 @@
     }
 </style>
 <div class="side-app" onload="setup()">
-    <button onclick="testFunc()">Test</button>
     <button class="btnPrint btn btn-pill btn-outline-danger" type="button" onclick="printReport(event)">
         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp; Save PDF
     </button>
@@ -116,8 +115,9 @@
                                 data-target="#ModalAddSchool"><i class="fa fa-plus" aria-hidden="true"></i> School
                                 Data</button>
                             &nbsp;
-                            <button class="btn btn-pill btn-outline-primary" onclick="addStudentHandler()"><i
-                                    class="fa fa-plus" aria-hidden="true"></i> Student</button>
+                            <button class="btn btn-pill btn-outline-primary" data-toggle="modal"
+                                data-target="#ModalFindStudent"><i class="fa fa-plus" aria-hidden="true"></i>
+                                Student</button>
                         </div>
                     </div>
                 </div>
@@ -207,6 +207,96 @@
                 <button class="btn btn-pill btn-outline-info" onclick="loadNewAreaData()">
                     <i class="fa fa-plus" aria-hidden="true"></i>
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalFindStudent" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title w-100">
+                    Find Student
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="card">
+                        <div class="card-body">
+
+                            <div class="row">
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label mt-0">School</label>
+                                        <div class="select-search">
+                                            <input id="SSfschool" type="text" autocomplete="off" class="form-control"
+                                                data-list="idListfSchool" onkeyup="SSKeyHandler(event)"
+                                                onfocus="SSFocus(event)" onblur="SSFocus(event)"
+                                                onplay="fSchoolChange(event)">
+                                            <ul onclick="SSItemClick(event)" id="idListfSchool" data-selected="-1">
+                                                <% schoolList.forEach(s=>{ %>
+                                                    <li id="<%=s.schoolId%>" title="<%=s.fullName%>">
+                                                        <%=s.abbrv%>
+                                                    </li>
+                                                    <% }) %>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="form-label mt-0">Class</label>
+                                        <div class="select-search">
+                                            <input id="SSfclass" type="text" autocomplete="off" disabled
+                                                class="form-control" data-list="LstFClass" onkeyup="SSKeyHandler(event)"
+                                                onfocus="SSFocus(event)" onblur="SSFocus(event)">
+                                            <ul onclick="SSItemClick(event)" id="LstFClass" data-selected="-1">
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="row">
+                                        <div class="form-group">
+
+                                            <label class="form-label mt-0">&nbsp;</label>
+                                            <button onclick="findStudent()" class="btn btn-pill btn-info-light"><b><i
+                                                        class="fa fa-search">&nbsp;Search</i></b></button>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            Student List Based on the Selected Year
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover text-nowrap mb-0" id="tbFindStudent">
+                                    <thead class="bg-primary">
+                                        <tr>
+                                            <th width="40%" class="text-white">Name</th>
+                                            <th width="40%" class=" text-white">Id</th>
+                                            <th width="10%" class="text-white">Class</th>
+                                            <th width="10%" class="text-center text-white">Add</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="mySchool_tbd">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -326,6 +416,7 @@
     var dtbDatas;
     var map
     var initialCoord = new L.LatLng(4.123425, 102.240730)
+    var tbFindStudent;
 
     function setup() {
         LineChart = echarts.init(document.getElementById('LineChart'))
@@ -344,6 +435,13 @@
                     { "targets": [2], "orderable": false, "searching": false }
                 ]
         });
+        tbFindStudent = new DataTable("#tbFindStudent", {
+            // options 
+            "columnDefs":
+                [
+                    { "targets": [3], "className": "text-center" }
+                ]
+        })
         yearSelector()
 
         map = L.map('mapdiv').setView([51.505, -0.09], 7); //(?,?) z
@@ -370,6 +468,33 @@
         document.querySelectorAll(".MyYearSelect").forEach(sel => {
             console.log(sel)
             sel.innerHTML = strhtml
+        })
+    }
+
+    function fSchoolChange(e) {
+        console.log(e.target.dataset.selected)
+        Server.request('GET', '/api/school/classList?schId=' + e.target.dataset.selected, null, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            if (result.length == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'No class in selected school'
+                })
+                tableStud.clear();
+                tableStud.draw();
+                document.getElementById('SSfclass').disabled = true
+                return
+            }
+            var strhtml = '<li id="null">ALL</li>'
+            result.forEach(cls => {
+                strhtml += '<li id="' + cls.classId + '">' + cls.className + '</li>'
+            })
+            document.getElementById('LstFClass').innerHTML = strhtml
+            document.getElementById('SSfclass').disabled = false
+        }).catch(function (err) {
+            console.log(err)
+            Message.createNew("Error", "Failed to load class list in selected school", 3)
         })
     }
 
@@ -562,24 +687,62 @@
         return
     }
 
-    async function addStudentHandler() {
-        var addByid = await Swal.fire({
-            title: 'Insert Identification No.',
-            html: '<input  class="form-control text-center" type="text"  id="swalStudentId"/>',
-            showCancelButton: true,
-            preConfirm: function () {
-                return new Promise(function (resolve) {
-                    resolve([
-                        $('#swalStudentId').val()
-                    ])
-                })
-            }
+    async function addStudentHandler(e) {
+        let action = await Swal.fire({
+            type: 'question',
+            title: 'Add Student Into Report?',
+            html: 'Id: ' + e.target.id,
+            showCancelButton: true
         })
-        if (addByid.dismiss) {
+        if (action.dismiss) {
             return;
         }
-        loadNewIndividualData(addByid.value[0])
+        loadNewIndividualData(e.target.id)
     }
+
+
+    function findStudent() {
+        var school = document.getElementById("SSfschool").dataset.selected;
+        var year = document.getElementById('selYear').value
+        if (school == "-1") {
+            Swal.fire({
+                type: 'error',
+                title: 'invalid school',
+                text: 'Please Select school first'
+            })
+            return
+        }
+        var classId = document.getElementById("SSfclass").dataset.selected;
+        Server.request("GET", "/api/account/allStudent?year=" + year + "&schoolId=" + school + "&classId=" + classId, null, true).then(
+            function (result) {
+                result = JSON.parse(result)
+                console.log(result)
+                tbFindStudent.clear();
+
+                if (result.length == 0) {
+                    Swal.fire({
+                        type: 'warning',
+                        title: 'No data',
+                        text: 'At ' + year + ' There is no student in selected school/class '
+                    })
+                }
+                var tmpRow;
+                result.forEach(student => { //temporary
+                    console.log('ad')
+                    tmpRow = tbFindStudent.row.add([
+                        student.name,
+                        student.studentId,
+                        student.className,
+                        '<button onclick="addStudentHandler(event)" id="' + student.studentId + '" class="btn btn-primary-light" ><i class="fa fa-plus"></i></button>'
+                    ]).node()
+                })
+                tbFindStudent.draw();
+            }
+        ).catch(function (err) {
+            console.log(err)
+        })
+    }
+
 
     //school
     function changeStateSchool(e) {

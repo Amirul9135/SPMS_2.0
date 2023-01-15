@@ -1,10 +1,11 @@
 const express = require("express");
-const Address = require("../Model/address")
+const Address = require("../Model/address");
+const Auth = require("./Middleware/Authenticate");
 const Validator = require("./Middleware/Validator")
 const router = express.Router();
 
 
-router.get("/", function (req, res) {
+router.get("/", Auth.userType(), function (req, res) {
     var accountId = req.query.accountId;
     if (!accountId) {
         return res.status(400).send("Invalid accountId")
@@ -18,6 +19,7 @@ router.get("/", function (req, res) {
 })
 
 router.post("/set",
+    Auth.userType(),
     Validator.checkString("accountId", { min: 12, max: 12 }, "invalid account id"),
     Validator.checkString("addressText"),
     Validator.checkNumber("areaId", { min: 0 }),
@@ -78,7 +80,7 @@ router.get('/county', function (req, res) {
 })
 
 
-router.get("/geo/area", function (req, res) {
+router.get("/geo/area", Auth.userType([2, 3]), function (req, res) {
     if (!req.query.id) {
         return res.status(400).send()
     }
@@ -91,6 +93,7 @@ router.get("/geo/area", function (req, res) {
 
 
 router.post("/geo/area", [
+    Auth.userType([2, 3]),
     Validator.checkNumber('areaId', { min: 0 }),
     Validator.validate()
 ], function (req, res) {

@@ -32,7 +32,7 @@ router.get('/profile', Auth.userType(), async function (req, res) {
         states: statesdata
     });
 })
-router.get('/teacher', Auth.userType([2, 3]), async function (req, res) {
+router.get('/teacher', Auth.userType([3]), async function (req, res) {
     var statesdata = await Address.getState().catch(function (err) {
         console.log(err)
     })
@@ -70,10 +70,12 @@ router.get('/student', Auth.userType([2, 3]), async function (req, res) {
 })
 
 //school & class
-router.get('/school', async function (req, res) {
+router.get('/school', Auth.userType([2, 3]), async function (req, res) {
+    if (req.user.type == 2) {
+        return res.redirect(req.baseUrl + "/classList")
+    }
     var statesdata = await Address.getState();
     return res.render("school.ejs", {
-
         states: statesdata
     });
 })
@@ -82,7 +84,7 @@ router.get('/classList', [
 ], async function (req, res) {
     var schoolId
     if (req.user.type == 2) {//kalau 2 = teacher= ambil dari token nanti
-        schoolId = req.query.scid //temporary amek dri ni dlu nanti dah lock baru properly
+        schoolId = req.user.schoolId //temporary amek dri ni dlu nanti dah lock baru properly
     }
     else {
         if (!req.query.scid) {//kalau admin kene specify dari click kat classlist id ni
@@ -122,15 +124,15 @@ router.get('/classDetails', [
 ])
 
 //subject & topic
-router.get('/subject', function (req, res) {
+router.get('/subject', Auth.userType([3]), function (req, res) {
     return res.sendFile(ViewDir + "\\subject.html");
 })
-router.get('/topic', function (req, res) {
+router.get('/topic', Auth.userType([3]), function (req, res) {
     return res.sendFile(ViewDir + "\\topic.html");
 })
 
 //assessment pages
-router.get('/assessment', async function (req, res) {
+router.get('/assessment', Auth.userType(), async function (req, res) {
     var subjects = await Subject.getAll()
     var answerType = await QuestionType.getAll();
     return res.render("assessment.ejs",
@@ -139,7 +141,7 @@ router.get('/assessment', async function (req, res) {
             subjects: subjects
         })
 })
-router.get('/pastAssessment', async function (req, res) {
+router.get('/pastAssessment', Auth.userType(), async function (req, res) {
     return res.render("assessment_Past.ejs")
 })
 
@@ -240,7 +242,7 @@ router.get('/assessment_attempt', Auth.userType([1]), async function (req, res) 
     })
 })
 
-router.get('/assessmentIReport', Auth.userType([1, 2, 3]), async function (req, res) {
+router.get('/assessmentIReport', Auth.userType(), async function (req, res) {
 
     console.log(req.user)
     if (!req.query.asid || !req.query.sid) {//assessment id, student id
@@ -294,7 +296,7 @@ router.get('/assessmentIReport', Auth.userType([1, 2, 3]), async function (req, 
     })
 })
 
-router.get('/assessmentReport', Auth.userType([2]), async function (req, res) {
+router.get('/assessmentReport', Auth.userType([2, 3]), async function (req, res) {
     if (!req.query.asId) {
         return res.status(400).send()
     }
@@ -343,9 +345,17 @@ router.get('/performanceReport', Auth.userType(),
         if (!statesdata) {
             return res.status(400).send()
         }
+        var schoolList = await School.getAll().catch(function (err) {
+            console.log(err)
+        })
+        if (!schoolList) {
+            return res.status(500).send({ error: "failed to load school list data" })
+        }
         return res.render("performance_report.ejs", {
             subjects: subjects,
-            states: statesdata
+            states: statesdata,
+
+            schoolList: schoolList
         })
     })
 
@@ -383,7 +393,7 @@ router.get('/attachment', function (req, res) {
     return res.sendFile(ViewDir + "\\attachment.html");
 })
 
-router.get('/mapping', async function (req, res) {
+router.get('/mapping', Auth.userType([3]), async function (req, res) {
     var statedata = await Address.getState().catch(function (err) {
         console.log(err)
     })

@@ -164,7 +164,7 @@ router.get('/',
         });
     });
 
-router.get('/allStudent', function (req, res) {
+router.get('/allStudent', Auth.userType([2, 3]), function (req, res) {
     var schoolId = req.query.schoolId;
     if (!schoolId) {
         return res.status(400).send("invalid id");
@@ -189,7 +189,7 @@ router.get('/allStudent', function (req, res) {
 });
 
 
-router.get('/allStaff', function (req, res) {
+router.get('/allStaff', Auth.userType([3]), function (req, res) {
     var schoolId = req.query.schoolId;
     if (!schoolId) {
         return res.status(400).send("invalid id");
@@ -229,13 +229,17 @@ router.post('/login',
                 }
                 global.jwts[accId] = secret;
                 jwtsCache.mcache.setItem(String(accId), secret)
-                const payload = {
+                var payload = {
                     user: {
                         id: accId,
                         name: result.name,
                         type: result.userType
                     }
                 }
+                if (result.userType == 2) {
+                    payload.user.schoolId = result.schoolId
+                }
+                console.log(payload)
                 jwt.sign(payload,
                     global.jwts[accId],
                     (err, token) => {
