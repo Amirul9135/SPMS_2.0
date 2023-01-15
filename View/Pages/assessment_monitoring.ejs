@@ -172,8 +172,6 @@
                 ]
         })
         loadStudentList()
-        WS()
-        checkFinished()
         checkbox = [document.getElementById('chkOff'), document.getElementById('chkOnn'), document.getElementById('chkAway'), document.getElementById('chkFn')]
 
     }
@@ -210,6 +208,8 @@
                     }
                 })
                 tbASStudents.draw()
+                checkFinished()
+                WS()
             }).catch(function (err) {
                 Message.createNew('Error', 'Failed to load student List', 3)
             })
@@ -258,6 +258,7 @@
 
     function setStudentStats(studentId, intStats) {
         let istd = document.getElementById(studentId)
+        console.log(istd)
         istd.className = ""
         istd.classList.add("mdi")
         istd.classList.add(statsClass[intStats])

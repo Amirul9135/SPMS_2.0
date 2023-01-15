@@ -27,6 +27,7 @@
     </button>
     <div id="ejsData"></div>
     <div class="row">
+        <!--
         <div class="card">
             <div class="card-header bg-info text-white">
                 <h3 class="card-title">
@@ -57,7 +58,7 @@
                 </div>
             </div>
 
-        </div>
+        </div>-->
         <div class="card">
             <div class="card-header bg-info text-white">
                 <h3 class="card-title">
@@ -100,13 +101,31 @@
                 </div>
             </div>
             <div class="card-body">
+                <div class="col-md-12">
+                    <div class="row text-center mt-1" style="justify-content: center;">
+
+                        <div class="row" id="btnData">
+                            <button class="btn btn-pill btn-outline-warning" style="display: none;"
+                                onclick="resetChartData()" id="btnReset">Reset</button>
+                            &nbsp;
+                            <button class="btn btn-pill btn-outline-primary" data-toggle="modal"
+                                data-target="#ModalAreaInput"><i class="fa fa-plus" aria-hidden="true"></i>
+                                Specific Area Data</button>
+                            &nbsp;
+                            <button class="btn btn-pill btn-outline-primary" data-toggle="modal"
+                                data-target="#ModalAddSchool"><i class="fa fa-plus" aria-hidden="true"></i> School
+                                Data</button>
+                            &nbsp;
+                        </div>
+                    </div>
+                </div>
 
                 <div class="col-md-12 mt-5" style="justify-content: center;">
                     <div id="LineChart" style="height: 80vh;width: 100%;"></div>
                 </div>
             </div>
         </div>
-        <div class="card">
+        <div class="card" id="datacard">
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="dtbDatas" class="table table-bordered table-hover text-nowrap mb-0">
@@ -657,7 +676,7 @@
 
 
     function loadedDataDone() {
-        document.getElementById('btnData').style.display = "none"
+        //document.getElementById('btnData').style.display = "none"
         document.getElementById('btnReset').style.display = "inline-block"
     }
 
@@ -718,7 +737,7 @@
 
     function resetChartData() {
         document.getElementById('btnReset').style.display = 'none'
-        document.getElementById('btnData').style.display = 'initial'
+        // document.getElementById('btnData').style.display = 'initial'
         lineChartOption.series = []
         redrawChart()
     }

@@ -58,7 +58,8 @@
                             <i class="fa fa-trash"><b style="font-family: sans-serif;">&nbsp;List</b></i>
                         </button>
 
-                        <button type="button" class="btn btn-primary btn-sm ml-2" data-toggle="modal" onclick="tableStudent();">
+                        <button type="button" class="btn btn-primary btn-sm ml-2" data-toggle="modal"
+                            onclick="tableStudent();">
                             <i class="fa fa-plus mr-2"><b style="font-family: sans-serif;">&nbsp;Student</b></i>
                         </button>
                     </div>
@@ -153,18 +154,23 @@
             ]
         })
 
+        tableStud = new DataTable('#StudTable', {
+            "columnDefs": [{
+                "targets": [1, 2],
+                "className": "text-center"
+            }
+            ]
+        })
         loadClassStudent();
         showTeacher();
     }
 
-    function showId(event)
-    {
+    function showId(event) {
         alert(event.target.id);
     }
 
 
-    async function register(event)
-    {
+    async function register(event) {
         alert(event.target.id)
         var action = await Swal.fire({
             type: 'question',
@@ -176,10 +182,10 @@
             return;
         }
 
-        var classId    = JSON.stringify(classData.classId);
+        var classId = JSON.stringify(classData.classId);
 
         var data = {
-            "classId"  : classId,
+            "classId": classId,
             "studentId": event.target.id
         }
 
@@ -190,11 +196,11 @@
 
         }).catch(async function (value) {
             var action = await Swal.fire({
-            type: 'error',
-            title: 'Student Already Registered!',
-            text: '',
-            showCancelButton: true
-        })
+                type: 'error',
+                title: 'Student Already Registered!',
+                text: '',
+                showCancelButton: true
+            })
 
         })
     }
@@ -206,7 +212,7 @@
         var data = {
             "classId": classId
         }
-        
+
 
         Server.request("POST", "/api/class/getClassStudent", data, false).then(function (value) {
             var data = JSON.parse(value);
@@ -231,9 +237,8 @@
         });
     }
 
-    
-    function showTeacher()
-    {
+
+    function showTeacher() {
         var classId = JSON.stringify(classData.classId);
 
         var data = {
@@ -241,37 +246,36 @@
         }
 
         Server.request("POST", "/api/class/getClassTeacher", data, true).then(function (value) {
-        console.log(value);
-        var data = JSON.parse(value);
+            console.log(value);
+            var data = JSON.parse(value);
 
-        var teacherName;
-        var className;
-        var schoolName;
-        var year;
-        var total;
+            var teacherName;
+            var className;
+            var schoolName;
+            var year;
+            var total;
 
-        data.forEach(teacher => { //temporary
-            teacherName = teacher.name;
-            className = teacher.className;
-            schoolName = teacher.schoolName;
-            year = teacher.year;
-            total = teacher.total;
-        })
-        
-        document.getElementById('teacherName').innerHTML = teacherName;
-        document.getElementById('schoolName').innerHTML  = schoolName;
-        document.getElementById('className').innerHTML   = className;
-        document.getElementById('total').innerHTML       = total;
-        document.getElementById('year').innerHTML        = year;
+            data.forEach(teacher => { //temporary
+                teacherName = teacher.name;
+                className = teacher.className;
+                schoolName = teacher.schoolName;
+                year = teacher.year;
+                total = teacher.total;
+            })
+
+            document.getElementById('teacherName').innerHTML = teacherName;
+            document.getElementById('schoolName').innerHTML = schoolName;
+            document.getElementById('className').innerHTML = className;
+            document.getElementById('total').innerHTML = total;
+            document.getElementById('year').innerHTML = year;
 
         }).catch(async function (value) {
-                
+
 
         })
     }
 
-    async function deleteStudent(event)
-    {
+    async function deleteStudent(event) {
         alert(event.target.id);
         var action = await Swal.fire({
             type: 'question',
@@ -286,7 +290,7 @@
         var classId = JSON.stringify(classData.classId);
         var data = {
             "studentId": event.target.id,
-            "classId"  : classId
+            "classId": classId
         }
 
         Server.request("POST", "/api/class/deleteStudent", data, false).then(async function (value) {
@@ -310,16 +314,9 @@
         })
 
     }
-    
+
     function tableStudent() {
 
-        tableStud = new DataTable('#StudTable', {
-            "columnDefs": [{
-                "targets": [1,2],
-                "className": "text-center"
-            }
-            ]
-        })
 
         loadStudent();
     }
@@ -330,12 +327,12 @@
         $('#modal_addStudents').modal('show');
 
         //var classId = JSON.stringify(classData.classId);
-        var school  = JSON.stringify(classData.schoolId);
+        var school = JSON.stringify(classData.schoolId);
 
         console.log(school);
 
         var data = {
-            "schoolId"  : school
+            "schoolId": school
         }
 
         Server.request("POST", "/api/class/getStudent", data, true).then(function (value) {
@@ -369,8 +366,7 @@
         });
     }
 
-    async function deleteList()
-    {
+    async function deleteList() {
         var action = await Swal.fire({
             type: 'question',
             title: 'Confirm Delete?',
@@ -383,7 +379,7 @@
 
         var classId = JSON.stringify(classData.classId);
         var data = {
-            "classId"  : classId
+            "classId": classId
         }
 
         Server.request("POST", "/api/class/deleteStudentList", data, false).then(async function (value) {

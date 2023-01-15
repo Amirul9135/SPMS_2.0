@@ -48,15 +48,17 @@ module.exports = function (ws, req) {
                     }
                     else if (decoded.user.type == 2 || decoded.user.type == 3) {
                         console.log('stf')
-                        console.log(global.staff)
 
                         if (!global.staff.hasOwnProperty(message.verify.assessment.toString())) {
                             global.staff[message.verify.assessment.toString()] = []
                         }
                         ws.on('close', function (p) {
-                            global.staff[ws.assessment.toString()] = global.staff[ws.assessment.toString()].filter(socket => { socket.user.id != ws.user.id })
-                            if (global.staff[ws.assessment.toString()].length == 0) {
-                                delete global.staff[ws.assessment.toString()]
+                            if (global.staff[ws.assessment.toString()]) {
+
+                                global.staff[ws.assessment.toString()] = global.staff[ws.assessment.toString()].filter(socket => { socket.user.id != ws.user.id })
+                                if (global.staff[ws.assessment.toString()].length == 0) {
+                                    delete global.staff[ws.assessment.toString()]
+                                }
                             }
                         })
                         global.staff[message.verify.assessment.toString()].push(ws)
