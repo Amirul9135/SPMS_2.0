@@ -11,188 +11,18 @@
     <script src="./res/script/serverRequest.js"></script>
     <link href="/res/assets/plugins/sweet-alert/sweetalert.css" rel="stylesheet">
     <script src="/res/assets/plugins/sweet-alert/sweetalert.min.js"></script>
-    <style>
-        body {
-            background-color: darkgrey;
-            font-size: 16px;
-            padding: 0;
-            margin: 0;
-        }
+    <link href="/res/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/res/style.css" rel="stylesheet">
 
-        /* Login */
-        #bodyLogin {
-            /*background-image: url("../images/loginBG.jpg");*/
-            background-repeat: no-repeat;
-            background-size: cover;
-        }
-
-        #pnLogin {
-            transition: all .3s;
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(205, 205, 250, 0.9);
-            border-radius: 1em;
-            box-sizing: border-box;
-            padding: 5em;
-            box-shadow:
-                0 0 12.5px #fff,
-                /* outer white */
-                -2.5px 0 20px blue,
-                /* outer left magenta */
-                2.5px 0 20px #0ff;
-            /* outer right cyan */
-            animation: pulse 2s infinite;
-        }
-
-        #pnLogin>#loginImage {
-            transition: all .5s;
-            margin: auto;
-            display: block;
-            height: 10em;
-            width: 10em;
-            background-image: url("./res/images/userIco.png");
-            background-position: center;
-            background-size: cover;
-            border: .5em solid gray;
-            border-radius: 50%;
-            margin-bottom: 2em;
-        }
-
-        .login_input {
-            border-color: lightgray;
-            transition: all .2s;
-            min-width: 15em;
-            border-radius: 7px;
-            margin-bottom: 1em;
-            line-height: 1.8em;
-        }
-
-        .login_input:focus {
-            border-color: white;
-            outline: 2px solid skyblue;
-        }
-
-        #pnLogin>div {
-            display: flex;
-        }
-
-        #pnLogin>button {
-            margin: auto;
-            width: 10em;
-            padding: 2%;
-            border-radius: 1em;
-        }
-
-        #pnLogin>button:hover {
-            color: white;
-            background-color: darkblue;
-            border-color: white;
-        }
-
-        .loginError {
-            border-color: red !important;
-            box-shadow:
-                0 0 6.25px #fff,
-                /* outer white */
-                -1.25px 0 10px red,
-                /* outer left magenta */
-                1.25px 0 10px pink;
-            /* outer right cyan */
-        }
-
-        #spLoginErr {
-            margin: auto;
-            margin-top: .5em;
-            color: red;
-            text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
-        }
-
-        #dvPass {
-            display: inline-block;
-            position: relative;
-        }
-
-        #dvPass>i {
-            display: inline-block;
-            position: absolute;
-            right: .2em;
-            margin: auto;
-            line-height: 1.3em;
-            color: gray;
-            font-size: 1.3em;
-        }
-
-        @-webkit-keyframes pulse {
-            0% {
-                -webkit-box-shadow:
-                    0 0 12.5px rgba(255, 255, 255, 1),
-                    -2.5px 0 20px rgba(30, 30, 255, 1),
-                    2.5px 0 20px rgba(0, 220, 220, 1);
-            }
-
-            50% {
-                -webkit-box-shadow:
-                    0 0 9.5px rgba(255, 255, 255, .5),
-                    -1.8px 0 15px rgba(30, 30, 255, .5),
-                    1.8px 0 15px rgba(0, 220, 220, .5);
-            }
-
-            80% {
-                -webkit-box-shadow:
-                    0 0 12.5px rgba(255, 255, 255, 1),
-                    -2.5px 0 20px rgba(30, 30, 255, 1),
-                    2.5px 0 20px rgba(0, 220, 220, 1);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                -moz-box-shadow:
-                    0 0 12.5px rgba(255, 255, 255, 1),
-                    -2.5px 0 20px rgba(30, 30, 255, 1),
-                    2.5px 0 20px rgba(0, 220, 220, 1);
-                box-shadow:
-                    0 0 12.5px rgba(255, 255, 255, 1),
-                    -2.5px 0 20px rgba(30, 30, 255, 1),
-                    2.5px 0 20px rgba(0, 220, 220, 1);
-            }
-
-            50% {
-                -moz-box-shadow:
-                    0 0 9.5px rgba(255, 255, 255, .5),
-                    -1.8px 0 15px rgba(30, 30, 255, .5),
-                    1.8px 0 15px rgba(0, 220, 220, .5);
-                box-shadow:
-                    0 0 9.5px rgba(255, 255, 255, .5),
-                    -1.8px 0 15px rgba(30, 30, 255, .5),
-                    1.8px 0 15px rgba(0, 220, 220, .5);
-            }
-
-            80% {
-                -moz-box-shadow:
-                    0 0 12.5px rgba(255, 255, 255, 1),
-                    -2.5px 0 20px rgba(30, 30, 255, 1),
-                    2.5px 0 20px rgba(0, 220, 220, 1);
-                box-shadow:
-                    0 0 12.5px rgba(255, 255, 255, 1),
-                    -2.5px 0 20px rgba(30, 30, 255, 1),
-                    2.5px 0 20px rgba(0, 220, 220, 1);
-            }
-        }
-    </style>
     <script>
         function togglePassword(e) {
             if (document.getElementById("txtPass").getAttribute("type") == "password") {
-                txtPass.setAttribute("type", "text");
+                document.getElementById("txtPass").setAttribute("type", "text");
                 e.target.classList.add("fa-eye");
                 e.target.classList.remove("fa-eye-slash");
             }
             else {
-                txtPass.setAttribute("type", "password");
+                document.getElementById("txtPass").setAttribute("type", "password");
                 e.target.classList.add("fa-eye-slash");
                 e.target.classList.remove("fa-eye");
             }
@@ -202,12 +32,7 @@
             event.preventDefault();
             var txtId = document.getElementById("txtId");
             var txtPass = document.getElementById("txtPass");
-            var imgLogin = document.getElementById("loginImage");
-            document.getElementById("spLoginErr").innerHTML = "";
 
-            txtId.classList.remove("loginError");
-            txtPass.classList.remove("loginError");
-            imgLogin.classList.remove("loginError");
 
             var validId = txtId.value.length >= 6;
             var validPass = txtPass.value.length >= 6;
@@ -215,35 +40,45 @@
                 Server.login(txtId.value, txtPass.value);
             }
             else {
-                document.getElementById("spLoginErr").innerHTML = "invalid credentials";
-                console.log("invalid");
-                if (!validId)
-                    txtId.classList.add("loginError");
-                if (!validPass)
-                    txtPass.classList.add("loginError");
-                imgLogin.classList.add("loginError");
+                Swal.fire({
+                    type: 'warning',
+                    title: 'invalid credentials'
+                })
             }
         }
     </script>
 </head>
 
 <body id="bodyLogin">
-    <form onsubmit="validateLogin(event)">
-        <div id="pnLogin">
-            <div id="loginImage"></div>
-            <input class="login_input" type="text" id="txtId" placeholder="account Id">
-            <br>
-            <div id="dvPass">
-                <input class="login_input" type="password" id="txtPass"> <i onclick="togglePassword(event)"
-                    class="fa fa-eye-slash"></i>
+    <div style="top: 50vh;transform: translateY(-50%);position: relative;">
+
+        <div class="row" style="justify-content: center;vertical-align: middle;;">
+            <div class="col-md-6 col-sm-12">
+
+                <div class="box">
+                    <form autocomplete="off">
+                        <h2>Log In</h2>
+                        <div class="inputBox">
+                            <input type="text" required="required" id="txtId">
+                            <span>Account Id</span>
+                            <i></i>
+                        </div>
+                        <div class="inputBox">
+                            <input type="password" required="required" id="txtPass"><i onclick="togglePassword(event)"
+                                class="fa fa-eye-slash"></i>
+                            <span>Password </span>
+                            <i></i>
+                        </div>
+                        <i onclick="togglePassword(event)" class="fa fa-eye-slash mt-2"
+                            style="color: #8f8f8f;">&nbsp;toggle
+                            password</i>
+                        <br>
+                        <input type="submit" value="Login" style="color: whitesmoke;" onclick="validateLogin(event)">
+                    </form>
+                </div>
             </div>
-
-
-            <button onclick="validateLogin(event)" type="submit">LOGIN</button>
-            <span id="spLoginErr"></span>
-
         </div>
-    </form>
+    </div>
 </body>
 
 </html>
