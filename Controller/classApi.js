@@ -68,15 +68,14 @@ router.get('/getstudentclass', function (req, res) {
     });
 });
 
-router.get('/getTeacher', function (req, res) {
-    var promiseAll = Class.getTeacher();
-    promiseAll.then(function (value) {
-        console.log(value);
-        res.send(JSON.stringify(value));
-    }).catch(function (value) {
-        console.log(value);
-        res.status(400).send(value);
-    });
+router.post('/getTeacher', function (req, res) {
+    Class.getTeacher(req.body.schoolId).then(
+        function (value) {
+            return res.status(200).send(value);
+        }
+    ).catch(function (value) {
+        return res.status(500).send(value);
+    })
 });
 
 router.post('/getClassStudent', function (req, res) {

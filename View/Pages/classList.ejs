@@ -34,12 +34,13 @@
                             <div class="table-responsive">
                                 <table class="table table-bordered table-hover text-nowrap mb-0" id="dtbClassList">
                                     <thead class="bg-primary">
+                                        <p class="text-red">**Click class name to update data.</p>
                                         <tr>
                                             <th width="20%" class="text-center text-white">Class Name</th>
                                             <th width="50%" class="text-white">Teacher</th>
                                             <th width="10%" class="text-center text-white">Total Students</th>
-                                            <th width="10%"></th>
-                                            <th width="10%"></th>
+                                            <th width="10%" class="text-white text-center">Delete</th>
+                                            <th width="10%" class="text-white text-center">Class Details</th>
                                         </tr>
                                     </thead>
                                     <tbody class="mycustom_tbd">
@@ -141,14 +142,22 @@
 
         Server.request("POST", "/api/class/getClassBySchool", data, false).then(function (value) {
             var data = JSON.parse(value);
-            dtbClassList.clear();
-            var tmpRow;
-            console.log('classlist')
             console.log(data)
+            dtbClassList.clear();
+
+            if (data.length == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'No Data',
+                    text: "There's no existing school data in selected county"
+                })
+            }
+
+            var tmpRow;
 
             data.forEach(qClass => { //temporary
                 tmpRow = dtbClassList.row.add([
-                    '<button onclick="getClass(event)" id="' + qClass.classId + '" ><b style="vertical-align: middle;">' + qClass.className + '</b></button>',
+                    '<button onclick="getClass(event)" id="' + qClass.classId + '"><b style="vertical-align: middle;">' + qClass.className + '</b></button>',
                     qClass.name,
                     qClass.total,
                     '<button class="btn btn-danger" style="vertical-align: middle;" onclick="deleteClass(event);" id="' + qClass.classId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>',
@@ -160,11 +169,30 @@
         }
         ).catch(function (value) {
             console.log(value);
+            dtbClassList.clear();
+            dtbClassList.draw();
+            try {
+                value = JSON.parse(value)
+                if (value.error) {
+                    Swal.fire({
+                        type: 'warning',
+                        title: value.error
+                    })
+                }
+            } catch {
+
+            }
         });
     }
 
     function loadTeacher() {
-        Server.request("GET", "/api/class/getTeacher", null, false).then(function (value) {
+
+        schoolId = JSON.stringify(school.schoolId);
+        var data = {
+            "schoolId": schoolId
+        }
+
+        Server.request("POST", "/api/class/getTeacher", data, false).then(function (value) {
             var data = JSON.parse(value);
             var strHtmlRads = "";
             strHtmlRads += '<option value="-1" selected>Select Teacher</option>'
@@ -199,24 +227,35 @@
             "accountId": accountId
         }
 
-        Server.request("POST", "/api/class/register", data, true).then(function (value) {
+        Server.request("POST", "/api/class/register", data, true).then(async function (value) {
             console.log(value)
 
-            Message.createNew("Success", "s", 0);
+            var action = await Swal.fire({
+                type: 'success',
+                title: 'Registered Successfully!',
+                text: '',
+                showCancelButton: false
+            })
             document.getElementById("selTeacher").value = "";
             document.getElementById("txtnameclass").value = "";
-            $('#modal_classDetails').modal('hide');//ni auto tutup balek modal after register
+            $('#modal_classDetails').modal('hide');//ni auto tutup balek modal after register\
+            loadClass();
 
-        }).catch(function (value) {
+        }).catch(async function (value) {
             console.log(value);
             value = JSON.parse(value);
             if (value.hasOwnProperty("validationError")) {
                 displayValidationError(value);
             }
             else {
-                Message.createNew("Error", value, 3);
+                //Message.createNew("Error", value, 3);
+                var action = await Swal.fire({
+                type: 'error',
+                title: 'Cannot Updated!',
+                text: 'An Error has occured',
+                showCancelButton: false
+            })
             }
-
         })
     }
 
@@ -285,6 +324,7 @@
             document.getElementById("btnUpdate").style.display = "none";
             document.getElementById("btnRegister").style.display = "inline-block";
             $('#modal_classDetails').modal('hide');
+            loadClass();
 
             var action = await Swal.fire({
                 type: 'success',
@@ -328,9 +368,7 @@
                 text: '',
                 showCancelButton: false
             })
-
-            dtbClassList.row("#" + event.target.parentElement.parentElement.id).remove();
-            dtbClassList.draw();
+            loadClass();
 
         }).catch(async function (value) {
             var action = await Swal.fire({

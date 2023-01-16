@@ -134,9 +134,9 @@ module.exports = class Class {
         });
     }
 
-    static getTeacher() { //tukar staff query
+    static getTeacher(schoolId) { //tukar staff query
         return new Promise(function (resolve, reject) {
-            var strSql = "SELECT accountId, name FROM account WHERE userType = 2";
+            var strSql = "SELECT st.staffId AS accountId, a.name AS name FROM staff st INNER JOIN account a ON a.accountId = st.staffId INNER JOIN school sc ON sc.schoolId = st.schoolId WHERE st.schoolId =" + db.escape(schoolId);
             db.query(strSql, function (err, result) {
                 if (err) {
                     console.log("error:" + err.message);

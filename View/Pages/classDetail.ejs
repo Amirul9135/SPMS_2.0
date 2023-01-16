@@ -76,7 +76,7 @@
                                             <th width="50%" class="text-white">Name</th>
                                             <th width="10%" class="text-white text-center">Age</th>
                                             <th width="15%" class="text-center text-white">Registered Date</th>
-                                            <th width="10%"></th>
+                                            <th width="10%" class="text-white text-center">Delete</th>
                                         </tr>
                                     </thead>
                                     <tbody class="mycustom_tbd">
@@ -110,7 +110,7 @@
                                     <tr>
                                         <th width="50%" class="text-white">Student Name</th>
                                         <th width="20%" class="text-center text-white">Class</th>
-                                        <th width="10%" class="text-center text-white"></th>
+                                        <th width="10%" class="text-center text-white">Add</th>
                                     </tr>
                                 </thead>
                                 <tbody class="mycustom_tbd">
@@ -120,8 +120,8 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-
+            <div class="modal-footer text-white" style="justify-content: center;">
+                <a class="btn btn-warning mt-1" data-dismiss="modal">Close</a>
             </div>
         </div>
     </div>
@@ -171,7 +171,6 @@
 
 
     async function register(event) {
-        alert(event.target.id)
         var action = await Swal.fire({
             type: 'question',
             title: 'Confirm Registration',
@@ -192,7 +191,8 @@
         Server.request("POST", "/api/class/registerStudent", data, true).then(function (value) {
             console.log(value)
 
-            Message.createNew("Success", "s", 0);
+            loadStudent();
+            loadClassStudent();
 
         }).catch(async function (value) {
             if (value == 'duplicate')
@@ -217,22 +217,32 @@
 
 
         Server.request("POST", "/api/class/getClassStudent", data, false).then(function (value) {
+
             var data = JSON.parse(value);
             dtbClassStudents.clear();
+
+            if (data == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'No data',
+                    text: 'Currently There is no student in selected class'
+                })
+            }
+
             var tmpRow;
-            console.log(data)
 
             data.forEach(qClassStud => { //temporary
                 tmpRow = dtbClassStudents.row.add([
                     qClassStud.studentId,
-                    '<b>' + qClassStud.name + '</b>',
+                    qClassStud.name,
                     qClassStud.age,
-                    qClassStud.rDate,
+                    new Date(qClassStud.rDate).toLocaleDateString('en-GB'),
                     '<button class="btn btn-danger" style="vertical-align: middle;" onclick="deleteStudent(event);" id="' + qClassStud.studentId + '"><b><i class="fa fa-trash" style="font-size: 17px;"></i></b></button>'
                 ]).node()
                 tmpRow.id = qClassStud.studentId; //letak id 
             })
             dtbClassStudents.draw();
+            console.log(data)
         }
         ).catch(function (value) {
             console.log(value);
@@ -278,11 +288,10 @@
     }
 
     async function deleteStudent(event) {
-        alert(event.target.id);
         var action = await Swal.fire({
             type: 'question',
             title: 'Confirm Delete?',
-            text: 'This student will be removed from the system',
+            text: 'This student will be removed from the system and cannot add this student in same class anymore ',
             showCancelButton: true
         })
         if (action.dismiss) {
@@ -299,12 +308,11 @@
             var action = await Swal.fire({
                 type: 'success',
                 title: 'Deleted Successfully!',
-                text: 'You need to wait one day for student removal',
+                text: 'You need to wait one day to add this student!',
                 showCancelButton: false
             })
 
-            dtbClassStudents.row("#" + event.target.parentElement.parentElement.id).remove();
-            dtbClassStudents.draw();
+            loadClassStudent();
 
         }).catch(async function (value) {
             var action = await Swal.fire({
@@ -318,8 +326,6 @@
     }
 
     function tableStudent() {
-
-
         loadStudent();
     }
 
@@ -385,15 +391,25 @@
         }
 
         Server.request("POST", "/api/class/deleteStudentList", data, false).then(async function (value) {
+            var data = JSON.parse(value);
+            dtbClassStudents.clear();
+
+            if (data.length == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'No data',
+                    text: 'Currently There is no student in selected class'
+                })
+            }
+
             var action = await Swal.fire({
                 type: 'success',
-                title: 'Deleted Successfully!',
+                title: 'Deleted All Student Successfully!',
                 text: '',
                 showCancelButton: false
             })
 
-            dtbClassStudents.row("#" + event.target.parentElement.parentElement.id).remove();
-            dtbClassStudents.draw();
+            loadClassStudent();
 
         }).catch(async function (value) {
             var action = await Swal.fire({

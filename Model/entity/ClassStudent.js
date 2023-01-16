@@ -84,7 +84,7 @@ module.exports = class ClassStudent {
 
     static getClassStudent(classId) {
         return new Promise(function (resolve, reject) {
-            var strSql = "SELECT c.classId AS classId,c.className AS className, a.name AS name, DATE_FORMAT(cs.startDate, '%d/' '%m/' '%Y') AS rDate, cs.studentId AS studentId, IF (LEFT(a.accountId,2) <= LEFT(YEAR(CURRENT_DATE),2), YEAR(CURRENT_DATE) - (LEFT(a.accountId,2) + 2000), YEAR(CURRENT_DATE) - (LEFT(a.accountId,2) + 1900)) AS age FROM class c LEFT JOIN class_student cs ON c.classId = cs.classId INNER JOIN school s ON s.schoolId = c.schoolId LEFT JOIN account a ON a.accountId = cs.studentId WHERE (cs.endDate > CURRENT_DATE OR cs.endDate IS NULL) AND c.classId =" +
+            var strSql = "SELECT c.classId AS classId,c.className AS className, a.name AS name, cs.startDate AS rDate, cs.studentId AS studentId, IF (LEFT(a.accountId,2) <= LEFT(YEAR(CURRENT_DATE),2), YEAR(CURRENT_DATE) - (LEFT(a.accountId,2) + 2000), YEAR(CURRENT_DATE) - (LEFT(a.accountId,2) + 1900)) AS age FROM class c LEFT JOIN class_student cs ON c.classId = cs.classId INNER JOIN school s ON s.schoolId = c.schoolId LEFT JOIN account a ON a.accountId = cs.studentId WHERE (cs.endDate > CURRENT_DATE OR cs.endDate IS NULL) AND c.classId =" +
                 db.escape(classId);
 
             db.query(strSql, function (err, result) {
@@ -101,8 +101,8 @@ module.exports = class ClassStudent {
 
     static getStudent(schoolId) {
         return new Promise(function (resolve, reject) {
-            var strSql = "SELECT cs.studentId AS studentId, c.className AS className, a.name AS name FROM class_student cs INNER JOIN account a ON a.accountId = cs.studentId INNER JOIN class c ON c.classId = cs.classId INNER JOIN school s ON s.schoolId = c.schoolId WHERE cs.endDate < CURRENT_DATE AND s.schoolId ="
-                + db.escape(schoolId) + " GROUP BY cs.studentId";
+            var strSql = "SELECT cs.studentId AS studentId, c.className AS className, a.name AS name, MAX(cs.endDate) AS endDate FROM class_student cs INNER JOIN account a ON a.accountId = cs.studentId INNER JOIN class c ON c.classId = cs.classId INNER JOIN school s ON s.schoolId = c.schoolId WHERE s.schoolId = " 
+            + db.escape(schoolId) + " GROUP BY cs.studentId HAVING MAX(cs.endDate) < CURRENT_DATE";
 
             db.query(strSql, function (err, result) {
                 if (err) {
