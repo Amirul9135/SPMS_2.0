@@ -157,7 +157,7 @@ module.exports = class Account {
     }
 
     login() {
-        var strSql = "SELECT a.name,a.password,a.userType,s.schoolId FROM account a LEFT JOIN staff s ON a.accountId = s.staffId WHERE accountId=" + db.escape(this.#straccountId) + "AND disabled IS NULL;"
+        var strSql = "SELECT a.name,a.password,a.userType,s.schoolId,sc.abbrv FROM account a LEFT JOIN staff s ON a.accountId = s.staffId LEFT JOIN school sc ON s.schoolId=sc.schoolId WHERE accountId=" + db.escape(this.#straccountId) + "AND disabled IS NULL;"
         return new Promise(function (resolve, reject) {
             db.query(strSql, function (err, result) {
                 if (err) {

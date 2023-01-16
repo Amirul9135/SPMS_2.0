@@ -805,7 +805,7 @@ module.exports = class Assessment {
         sDt = year + '-01-01'
         eDt = year + '-12-31'
         var strlSql = "SELECT aq.studentId,acc.name,  (SUM(aq.mark) / SUM(aq.fullMark)) AS percent, CAST(a.close AS DATE) As date FROM assigned_question aq JOIN assessment a ON aq.assessmentId=a.assessmentId JOIN account acc ON aq.studentId=acc.accountId "
-            + " WHERE a.open >='2021-01-01' AND a.close <='2023-12-31' AND a.subject=" + db.escape(subjectCode) + " AND aq.studentId = " + db.escape(studentId) + " GROUP BY aq.assessmentId ORDER BY a.close ASC"
+            + " WHERE a.open >=" + db.escape(sDt) + " AND a.close <=" + db.escape(eDt) + " AND a.subject=" + db.escape(subjectCode) + " AND aq.studentId = " + db.escape(studentId) + " GROUP BY aq.assessmentId ORDER BY a.close ASC"
         return new Promise(function (resolve, reject) {
             db.query(strlSql, function (err, result) {
                 if (err) {

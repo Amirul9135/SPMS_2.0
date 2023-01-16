@@ -377,11 +377,20 @@ router.get('/performanceReport', Auth.userType(),
         if (!schoolList) {
             return res.status(500).send({ error: "failed to load school list data" })
         }
+        if (req.user.type == 2) {
+            let tmp = []
+            for (var i = 0; i < schoolList.length; i++) {
+                if (schoolList[i].schoolId === req.user.schoolId) {
+                    tmp.push(schoolList[i])
+                }
+            }
+            schoolList = tmp
+        }
         return res.render("performance_report.ejs", {
             subjects: subjects,
             states: statesdata,
-
-            schoolList: schoolList
+            schoolList: schoolList,
+            user: req.user
         })
     })
 
