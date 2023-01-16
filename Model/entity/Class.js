@@ -105,7 +105,7 @@ module.exports = class Class {
 
     static getClassBySchool(schoolId) {
         return new Promise(function (resolve, reject) {
-            var strSql = "SELECT c.classId AS classId,c.className AS className, a.name AS name, COUNT(cs.classId) AS total FROM class c LEFT JOIN class_student cs ON c.classId = cs.classId INNER JOIN school s ON s.schoolId = c.schoolId LEFT JOIN account a ON a.accountId = c.teacherId WHERE (cs.endDate > CURRENT_TIMESTAMP OR cs.endDate IS NULL) AND s.schoolId = " + db.escape(schoolId) + " GROUP BY c.classId";
+            var strSql = "SELECT c.classId AS classId,c.className AS className, a.name AS name, COUNT(cs.classId) AS total FROM class c LEFT JOIN class_student cs ON c.classId = cs.classId AND cs.endDate > CURRENT_TIMESTAMP OR cs.endDate IS NULL  JOIN school s ON s.schoolId = c.schoolId LEFT JOIN account a ON a.accountId = c.teacherId WHERE c.schoolId =" + db.escape(schoolId) + " GROUP BY c.classId";
 
             db.query(strSql, function (err, result) {
                 if (err) {

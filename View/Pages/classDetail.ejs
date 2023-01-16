@@ -390,17 +390,18 @@
             "classId": classId
         }
 
-        Server.request("POST", "/api/class/deleteStudentList", data, false).then(async function (value) {
-            var data = JSON.parse(value);
-            dtbClassStudents.clear();
-
-            if (data.length == 0) {
-                Swal.fire({
-                    type: 'warning',
-                    title: 'No data',
-                    text: 'Currently There is no student in selected class'
-                })
-            }
+        console.log(dtbClassStudents.rows().data().length);
+        if (dtbClassStudents.rows().data().length == 0) 
+        {
+            Swal.fire({
+                type: 'warning',
+                title: 'No data',
+                text: 'Currently There is no student in selected class'
+            })
+        }
+        else
+        {
+            Server.request("POST", "/api/class/deleteStudentList", data, false).then(async function (value) {
 
             var action = await Swal.fire({
                 type: 'success',
@@ -411,14 +412,18 @@
 
             loadClassStudent();
 
-        }).catch(async function (value) {
-            var action = await Swal.fire({
-                type: 'error',
-                title: 'Cannot Deleted!',
-                text: 'An Error has occured',
-                showCancelButton: false
+            }).catch(async function (value) {
+                console.log(value);
+                var action = await Swal.fire({
+                    type: 'error',
+                    title: 'Cannot Deleted!',
+                    text: 'An Error has occured',
+                    showCancelButton: false
+                })
             })
-        })
+        }
+        
+        
     }
 
 </script>

@@ -56,18 +56,6 @@ router.post('/getClassBySchool', function (req, res) {
     })
 })
 
-router.get('/getstudentclass', function (req, res) {
-    var classId = "2"
-    var promiseAll = Class.getstudentclass(classId);
-    promiseAll.then(function (value) {
-        console.log(value);
-        return res.send(value);
-    }).catch(function (value) {
-        console.log(value);
-        return res.status(400).send(value);
-    });
-});
-
 router.post('/getTeacher', function (req, res) {
     Class.getTeacher(req.body.schoolId).then(
         function (value) {
