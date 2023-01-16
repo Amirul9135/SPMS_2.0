@@ -110,6 +110,7 @@
                                     <tr>
                                         <th width="50%" class="text-white">Student Name</th>
                                         <th width="20%" class="text-center text-white">Class</th>
+                                        <th width="10%" class="text-center text-white">Year</th>
                                         <th width="10%" class="text-center text-white">Add</th>
                                     </tr>
                                 </thead>
@@ -156,7 +157,7 @@
 
         tableStud = new DataTable('#StudTable', {
             "columnDefs": [{
-                "targets": [1, 2],
+                "targets": [1, 2, 3],
                 "className": "text-center"
             }
             ]
@@ -360,6 +361,7 @@
                 tmpRow = tableStud.row.add([
                     student.name + '<br><span>' + student.studentId + '</span>',
                     student.className,
+                    new Date(student.endDate).getFullYear(),
                     '<button class="btn btn-success" style="vertical-align: middle;" onclick="register(event);" id="' + student.studentId + '"><b><i class="fa fa-plus" style="font-size: 17px;"></i></b></button>'
 
                 ]).node()
@@ -391,26 +393,24 @@
         }
 
         console.log(dtbClassStudents.rows().data().length);
-        if (dtbClassStudents.rows().data().length == 0) 
-        {
+        if (dtbClassStudents.rows().data().length == 0) {
             Swal.fire({
                 type: 'warning',
                 title: 'No data',
                 text: 'Currently There is no student in selected class'
             })
         }
-        else
-        {
+        else {
             Server.request("POST", "/api/class/deleteStudentList", data, false).then(async function (value) {
 
-            var action = await Swal.fire({
-                type: 'success',
-                title: 'Deleted All Student Successfully!',
-                text: '',
-                showCancelButton: false
-            })
+                var action = await Swal.fire({
+                    type: 'success',
+                    title: 'Deleted All Student Successfully!',
+                    text: '',
+                    showCancelButton: false
+                })
 
-            loadClassStudent();
+                loadClassStudent();
 
             }).catch(async function (value) {
                 console.log(value);
@@ -422,8 +422,8 @@
                 })
             })
         }
-        
-        
+
+
     }
 
 </script>
