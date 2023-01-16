@@ -140,7 +140,7 @@
             "schoolId": schoolId
         }
 
-        Server.request("POST", "/api/class/getClassBySchool", data, false).then(function (value) {
+        Server.request("POST", "/api/class/getClassBySchool", data, true).then(function (value) {
             var data = JSON.parse(value);
             console.log(data)
             dtbClassList.clear();
@@ -192,7 +192,7 @@
             "schoolId": schoolId
         }
 
-        Server.request("POST", "/api/class/getTeacher", data, false).then(function (value) {
+        Server.request("POST", "/api/class/getTeacher", data, true).then(function (value) {
             var data = JSON.parse(value);
             var strHtmlRads = "";
             strHtmlRads += '<option value="-1" selected>Select Teacher</option>'
@@ -250,11 +250,11 @@
             else {
                 //Message.createNew("Error", value, 3);
                 var action = await Swal.fire({
-                type: 'error',
-                title: 'Cannot Updated!',
-                text: 'An Error has occured',
-                showCancelButton: false
-            })
+                    type: 'error',
+                    title: 'Cannot Updated!',
+                    text: 'An Error has occured',
+                    showCancelButton: false
+                })
             }
         })
     }
@@ -316,7 +316,7 @@
             "accountId": accountId
         }
 
-        Server.request("POST", "/api/class/update", data, false).then(async function (value) {
+        Server.request("POST", "/api/class/update", data, true).then(async function (value) {
             console.log('Updated');
 
             document.getElementById("txtnameclass").value = "";
@@ -361,7 +361,7 @@
             "classId": event.target.id
         }
 
-        Server.request("POST", "/api/class/delete", data, false).then(async function (value) {
+        Server.request("POST", "/api/class/delete", data, true).then(async function (value) {
             var action = await Swal.fire({
                 type: 'success',
                 title: 'Deleted Successfully!',

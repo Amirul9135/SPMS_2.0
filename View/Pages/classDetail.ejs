@@ -217,7 +217,7 @@
         }
 
 
-        Server.request("POST", "/api/class/getClassStudent", data, false).then(function (value) {
+        Server.request("POST", "/api/class/getClassStudent", data, true).then(function (value) {
 
             var data = JSON.parse(value);
             dtbClassStudents.clear();
@@ -305,7 +305,7 @@
             "classId": classId
         }
 
-        Server.request("POST", "/api/class/deleteStudent", data, false).then(async function (value) {
+        Server.request("POST", "/api/class/deleteStudent", data, true).then(async function (value) {
             var action = await Swal.fire({
                 type: 'success',
                 title: 'Deleted Successfully!',
@@ -401,7 +401,7 @@
             })
         }
         else {
-            Server.request("POST", "/api/class/deleteStudentList", data, false).then(async function (value) {
+            Server.request("POST", "/api/class/deleteStudentList", data, true).then(async function (value) {
 
                 var action = await Swal.fire({
                     type: 'success',

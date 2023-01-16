@@ -36,6 +36,11 @@ app.use('/res/',
 app.get('/login', function (req, res) {
     return res.sendFile(__dirname + '\\View\\login.html');
 })
+
+app.get('/favicon.ico', function (req, res) {
+    return res.sendFile(__dirname + '\\View\\Res\\assets\\images\\brand\\favicon.ico')
+})
+
 app.get('/*', function (req, res) {
     if (/\.{1}/.test(req.originalUrl)) {
         //any path ada . means file la so kalau masuk sini not found 404 

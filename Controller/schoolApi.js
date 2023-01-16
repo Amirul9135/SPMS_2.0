@@ -10,7 +10,7 @@ const Auth = require("./Middleware/Authenticate")
 //const Validator = require("./Middleware/Validator");
 
 router.post('/register', [
-    Auth.userType([2, 3]),
+    Auth.userType([3]),
     Validator.checkString('fullName'),
     Validator.checkString('description'),
     Validator.checkString("abbrv"),
@@ -33,7 +33,7 @@ router.post('/register', [
 });
 
 router.post('/update', [
-    Auth.userType([2, 3]),
+    Auth.userType([3]),
     Validator.checkString('fullName'),
     Validator.checkString('description'),
     Validator.checkString("abbrv"),
@@ -53,7 +53,7 @@ router.post('/update', [
     });
 });
 
-router.post('/delete', function (req, res) {
+router.post('/delete', Auth.userType([3]), function (req, res) {
     if (!req.body.schoolId) {
         return res.status(400).send()
     }
@@ -68,7 +68,7 @@ router.post('/delete', function (req, res) {
     });
 });
 
-router.get('/getSchool', function (req, res) {
+router.get('/getSchool', Auth.userType([2, 3]), function (req, res) {
     var schoolId = "0"
     var promiseAll = School.getSchool(schoolId);
     promiseAll.then(function (value) {
@@ -80,7 +80,7 @@ router.get('/getSchool', function (req, res) {
     });
 });
 
-router.get('/allSchool', function (req, res) {
+router.get('/allSchool', Auth.userType([2, 3]), function (req, res) {
     var promiseAll = School.getAll();
     promiseAll.then(function (value) {
         console.log(value);
@@ -92,7 +92,7 @@ router.get('/allSchool', function (req, res) {
 });
 
 
-router.get('/classList', function (req, res) {
+router.get('/classList', Auth.userType([2, 3]), function (req, res) {
     if (!req.query.schId) {
         return res.status(400).send()
     }
@@ -103,7 +103,7 @@ router.get('/classList', function (req, res) {
     })
 })
 
-router.get('/county', function (req, res) {
+router.get('/county', Auth.userType([2, 3]), function (req, res) {
     if (!req.query.id) {
         return res.status(400).send()
     }

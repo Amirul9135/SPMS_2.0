@@ -279,7 +279,7 @@
     function loadAddress() {
       if (!cacheAcc)
         return;
-      Server.request("GET", "/api/address/?accountId=" + cacheAcc.accountId, null, false).then(
+      Server.request("GET", "/api/address/?accountId=" + cacheAcc.accountId, null, true).then(
         function (result) {
           result = JSON.parse(result)
           console.log(result)
@@ -310,7 +310,7 @@
         "addressText": text,
         "areaId": areaId
       }
-      Server.request("POST", "/api/address/set", address, false).then(function (result) {
+      Server.request("POST", "/api/address/set", address, true).then(function (result) {
         //Message.createNew("success", "address saved", 0);
         console.log('address saved')
         return;

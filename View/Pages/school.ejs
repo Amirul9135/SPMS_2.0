@@ -306,35 +306,6 @@
         navigate('/classList?scid=' + e.target.id)
     }
 
-    // With filter
-    // function loadSchool() {
-    //     console.log("load")
-
-    //     var school = document.getElementById("txtschool").value;
-    //     var classId = document.getElementById("txtclass").value;
-    //     console.log(school);
-
-
-    //     Server.request("GET", "/api/account/allStudent?schoolId=" + school + "&classId=" + classId, null, false).then(function (value) {
-    //         var data = JSON.parse(value);
-    //         tableStud.clear();
-    //         var tmpRow;
-    //         data.forEach(student => { //temporary
-    //             tmpRow = tableStud.row.add([
-    //                 student.name + '<br><span>' + student.studentId + '</span>',
-    //                 student.fullName,
-    //                 student.className,
-    //                 '<button onclick="deleteStud(event)" class="btn btn-danger"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button>'
-    //             ]).node()
-    //             tmpRow.id = student.studentId; //letak id
-    //         })
-    //         tableStud.draw();
-    //         console.log(data)
-    //     }
-    //     ).catch(function (value) {
-    //         console.log(value);
-    //     });
-    // }
 
     function showId(event) {
         console.log(event.target);
@@ -455,7 +426,7 @@
 
         console.log(data);
 
-        Server.request("POST", "/api/school/delete", data, false).then(async function (value) {
+        Server.request("POST", "/api/school/delete", data, true).then(async function (value) {
             var action = await Swal.fire({
                 type: 'success',
                 title: 'Deleted Successfully!',

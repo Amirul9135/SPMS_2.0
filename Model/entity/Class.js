@@ -183,11 +183,10 @@ module.exports = class Class {
         })
     }
 
-    getClassStudent(classId)
-    {
+    getClassStudent(classId) {
         return new Promise(function (resolve, reject) {
-            var strSql = "SELECT c.classId AS classId,c.className AS className, a.name AS name, cs.startDate AS date, cs.studentId AS studentId, IF (LEFT(a.accountId,2) <= LEFT(YEAR(CURRENT_DATE),2), YEAR(CURRENT_DATE) - (LEFT(a.accountId,2) + 2000), YEAR(CURRENT_DATE) - (LEFT(a.accountId,2) + 1900)) AS age FROM class c LEFT JOIN class_student cs ON c.classId = cs.classId INNER JOIN school s ON s.schoolId = c.schoolId LEFT JOIN account a ON a.accountId = cs.studentId WHERE (cs.endDate > CURRENT_DATE OR cs.endDate IS NULL) AND c.classId ="+
-            db.escape(classId);
+            var strSql = "SELECT c.classId AS classId,c.className AS className, a.name AS name, cs.startDate AS date, cs.studentId AS studentId, IF (LEFT(a.accountId,2) <= LEFT(YEAR(CURRENT_DATE),2), YEAR(CURRENT_DATE) - (LEFT(a.accountId,2) + 2000), YEAR(CURRENT_DATE) - (LEFT(a.accountId,2) + 1900)) AS age FROM class c LEFT JOIN class_student cs ON c.classId = cs.classId INNER JOIN school s ON s.schoolId = c.schoolId LEFT JOIN account a ON a.accountId = cs.studentId WHERE (cs.endDate > CURRENT_DATE OR cs.endDate IS NULL) AND c.classId =" +
+                db.escape(classId);
 
             db.query(strSql, function (err, result) {
                 if (err) {

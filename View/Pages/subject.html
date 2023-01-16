@@ -37,8 +37,10 @@
 
                 <div class="col-sm-12 col-md-1 col-lg-1 col-xl-1 p-0" style="text-align: right;">
                     <label class="form-label"><br></label>
-                    <a class="btn btn-primary" onclick="register()" id="btnRegister"><b><i class="fa fa-plus"></i>&nbsp;Subject</b></a>
-                    <a class="btn btn-success text-white" onclick="updateSubject()" id="btnUpdate" style="display: none;"><b><i class="fa fa-floppy-o"></i>&nbsp;Subject</b></a>
+                    <a class="btn btn-primary" onclick="register()" id="btnRegister"><b><i
+                                class="fa fa-plus"></i>&nbsp;Subject</b></a>
+                    <a class="btn btn-success text-white" onclick="updateSubject()" id="btnUpdate"
+                        style="display: none;"><b><i class="fa fa-floppy-o"></i>&nbsp;Subject</b></a>
                 </div>
             </div>
 
@@ -82,40 +84,40 @@
     // Register subject
     async function register() {
         var action = await Swal.fire({
-            type : 'question',
+            type: 'question',
             title: 'Confirm Registration',
-            text : 'Register new subject into the system?',
+            text: 'Register new subject into the system?',
             showCancelButton: true
         })
         if (action.dismiss) {
             return;
         }
 
-        var subjectCode  = document.getElementById("txtSubjectCode").value;
+        var subjectCode = document.getElementById("txtSubjectCode").value;
         var subjectTitle = document.getElementById("txtSubjectTitle").value;
 
         var data = {
-            "subjectCode" : subjectCode,
+            "subjectCode": subjectCode,
             "subjectTitle": subjectTitle
         }
 
-        Server.request("POST", "/api/subject/register", data, false).then(async function (value) {
+        Server.request("POST", "/api/subject/register", data, true).then(async function (value) {
             document.getElementById("txtSubjectCode").value = "";
             document.getElementById("txtSubjectTitle").value = "";
 
             var action = await Swal.fire({
-                type : 'success',
+                type: 'success',
                 title: 'Register Successfully!',
-                text : '',
+                text: '',
                 showCancelButton: false
             })
             loadSubject(document.getElementById("txtSubjectCode").value);
-        
+
         }).catch(async function (value) {
             var action = await Swal.fire({
-                type : 'error',
+                type: 'error',
                 title: 'Cannot Register!',
-                text : 'An Error has occured',
+                text: 'An Error has occured',
                 showCancelButton: false
             })
         })
@@ -127,10 +129,10 @@
         console.log("load")
 
         var data = {
-            "subjectCode" : subjectCode
+            "subjectCode": subjectCode
         }
 
-        Server.request("GET", "/api/subject/allSubject", data, false).then(function (value) {
+        Server.request("GET", "/api/subject/allSubject", data, true).then(function (value) {
             var data = JSON.parse(value);
             tableSubject.clear();
             var tmpRow;
@@ -141,9 +143,9 @@
                     '<center>' + qSubject.subjectCode + '</center>',
                     '<button onclick="deleteSubject(event);" class="btn btn-danger" id="' + qSubject.subjectCode + '"><b><i class="fa fa-trash  text-white" style="font-size: 17px;"></i></b></button> '
                 ]).node()
-               tmpRow.id = qSubject.subjectCode; //letak id
+                tmpRow.id = qSubject.subjectCode; //letak id
             })
-            tableSubject .draw();
+            tableSubject.draw();
             console.log(data)
         }
         ).catch(function (value) {
@@ -155,9 +157,9 @@
     //view subject on Click 
     async function getSubject(event) {
         var action = await Swal.fire({
-            type : 'question',
+            type: 'question',
             title: 'Update this subject?',
-            text : 'Directing to update form',
+            text: 'Directing to update form',
             showCancelButton: true
         })
         if (action.dismiss) {
@@ -168,10 +170,10 @@
             "subjectCode": event.target.id
         }
 
-        document.getElementById("txtSubjectCode").value      = event.target.id;
-        document.getElementById("txtSubjectTitle").value     = event.target.children[0].innerHTML;
-        document.getElementById("txtSubjectCode").disabled   = true;
-        document.getElementById("btnUpdate").style.display   = "inline-block";
+        document.getElementById("txtSubjectCode").value = event.target.id;
+        document.getElementById("txtSubjectTitle").value = event.target.children[0].innerHTML;
+        document.getElementById("txtSubjectCode").disabled = true;
+        document.getElementById("btnUpdate").style.display = "inline-block";
         document.getElementById("btnRegister").style.display = "none";
     }
 
@@ -179,9 +181,9 @@
     // Update subject
     async function updateSubject() {
         var action = await Swal.fire({
-            type : 'question',
+            type: 'question',
             title: 'Confirm Update?',
-            text : 'This subject will be updated into the system',
+            text: 'This subject will be updated into the system',
             showCancelButton: true
         })
         if (action.dismiss) {
@@ -189,20 +191,20 @@
         }
 
         var subjectTitle = document.getElementById("txtSubjectTitle").value;
-        var subjectCode  = document.getElementById("txtSubjectCode").value;
+        var subjectCode = document.getElementById("txtSubjectCode").value;
 
         var data = {
             "subjectTitle": subjectTitle,
-            "subjectCode" : subjectCode
+            "subjectCode": subjectCode
         }
 
-        Server.request("POST", "/api/subject/update", data, false).then(async function (value) {
+        Server.request("POST", "/api/subject/update", data, true).then(async function (value) {
             console.log('Updated');
 
-            document.getElementById("txtSubjectCode").value      = "";
-            document.getElementById("txtSubjectTitle").value     = "";
-            document.getElementById("txtSubjectCode").disabled   = false;
-            document.getElementById("btnUpdate").style.display   = "none";
+            document.getElementById("txtSubjectCode").value = "";
+            document.getElementById("txtSubjectTitle").value = "";
+            document.getElementById("txtSubjectCode").disabled = false;
+            document.getElementById("btnUpdate").style.display = "none";
             document.getElementById("btnRegister").style.display = "inline-block";
 
             var action = await Swal.fire({
@@ -215,9 +217,9 @@
 
         }).catch(async function (value) {
             var action = await Swal.fire({
-                type : 'error',
+                type: 'error',
                 title: 'Cannot Updated!',
-                text : 'An Error has occured',
+                text: 'An Error has occured',
                 showCancelButton: false
             })
         })
@@ -226,9 +228,9 @@
     //Delete functioon
     async function deleteSubject(event) {
         var action = await Swal.fire({
-            type : 'question',
+            type: 'question',
             title: 'Delete Subject?',
-            text : 'This subject will be removed from the system',
+            text: 'This subject will be removed from the system',
             showCancelButton: true
         })
         if (action.dismiss) {
@@ -238,11 +240,11 @@
             "subjectCode": event.target.id
         }
 
-        Server.request("POST", "/api/subject/delete", data, false).then(async function (value) {
+        Server.request("POST", "/api/subject/delete", data, true).then(async function (value) {
             var action = await Swal.fire({
-                type : 'success',
+                type: 'success',
                 title: 'Deleted Successfully!',
-                text : '',
+                text: '',
                 showCancelButton: false
             })
 
@@ -251,9 +253,9 @@
 
         }).catch(async function (value) {
             var action = await Swal.fire({
-                type : 'error',
+                type: 'error',
                 title: 'Cannot Deleted!',
-                text : 'An Error has occured',
+                text: 'An Error has occured',
                 showCancelButton: false
             })
         })

@@ -21,9 +21,10 @@
                 <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
                     <div class="form-group">
                         <label class="form-label">Subject Code</label>
-                        <select class="form-control select2-show-search" id="selSubjectCode" onchange="subjectChange(event);">
+                        <select class="form-control select2-show-search" id="selSubjectCode"
+                            onchange="subjectChange(event);">
                             <optgroup>
-                                
+
                             </optgroup>
                         </select>
                     </div>
@@ -32,15 +33,16 @@
                 <div class="col-sm-12 col-md-7 col-lg-7 col-xl-7 p-0">
                     <div class="form-group">
                         <label class="form-label">Topic Title</label>
-                        <input type="text" class="form-control" id="txtTopicTitle"
-                            placeholder="Insert Topic Title">
+                        <input type="text" class="form-control" id="txtTopicTitle" placeholder="Insert Topic Title">
                     </div>
                 </div>
 
                 <div class="col-sm-12 col-md-1 col-lg-1 col-xl-1 p-0" style="text-align: right;">
                     <label class="form-label"><br></label>
-                    <a class="btn btn-primary" onclick="register()" id="btnRegister"><b><i class="fa fa-plus"></i>&nbsp;Topic</b></a>
-                    <a class="btn btn-success text-white" onclick="updateTopic()" id="btnUpdate" style="display: none;"><b><i class="fa fa-floppy-o"></i>&nbsp;Topic</b></a>
+                    <a class="btn btn-primary" onclick="register()" id="btnRegister"><b><i
+                                class="fa fa-plus"></i>&nbsp;Topic</b></a>
+                    <a class="btn btn-success text-white" onclick="updateTopic()" id="btnUpdate"
+                        style="display: none;"><b><i class="fa fa-floppy-o"></i>&nbsp;Topic</b></a>
                 </div>
             </div>
 
@@ -78,7 +80,7 @@
     var selectedTopicId;
     var tableTopic;
 
-    function setup(){
+    function setup() {
         tableTopic = new DataTable("#topicTable", {
             // options 
             "columnDefs":
@@ -92,42 +94,41 @@
 
 
     // Register topic
-    async function register()
-    {
+    async function register() {
         var action = await Swal.fire({
-            type : 'question',
+            type: 'question',
             title: 'Confirm Registration',
-            text : 'Register new topic into the system?',
+            text: 'Register new topic into the system?',
             showCancelButton: true
         })
         if (action.dismiss) {
             return;
         }
 
-        var subjectCode  = document.getElementById("selSubjectCode").value;
-        var topicTitle   = document.getElementById("txtTopicTitle").value;
+        var subjectCode = document.getElementById("selSubjectCode").value;
+        var topicTitle = document.getElementById("txtTopicTitle").value;
 
         var data = {
-            "subjectCode"  : subjectCode,
-            "topicTitle"   : topicTitle
+            "subjectCode": subjectCode,
+            "topicTitle": topicTitle
         }
 
-        Server.request("POST", "/api/topic/register", data, false).then(async function (value) {
+        Server.request("POST", "/api/topic/register", data, true).then(async function (value) {
             document.getElementById("txtTopicTitle").value = "";
 
             var action = await Swal.fire({
-                type : 'success',
+                type: 'success',
                 title: 'Register Successfully!',
-                text : '',
+                text: '',
                 showCancelButton: false
             })
 
             loadTopic(document.getElementById("selSubjectCode").value);
         }).catch(async function (value) {
             var action = await Swal.fire({
-                type : 'error',
+                type: 'error',
                 title: 'Cannot Register!',
-                text : 'An Error has occured',
+                text: 'An Error has occured',
                 showCancelButton: false
             })
         })
@@ -139,10 +140,10 @@
         console.log("load")
 
         var data = {
-            "subjectCode" : subjectCode
+            "subjectCode": subjectCode
         }
 
-        Server.request("POST", "/api/topic/getTopicBySubject", data, false).then(function (value) {
+        Server.request("POST", "/api/topic/getTopicBySubject", data, true).then(function (value) {
             var data = JSON.parse(value);
             tableTopic.clear();
             var tmpRow;
@@ -155,7 +156,7 @@
                 ]).node()
                 tmpRow.id = qTopic.topicId; //letak id
             });
-            tableTopic .draw();
+            tableTopic.draw();
             console.log(data)
         }
         ).catch(function (value) {
@@ -164,13 +165,13 @@
     }
 
 
-    function loadSubject(){
-        Server.request("GET", "/api/subject/allSubject", null, false).then(function (value) {
+    function loadSubject() {
+        Server.request("GET", "/api/subject/allSubject", null, true).then(function (value) {
             var data = JSON.parse(value);
             var strHtmlRads = "";
             strHtmlRads += '<option value="-1" selected>Select Subject Code</option>'
 
-            data.forEach(qSubject=>{
+            data.forEach(qSubject => {
                 strHtmlRads += '<option value="' + qSubject.subjectCode + '">' + qSubject.subjectCode + '</option>'
             })
 
@@ -179,7 +180,7 @@
     }
 
 
-    function subjectChange(event){
+    function subjectChange(event) {
         var subjectCode = event.target.value;
 
         loadTopic(subjectCode);
@@ -189,9 +190,9 @@
     //get topic id when click
     async function getTopic(event) {
         var action = await Swal.fire({
-            type : 'question',
+            type: 'question',
             title: 'Update this topic?',
-            text : 'Directing to update form',
+            text: 'Directing to update form',
             showCancelButton: true
         })
         if (action.dismiss) {
@@ -202,9 +203,9 @@
             "topicId": event.target.id
         }
 
-        document.getElementById("txtTopicTitle").value       = event.target.children[0].innerHTML;
-        document.getElementById("selSubjectCode").disabled   = true;
-        document.getElementById("btnUpdate").style.display   = "inline-block";
+        document.getElementById("txtTopicTitle").value = event.target.children[0].innerHTML;
+        document.getElementById("selSubjectCode").disabled = true;
+        document.getElementById("btnUpdate").style.display = "inline-block";
         document.getElementById("btnRegister").style.display = "none";
 
         selectedTopicId = event.target.id;
@@ -214,9 +215,9 @@
     //update topic
     async function updateTopic() {
         var action = await Swal.fire({
-            type : 'question',
+            type: 'question',
             title: 'Confirm Update?',
-            text : 'This topic will be updated into the system',
+            text: 'This topic will be updated into the system',
             showCancelButton: true
         })
         if (action.dismiss) {
@@ -226,32 +227,32 @@
         var topicTitle = document.getElementById("txtTopicTitle").value;
 
         var data = {
-            "topicId"     : selectedTopicId,
-            "topicTitle"  : topicTitle
+            "topicId": selectedTopicId,
+            "topicTitle": topicTitle
         }
 
-        Server.request("POST", "/api/topic/update", data, false).then(async function (value) {
+        Server.request("POST", "/api/topic/update", data, true).then(async function (value) {
             console.log('Updated');
 
-            document.getElementById("txtTopicTitle").value       = "";
-            document.getElementById("selSubjectCode").disabled   = false;
-            document.getElementById("btnUpdate").style.display   = "none";
+            document.getElementById("txtTopicTitle").value = "";
+            document.getElementById("selSubjectCode").disabled = false;
+            document.getElementById("btnUpdate").style.display = "none";
             document.getElementById("btnRegister").style.display = "inline-block";
 
             var action = await Swal.fire({
-                type : 'success',
+                type: 'success',
                 title: 'Updated Successfully!',
-                text : '',
+                text: '',
                 showCancelButton: false
             })
-            
+
             loadTopic(document.getElementById("selSubjectCode").value);
 
         }).catch(async function (value) {
             var action = await Swal.fire({
-                type : 'error',
+                type: 'error',
                 title: 'Cannot Updated!',
-                text : 'An Error has occured',
+                text: 'An Error has occured',
                 showCancelButton: false
             })
         })
@@ -259,12 +260,12 @@
 
 
     // Delete topic
-    async function deleteTopic(event){
+    async function deleteTopic(event) {
 
         var action = await Swal.fire({
-            type : 'question',
+            type: 'question',
             title: 'Confirm Delete?',
-            text : 'This topic will be removed from the system',
+            text: 'This topic will be removed from the system',
             showCancelButton: true
         })
         if (action.dismiss) {
@@ -272,25 +273,25 @@
         }
 
         var data = {
-            "topicId":event.target.id
+            "topicId": event.target.id
         }
 
-        Server.request("POST", "/api/topic/delete", data, false).then(async function(value){
+        Server.request("POST", "/api/topic/delete", data, true).then(async function (value) {
             var action = await Swal.fire({
-                type : 'success',
+                type: 'success',
                 title: 'Deleted Successfully!',
-                text : '',
+                text: '',
                 showCancelButton: false
             })
 
             tableTopic.row("#" + event.target.parentElement.parentElement.id).remove();
             tableTopic.draw();
 
-        }).catch(async function(value){
+        }).catch(async function (value) {
             var action = await Swal.fire({
-                type : 'error',
+                type: 'error',
                 title: 'Cannot Deleted!',
-                text : 'An Error has occured',
+                text: 'An Error has occured',
                 showCancelButton: false
             })
         })
