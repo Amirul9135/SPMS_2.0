@@ -5,7 +5,7 @@
         position: fixed;
         bottom: .5vh;
         right: .5vw;
-        z-index: 2;
+        z-index: 1000;
     }
 
     .btnPrint:hover {
@@ -20,52 +20,21 @@
         pointer-events: none;
     }
 </style>
-<div class="side-app" onload="setup()">
+<div class="side-app" onload="setup()"> 
+    <!--
     <button class="btnPrint btn btn-pill btn-outline-danger" type="button" onclick="printReport(event)">
         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp; Save PDF
-    </button>
+    </button>-->
     <div id="ejsData"></div>
-    <div class="row">
-        <!--
-        <div class="card">
+    <div class="row"> 
+        <div class="card"  >
             <div class="card-header bg-info text-white">
-                <h3 class="card-title">
-                    Report Setting
-                </h3>
-                <div class="card-options ">
-                    </button><i class="fe fe-chevron-up text-white" onclick="toggle_card(event)"></i>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="row text-center mt-1" style="justify-content: center;">
-
-                            <button class="btn btn-pill btn-outline-warning" onclick="resetChartData()"
-                                style="width: 100px;display: none;" id="btnReset">Reset</button>
-                            <div class="row" id="btnData">
-                                <button class="btn btn-pill btn-outline-primary" data-toggle="modal"
-                                    data-target="#ModalAreaInput"><i class="fa fa-plus" aria-hidden="true"></i>
-                                    Specific Area Data</button>
-                                <button class="btn btn-pill btn-outline-primary" data-toggle="modal"
-                                    data-target="#ModalAddSchool"><i class="fa fa-plus" aria-hidden="true"></i>School
-                                    Data</button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>-->
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                <h3 class="card-title">
+                <h3 class="card-title" id="report_title">
                     <div class="row">
                         <div>
                             <div class="form-label">
                                 <h4>Performance Analysis For Subject &nbsp;</h4>
-                            </div>
+                            </div> 
                         </div>
                         <div>
                             <div class="select-search">
@@ -106,18 +75,36 @@
                         <div class="row" id="btnData">
                             <button class="btn btn-pill btn-outline-warning" style="display: none;"
                                 onclick="resetChartData()" id="btnReset">Reset</button>
+                                <% if(user.type==3){ %> 
                             &nbsp;
                             <button class="btn btn-pill btn-outline-primary" data-toggle="modal"
                                 data-target="#ModalAreaInput"><i class="fa fa-plus" aria-hidden="true"></i>
                                 Specific Area Data</button>
+                                
                             &nbsp;
                             <button class="btn btn-pill btn-outline-primary" data-toggle="modal"
                                 data-target="#ModalAddSchool"><i class="fa fa-plus" aria-hidden="true"></i> School
                                 Data</button>
+                                <% }else if(user.type==2){ %>
+                                    
+                            &nbsp;
+                            <button class="btn btn-pill btn-outline-primary" id="<%=user.schoolId%>" data-schoolname="<%=user.schoolName%>"
+                                onclick="addSchoolHandler(event)"><i class="fa fa-plus" aria-hidden="true"></i> School
+                                Data</button>
+                                    <% } %>  
+                                <% if(user.type==1){ %>
+
+                                    
+                            &nbsp;
+                            <button data-imstudent="yes" class="btn btn-pill btn-outline-primary" onclick="addStudentHandler(event)" id="<%=user.id%>" ><i class="fa fa-plus" aria-hidden="true"></i>
+                                Load data</button>
+                                    
+                                    <% }else{ %>  
                             &nbsp;
                             <button class="btn btn-pill btn-outline-primary" data-toggle="modal"
                                 data-target="#ModalFindStudent"><i class="fa fa-plus" aria-hidden="true"></i>
                                 Student</button>
+                                <% } %> 
                         </div>
                     </div>
                 </div>
@@ -406,9 +393,6 @@
         </div>
     </div>
 </div>
-<script src="/res/assets/plugins/bootstrap-daterangepicker/moment.min.js"></script>
-<script src="/res/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
-<script src="/res/assets/plugins/date-picker/jquery-ui.js"></script>
 <script src="/res/script/echarts.min.js"></script>
 <script>
 
@@ -418,13 +402,9 @@
     var initialCoord = new L.LatLng(4.123425, 102.240730)
     var tbFindStudent;
 
+    //ALL
     function setup() {
         LineChart = echarts.init(document.getElementById('LineChart'))
-        $("#datepicker").datepicker({
-            format: "yyyy",
-            viewMode: "years",
-            minViewMode: "years"
-        });
         dtbDatas = new DataTable("#dtbDatas");
 
         tableSchool = new DataTable("#SchoolTable", {
@@ -449,62 +429,44 @@
         redrawChart()
     }
 
+    function printReport(e) {
+        PrintMode(true)
+        document.getElementById('report_title').style.display = 'block'
+        e.target.style.display = 'none'
+        document.getElementById('btnData').style.display = 'none'
+        window.print()
+        document.getElementById('btnData').style.display = 'initial'
+        e.target.style.display = 'initial'
+        PrintMode(false)
+    }
+    function PrintMode(mode) {
+        if (mode) {
+            $(".dataTables_filter").hide();
+            $(".dataTables_length").hide();
+            $(".dataTables_paginate").hide();
+            $(".card-footer").hide();
+        }
+        else {
+            $(".dataTables_filter").show();
+            $(".dataTables_length").show();
+            $(".dataTables_paginate").show();
+            $(".card-footer").show();
+        }
+    }
 
     function yearSelector() {
         var strhtml = ""
         var i = new Date().getFullYear()
-        console.log(i)
         while (i > 2000) {
 
             strhtml += '<option value="' + i.toString() + '">' + i.toString() + '</option>'
             console.log(i)
             i--
         }
-        console.log(strhtml)
-        //     for (var i = new Date().getFullYear(); i >= 2000; i--) {
-        //        strhtml += '<option value="' + i + "'>" + i + '</option>'
-        //   strhtml.trim()
-        //   }
         document.querySelectorAll(".MyYearSelect").forEach(sel => {
             console.log(sel)
             sel.innerHTML = strhtml
         })
-    }
-
-    function fSchoolChange(e) {
-        console.log(e.target.dataset.selected)
-        Server.request('GET', '/api/school/classList?schId=' + e.target.dataset.selected, null, true).then(function (result) {
-            result = JSON.parse(result)
-            console.log(result)
-            if (result.length == 0) {
-                Swal.fire({
-                    type: 'warning',
-                    title: 'No class in selected school'
-                })
-                tableStud.clear();
-                tableStud.draw();
-                document.getElementById('SSfclass').disabled = true
-                return
-            }
-            var strhtml = '<li id="null">ALL</li>'
-            result.forEach(cls => {
-                strhtml += '<li id="' + cls.classId + '">' + cls.className + '</li>'
-            })
-            document.getElementById('LstFClass').innerHTML = strhtml
-            document.getElementById('SSfclass').disabled = false
-        }).catch(function (err) {
-            console.log(err)
-            Message.createNew("Error", "Failed to load class list in selected school", 3)
-        })
-    }
-
-
-
-    function newPolygon() {
-        return [{
-            "type": "Polygon",
-            "coordinates": [[]]
-        }]
     }
 
     function loadDataToTable() {
@@ -522,7 +484,6 @@
             })
             return
         }
-
         var strHead = "<tr><th>Date</th>"
         console.log(curData)
         var dateRows = {}
@@ -584,475 +545,11 @@
         //fill column 
     }
 
-    function loadArea() {
-        map.eachLayer(function (layer) {
-            map.removeLayer(layer);
-        });
-
-        document.getElementById('mapdiv').style.display = "initial"
-
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
-        var color = LineChart.getModel().getSeries().map(s => {
-            return {
-                id: s.id,
-                seriesColor: LineChart.getVisual({
-                    seriesIndex: s.seriesIndex
-                }, 'color')
-            }
-        })
-        let haveMapData = false
-        var curData = JSON.parse(JSON.stringify(LineChart.getOption().series))
-        curData.forEach(data => {
-            if (data.id) {
-                if (typeof data.id === 'string' || data.id instanceof String) {
-
-                    if (data.id.includes('|')) {
-                        return
-                    }
-                }
-                haveMapData = true
-                let curcolor = "#f0f0f0"
-                color.forEach(c => {
-                    if (c.id == data.id.toString()) {
-                        curcolor = c.seriesColor
-                    }
-                })
-                if (data.name.includes('<br>')) {
-                    data.name = data.name.split('<br>')[0]
-                }
-                loadAreaPolygon(data.id, curcolor, data.name)
-            }
-        })
-        if (!haveMapData) {
-            document.getElementById('mapdiv').style.display = "none"
-        }
-
-        //  mapLayer.addData(polygon)
-    }
-    function loadAreaPolygon(areaId, color, areaname) {
-
-        Server.request('GET', '/api/address/geo/area?id=' + areaId, null, true).then(
-            function (result) {
-                result = JSON.parse(result)
-                console.log(result)
-                if (result.coord) {
-                    let mark = new L.marker(new L.LatLng(result.coord.y, result.coord.x)).bindPopup("<b>" + areaname + "</b><br>Latitude:" + result.coord.y + "<br>Logitude:" + result.coord.x).addTo(map);
-                    mark.on('mouseover', function (e) {
-                        mark.openPopup()
-                    })
-                    map.setView([result.coord.y, result.coord.x], 13)
-                }
-                if (result.areaPolygon) {
-                    //convert format
-                    var tmpCoord = []
-
-                    result.areaPolygon[0].forEach(item => {
-                        tmpCoord.push([item.x, item.y])
-                    })
-                    var polygon = newPolygon()
-                    polygon[0].coordinates[0] = tmpCoord
-
-
-                    var myStyle = {
-                        "color": color,
-                    };
-                    L.geoJSON(polygon, {
-                        style: myStyle
-                    }).addTo(map)
-                }
-                else {
-                    Swal.fire({
-                        type: 'info',
-                        title: 'There is no mapping data on this area ' + areaId + ' yet'
-                    })
-                }
-
-            }
-        ).catch(function (err) {
-            console.log(err)
-            Swal.fire({
-                type: 'error',
-                title: 'Failed',
-                text: 'Unable to load area info'
-            })
-        })
-    }
-    var ii = 0
-    function testFunc() {
-        console.log(LineChart.getOption().series)
-        //    loadArea()
-        return
-    }
-
-    async function addStudentHandler(e) {
-        let action = await Swal.fire({
-            type: 'question',
-            title: 'Add Student Into Report?',
-            html: 'Id: ' + e.target.id,
-            showCancelButton: true
-        })
-        if (action.dismiss) {
-            return;
-        }
-        loadNewIndividualData(e.target.id)
-    }
-
-
-    function findStudent() {
-        var school = document.getElementById("SSfschool").dataset.selected;
-        var year = document.getElementById('selYear').value
-        if (school == "-1") {
-            Swal.fire({
-                type: 'error',
-                title: 'invalid school',
-                text: 'Please Select school first'
-            })
-            return
-        }
-        var classId = document.getElementById("SSfclass").dataset.selected;
-        Server.request("GET", "/api/account/allStudent?year=" + year + "&schoolId=" + school + "&classId=" + classId, null, true).then(
-            function (result) {
-                result = JSON.parse(result)
-                console.log(result)
-                tbFindStudent.clear();
-
-                if (result.length == 0) {
-                    Swal.fire({
-                        type: 'warning',
-                        title: 'No data',
-                        text: 'At ' + year + ' There is no student in selected school/class '
-                    })
-                }
-                var tmpRow;
-                result.forEach(student => { //temporary
-                    console.log('ad')
-                    tmpRow = tbFindStudent.row.add([
-                        student.name,
-                        student.studentId,
-                        student.className,
-                        '<button onclick="addStudentHandler(event)" id="' + student.studentId + '" class="btn btn-primary-light" ><i class="fa fa-plus"></i></button>'
-                    ]).node()
-                })
-                tbFindStudent.draw();
-            }
-        ).catch(function (err) {
-            console.log(err)
-        })
-    }
-
-
-    //school
-    function changeStateSchool(e) {
-        console.log('ss')
-        if (e.target.value == '-1') {
-            return;
-        }
-        Server.request('GET', '/api/address/county?stateCode=' + e.target.value, null, true).then(function (result) {
-            result = JSON.parse(result)
-            console.log(result)
-            let strhtml = ""
-            result.forEach(c => {
-                strhtml += '<option value="' + c.countyId + '">' + c.name + '</option>'
-            })
-            document.getElementById('selectCounty').innerHTML = strhtml
-        }).catch(function (err) {
-            Message.createNew('Eror', 'Failed to recieve county list', 3)
-            console.log(err)
-        })
-    }
-
-
-    function loadSchool() {
-        var countyId = document.getElementById('selectCounty').value
-        if (!countyId) {
-            Swal.fire({
-                type: 'error',
-                title: 'no county selected'
-            })
-        }
-        Server.request("GET", "/api/school/county?id=" + countyId, null, true).then(function (value) {
-            var data = JSON.parse(value);
-            console.log(data)
-
-            if (data.length == 0) {
-                Swal.fire({
-                    type: 'warning',
-                    title: 'No Data',
-                    text: "There's no existing school data in selected county"
-                })
-            }
-            tableSchool.clear();
-            var tmpRow;
-
-            data.forEach(qSchool => { //temporary
-                tmpRow = tableSchool.row.add([
-                    qSchool.fullName,
-                    qSchool.abbrv,
-                    '<button class="btn btn-outline-success" style="vertical-align: middle;border-radius:50%" onclick="addSchoolHandler(event);" id="' + qSchool.schoolId + '"><b><i class="fa fa-plus" style="font-size: 17px;"></i></b></button>'
-                ]).node()
-                // tmpRow.id = qSchool.subjectCode; //letak id
-            })
-            tableSchool.draw();
-            console.log(data)
-        }
-        ).catch(function (value) {
-            console.log(value);
-            tableSchool.clear();
-            tableSchool.draw();
-            try {
-                value = JSON.parse(value)
-                if (value.error) {
-                    Swal.fire({
-                        type: 'warning',
-                        title: value.error
-                    })
-                }
-            } catch {
-
-            }
-        });
-    }
-
-
-
-    //analysis data loading
-
-    function loadNewAreaData() {
-        var areaId = document.getElementById('idListArea').dataset.selected
-        var areaname = document.getElementById('SSArea').value
-        if (areaId == '-1') {
-            Message.createNew('Invalid Area id', '', 3)
-            return
-        }
-        var subjcode = document.getElementById('idListSubj').dataset.selected
-        if (subjcode == '-1') {
-            Message.createNew('No subject Selected', '', 3)
-            return
-        }
-        var year = document.getElementById('selYear').value
-        console.log(year)
-        Server.request('GET', '/api/assessment/report/area?areaId=' + areaId + '&subjCode=' + subjcode + '&year=' + year, null, true).then(function (result) {
-            result = JSON.parse(result)
-            console.log(result)
-            if (result.length == 0) {
-                return
-            }
-            let converted = []
-            result.forEach(res => {
-                converted.push([res.date, res.percent * 100, res.studentCount])
-            })
-            console.log('conv')
-            console.log(converted)
-            let newData = newSeries(areaId.toString(), areaname, converted)
-            lineChartOption.series.push(newData)
-            redrawChart()
-            loadedDataDone()
-        }).catch(function (err) {
-            console.log(err)
-            try {
-                err = JSON.parse(err)
-                if (err.error == "no data") {
-                    Swal.fire({
-                        type: 'warning',
-                        title: 'No record meets the criteria'
-                    })
-                }
-            } catch {
-
-            }
-        })
-
-
-    }
-
-    function loadNewIndividualData(studentId) {
-        var subjcode = document.getElementById('idListSubj').dataset.selected
-        if (subjcode == '-1') {
-            Message.createNew('No subject Selected', '', 3)
-            return
-        }
-        var year = document.getElementById('selYear').value
-        Server.request('GET', '/api/assessment/report/individual?studentId=' + studentId + '&subjCode=' + subjcode + '&year=' + year, null, true).then(
-            function (result) {
-                result = JSON.parse(result)
-                console.log(result)
-                let converted = []
-                result.forEach(res => {
-                    converted.push([res.date, res.percent * 100, 1])
-                })
-                let newData = newSeries(null, result[0].studentId + '<br>' + result[0].name, converted)
-                lineChartOption.series.push(newData)
-                redrawChart()
-                loadedDataDone()
-
-            }
-        ).catch(function (err) {
-            console.log(err)
-            try {
-                err = JSON.parse(err)
-                if (err.error == "no data") {
-                    Swal.fire({
-                        type: 'warning',
-                        title: 'No record meets the criteria'
-                    })
-                }
-            } catch {
-
-            }
-        })
-    }
-
     function loadedDataDone() {
         //document.getElementById('btnData').style.display = "none"
         document.getElementById('btnReset').style.display = "inline-block"
     }
-
-    function addSchoolInCounty() {
-
-        var countyId = document.getElementById('selectCounty').value
-        if (!countyId) {
-            Swal.fire({
-                type: 'error',
-                title: 'no county selected'
-            })
-            return
-        }
-        let count = 0
-        tableSchool.rows().every(function (rowIdx, tableLoop, rowLoop) {
-            var data = this.data();
-            count++;
-            let id = data[2].split('id="')[1]
-            id = id.split('"')[0]
-            addSingleSchool({ id: id, name: data[1].trim() })
-            // ... do something with data(), or this.node(), etc
-        });
-        if (count == 0) {
-            Swal.fire({
-                type: 'error',
-                title: 'no school in list, please try searching first before using the add all button'
-            })
-            return
-        }
-    }
-
-    async function addSchoolHandler(e) {
-        var action = await Swal.fire({
-            type: 'question',
-            title: 'Report Type',
-            text: '',
-            showCancelButton: true,
-            showCloseButton: true,
-            cancelButtonText: "Group by Area",
-            confirmButtonText: "Combine As Average",
-        })
-        if (action.dismiss == "cancel") {
-            //by area
-            addSchoolData(e)
-        }
-        else if (action.value == true) {
-            console.log('by school')
-            addSingleSchool({ id: e.target.id, name: e.target.parentElement.parentElement.children[1].innerHTML.trim() })
-        }
-    }
-
-    function addSingleSchool(sch) { //school obj with .id and .name
-        console.log(sch)
-        var subjCode = document.getElementById('idListSubj').dataset.selected
-        if (subjCode == '-1') {
-            Swal.fire({
-                type: 'error',
-                title: 'Invalid Subject',
-                text: 'Please select a subject first'
-            })
-            return
-        }
-        var year = document.getElementById('selYear').value
-        Server.request("GET", "/api/assessment/report/school?schoolId=" + sch.id + "&subjCode=" + subjCode + "&year=" + year + "&split=false", null, true).then(
-            function (result) {
-                result = JSON.parse(result)
-                console.log(result)
-                let converted = []
-                result.forEach(res => {
-                    converted.push([res.date, res.percent * 100, res.studentCount])
-                })
-                let newData = newSeries(sch.id + "|", sch.name, converted)
-                lineChartOption.series.push(newData)
-                redrawChart()
-                loadedDataDone()
-
-            }
-        ).catch(function (err) {
-            console.log(err)
-            try {
-                err = JSON.parse(err)
-                if (err.error == "no data") {
-                    Message.createNew("No Data", "There's no specified data for school " + sch.id + " : " + sch.name, 2)
-                }
-            } catch {
-
-            }
-        })
-
-    }
-
-    function addSchoolData(e) {
-        var sname = e.target.parentElement.parentElement.children[1].innerHTML.trim()
-        var year = document.getElementById('selYear').value
-        var subjCode = document.getElementById('idListSubj').dataset.selected
-        if (subjCode == '-1') {
-            Swal.fire({
-                type: 'error',
-                title: 'Invalid Subject',
-                text: 'Please select a subject first'
-            })
-            return
-        }
-        Server.request("GET", "/api/assessment/report/school?schoolId=" + e.target.id + "&subjCode=" + subjCode + "&year=" + year, null, true).then(function (result) {
-            result = JSON.parse(result)
-            let converteds = {}
-            result.forEach(d => {
-                if (!converteds.hasOwnProperty(d.areaName)) {
-                    converteds[d.areaName] = { areaId: d.areaId, data: [] }
-                    converteds[d.areaName].data = []
-                }
-                converteds[d.areaName].data.push([d.date, d.percent * 100, d.studentCount])
-            })
-            Object.keys(converteds).forEach(k => {
-                let newData = new newSeries(converteds[k].areaId.toString(), k + "<br>" + sname, converteds[k].data)
-
-                lineChartOption.series.push(newData)
-            })
-            redrawChart()
-            loadedDataDone()
-        }).catch(function (err) {
-            console.log(err)
-            try {
-                err = JSON.parse(err)
-                if (err.error == "no data") {
-                    Swal.fire({
-                        type: 'warning',
-                        title: 'No record meets the criteria'
-                    })
-                }
-            } catch {
-
-            }
-        })
-    }
-
-    function rtypeChange(e) {
-        if (e.target.value == '2') {
-            document.getElementById('selectSubject').disabled = false
-        }
-        else {
-            document.getElementById('selectSubject').disabled = true
-        }
-        resetChartData()
-    }
-
+    
     function resetChartData() {
         document.getElementById('btnReset').style.display = 'none'
         // document.getElementById('btnData').style.display = 'initial'
@@ -1070,15 +567,6 @@
         setTimeout(function () { LineChart.resize() }, 400)
     });
 
-    var data3 = [
-        //3rd value letak assessment/student name
-        ['2021-05-20T20:40:33Z', 13, 1],
-        ['2021-07-10T20:40:53Z', 19, 2],
-        ['2021-09-10T20:44:03Z', 66, 2],
-        ['2021-09-10T20:44:03Z', 78, 5],
-        ['2021-12-10T20:41:03Z', 98, 2],
-        ['2021-10T20:45:03Z', 33, 3]
-    ]
     var lineChartOption = {
         legend: {
             // Try 'horizontal'
@@ -1194,7 +682,161 @@
         }
     }
 
-    //address
+    //ALL END
+
+
+    //REGIONAL
+    function newPolygon() {
+        return [{
+            "type": "Polygon",
+            "coordinates": [[]]
+        }]
+    }
+
+    function loadArea() {
+        map.eachLayer(function (layer) {
+            map.removeLayer(layer);
+        });
+
+        document.getElementById('mapdiv').style.display = "initial"
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        var color = LineChart.getModel().getSeries().map(s => {
+            return {
+                id: s.id,
+                seriesColor: LineChart.getVisual({
+                    seriesIndex: s.seriesIndex
+                }, 'color')
+            }
+        })
+        let haveMapData = false
+        var curData = JSON.parse(JSON.stringify(LineChart.getOption().series))
+        curData.forEach(data => {
+            if (data.id) {
+                if (typeof data.id === 'string' || data.id instanceof String) {
+
+                    if (data.id.includes('|')) {
+                        return
+                    }
+                }
+                haveMapData = true
+                let curcolor = "#f0f0f0"
+                color.forEach(c => {
+                    if (c.id == data.id.toString()) {
+                        curcolor = c.seriesColor
+                    }
+                })
+                if (data.name.includes('<br>')) {
+                    data.name = data.name.split('<br>')[0]
+                }
+                loadAreaPolygon(data.id, curcolor, data.name)
+            }
+        })
+        if (!haveMapData) {
+            document.getElementById('mapdiv').style.display = "none"
+        }
+
+        //  mapLayer.addData(polygon)
+    }
+    function loadAreaPolygon(areaId, color, areaname) {
+        Server.request('GET', '/api/address/geo/area?id=' + areaId, null, true).then(
+            function (result) {
+                result = JSON.parse(result)
+                console.log(result)
+                if (result.coord) {
+                    let mark = new L.marker(new L.LatLng(result.coord.y, result.coord.x)).bindPopup("<b>" + areaname + "</b><br>Latitude:" + result.coord.y + "<br>Logitude:" + result.coord.x).addTo(map);
+                    mark.on('mouseover', function (e) {
+                        mark.openPopup()
+                    })
+                    map.setView([result.coord.y, result.coord.x], 13)
+                }
+                if (result.areaPolygon) {
+                    //convert format
+                    var tmpCoord = []
+
+                    result.areaPolygon[0].forEach(item => {
+                        tmpCoord.push([item.x, item.y])
+                    })
+                    var polygon = newPolygon()
+                    polygon[0].coordinates[0] = tmpCoord
+
+
+                    var myStyle = {
+                        "color": color,
+                    };
+                    L.geoJSON(polygon, {
+                        style: myStyle
+                    }).addTo(map)
+                }
+                else {
+                    Swal.fire({
+                        type: 'info',
+                        title: 'There is no mapping data on this area ' + areaId + ' yet'
+                    })
+                }
+
+            }
+        ).catch(function (err) {
+            console.log(err)
+            Swal.fire({
+                type: 'error',
+                title: 'Failed',
+                text: 'Unable to load area info'
+            })
+        })
+    }
+
+    function loadNewAreaData() {
+        var areaId = document.getElementById('idListArea').dataset.selected
+        var areaname = document.getElementById('SSArea').value
+        if (areaId == '-1') {
+            Message.createNew('Invalid Area id', '', 3)
+            return
+        }
+        var subjcode = document.getElementById('idListSubj').dataset.selected
+        if (subjcode == '-1') {
+            Message.createNew('No subject Selected', '', 3)
+            return
+        }
+        var year = document.getElementById('selYear').value
+        console.log(year)
+        Server.request('GET', '/api/assessment/report/area?areaId=' + areaId + '&subjCode=' + subjcode + '&year=' + year, null, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            if (result.length == 0) {
+                return
+            }
+            let converted = []
+            result.forEach(res => {
+                converted.push([res.date, res.percent * 100, res.studentCount])
+            })
+            console.log('conv')
+            console.log(converted)
+            let newData = newSeries(areaId.toString(), areaname, converted)
+            lineChartOption.series.push(newData)
+            redrawChart()
+            loadedDataDone()
+        }).catch(function (err) {
+            console.log(err)
+            try {
+                err = JSON.parse(err)
+                if (err.error == "no data") {
+                    Swal.fire({
+                        type: 'warning',
+                        title: 'No record meets the criteria'
+                    })
+                }
+            } catch {
+
+            }
+        })
+
+
+    }
+    
 
     function resetPostcode() {
         document.getElementById("SSPostcode").disabled = true;
@@ -1249,4 +891,341 @@
         })
     }
 
+    //REGIONAL END
+
+
+    //SCHOOL 
+
+    function addSchoolInCounty() {
+
+        var countyId = document.getElementById('selectCounty').value
+        if (!countyId) {
+            Swal.fire({
+                type: 'error',
+                title: 'no county selected'
+            })
+            return
+        }
+        let count = 0
+        tableSchool.rows().every(function (rowIdx, tableLoop, rowLoop) {
+            var data = this.data();
+            count++;
+            let id = data[2].split('id="')[1]
+            id = id.split('"')[0]
+            addSingleSchool({ id: id, name: data[1].trim() })
+            // ... do something with data(), or this.node(), etc
+        });
+        if (count == 0) {
+            Swal.fire({
+                type: 'error',
+                title: 'no school in list, please try searching first before using the add all button'
+            })
+            return
+        }
+    }
+
+    async function addSchoolHandler(e) { 
+        var action = await Swal.fire({
+            type: 'question',
+            title: 'Report Type',
+            text: '',
+            showCancelButton: true,
+            showCloseButton: true,
+            cancelButtonText: "Group by Area",
+            confirmButtonText: "Combine As Average",
+        })
+        if (action.dismiss == "cancel") {
+            //by area
+            addSchoolData({ id: e.target.id, name: e.target.dataset.schoolname.trim() })
+        }
+        else if (action.value == true) { 
+            addSingleSchool({ id: e.target.id, name: e.target.dataset.schoolname.trim() })
+        }
+    }
+
+    function addSingleSchool(sch) { //school obj with .id and .name
+        console.log(sch)
+        var subjCode = document.getElementById('idListSubj').dataset.selected
+        if (subjCode == '-1') {
+            Swal.fire({
+                type: 'error',
+                title: 'Invalid Subject',
+                text: 'Please select a subject first'
+            })
+            return
+        }
+        var year = document.getElementById('selYear').value
+        Server.request("GET", "/api/assessment/report/school?schoolId=" + sch.id + "&subjCode=" + subjCode + "&year=" + year + "&split=false", null, true).then(
+            function (result) {
+                result = JSON.parse(result)
+                console.log(result)
+                let converted = []
+                result.forEach(res => {
+                    converted.push([res.date, res.percent * 100, res.studentCount])
+                })
+                let newData = newSeries(sch.id + "|", sch.name, converted)
+                lineChartOption.series.push(newData)
+                redrawChart()
+                loadedDataDone()
+
+            }
+        ).catch(function (err) {
+            console.log(err)
+            try {
+                err = JSON.parse(err)
+                if (err.error == "no data") {
+                    Message.createNew("No Data", "There's no specified data for school " + sch.id + " : " + sch.name, 2)
+                }
+            } catch {
+
+            }
+        })
+
+    }
+
+    function addSchoolData(sch) {
+        var sname = sch.name
+        var year = document.getElementById('selYear').value
+        var subjCode = document.getElementById('idListSubj').dataset.selected
+        if (subjCode == '-1') {
+            Swal.fire({
+                type: 'error',
+                title: 'Invalid Subject',
+                text: 'Please select a subject first'
+            })
+            return
+        }
+        Server.request("GET", "/api/assessment/report/school?schoolId=" + sch.id + "&subjCode=" + subjCode + "&year=" + year, null, true).then(function (result) {
+            result = JSON.parse(result)
+            let converteds = {}
+            result.forEach(d => {
+                if (!converteds.hasOwnProperty(d.areaName)) {
+                    converteds[d.areaName] = { areaId: d.areaId, data: [] }
+                    converteds[d.areaName].data = []
+                }
+                converteds[d.areaName].data.push([d.date, d.percent * 100, d.studentCount])
+            })
+            Object.keys(converteds).forEach(k => {
+                let newData = new newSeries(converteds[k].areaId.toString(), k + "<br>" + sname, converteds[k].data)
+
+                lineChartOption.series.push(newData)
+            })
+            redrawChart()
+            loadedDataDone()
+        }).catch(function (err) {
+            console.log(err)
+            try {
+                err = JSON.parse(err)
+                if (err.error == "no data") {
+                    Swal.fire({
+                        type: 'warning',
+                        title: 'No record meets the criteria'
+                    })
+                }
+            } catch {
+
+            }
+        })
+    }
+
+    function changeStateSchool(e) {
+        console.log('ss')
+        if (e.target.value == '-1') {
+            return;
+        }
+        Server.request('GET', '/api/address/county?stateCode=' + e.target.value, null, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            let strhtml = ""
+            result.forEach(c => {
+                strhtml += '<option value="' + c.countyId + '">' + c.name + '</option>'
+            })
+            document.getElementById('selectCounty').innerHTML = strhtml
+        }).catch(function (err) {
+            Message.createNew('Eror', 'Failed to recieve county list', 3)
+            console.log(err)
+        })
+    }
+
+    function loadSchool() {
+        var countyId = document.getElementById('selectCounty').value
+        if (!countyId) {
+            Swal.fire({
+                type: 'error',
+                title: 'no county selected'
+            })
+        }
+        Server.request("GET", "/api/school/county?id=" + countyId, null, true).then(function (value) {
+            var data = JSON.parse(value);
+            console.log(data)
+
+            if (data.length == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'No Data',
+                    text: "There's no existing school data in selected county"
+                })
+            }
+            tableSchool.clear();
+            var tmpRow;
+
+            data.forEach(qSchool => { //temporary
+                tmpRow = tableSchool.row.add([
+                    qSchool.fullName,
+                    qSchool.abbrv,
+                    '<button class="btn btn-outline-success" style="vertical-align: middle;border-radius:50%" onclick="addSchoolHandler(event);" id="' + qSchool.schoolId + '" data-schoolname="'+qSchool.abbrv+'"><b><i class="fa fa-plus" style="font-size: 17px;"></i></b></button>'
+                ]).node()
+                // tmpRow.id = qSchool.subjectCode; //letak id
+            })
+            tableSchool.draw();
+            console.log(data)
+        }
+        ).catch(function (value) {
+            console.log(value);
+            tableSchool.clear();
+            tableSchool.draw();
+            try {
+                value = JSON.parse(value)
+                if (value.error) {
+                    Swal.fire({
+                        type: 'warning',
+                        title: value.error
+                    })
+                }
+            } catch {
+
+            }
+        });
+    }
+
+    //SCHOOL END
+
+    //STUDENT
+
+    function fSchoolChange(e) {
+        console.log(e.target.dataset.selected)
+        Server.request('GET', '/api/school/classList?schId=' + e.target.dataset.selected, null, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            if (result.length == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'No class in selected school'
+                })
+                tableStud.clear();
+                tableStud.draw();
+                document.getElementById('SSfclass').disabled = true
+                return
+            }
+            var strhtml = '<li id="null">ALL</li>'
+            result.forEach(cls => {
+                strhtml += '<li id="' + cls.classId + '">' + cls.className + '</li>'
+            })
+            document.getElementById('LstFClass').innerHTML = strhtml
+            document.getElementById('SSfclass').disabled = false
+        }).catch(function (err) {
+            console.log(err)
+            Message.createNew("Error", "Failed to load class list in selected school", 3)
+        })
+    }
+    async function addStudentHandler(e) {
+        if(!e.target.dataset.imstudent){
+            let action = await Swal.fire({
+            type: 'question',
+            title: 'Add Student Into Report?',
+            html: 'Id: ' + e.target.id,
+            showCancelButton: true
+        })
+        if (action.dismiss) {
+            return;
+        }
+        }
+        loadNewIndividualData(e.target.id)
+    }
+
+    function findStudent() {
+        var school = document.getElementById("SSfschool").dataset.selected;
+        var year = document.getElementById('selYear').value
+        if (school == "-1") {
+            Swal.fire({
+                type: 'error',
+                title: 'invalid school',
+                text: 'Please Select school first'
+            })
+            return
+        }
+        var classId = document.getElementById("SSfclass").dataset.selected;
+        Server.request("GET", "/api/account/allStudent?year=" + year + "&schoolId=" + school + "&classId=" + classId, null, true).then(
+            function (result) {
+                result = JSON.parse(result)
+                console.log(result)
+                tbFindStudent.clear();
+
+                if (result.length == 0) {
+                    Swal.fire({
+                        type: 'warning',
+                        title: 'No data',
+                        text: 'At ' + year + ' There is no student in selected school/class '
+                    })
+                }
+                var tmpRow;
+                result.forEach(student => { //temporary
+                    console.log('ad')
+                    tmpRow = tbFindStudent.row.add([
+                        student.name,
+                        student.studentId,
+                        student.className,
+                        '<button onclick="addStudentHandler(event)" id="' + student.studentId + '" class="btn btn-primary-light" ><i class="fa fa-plus"></i></button>'
+                    ]).node()
+                })
+                tbFindStudent.draw();
+            }
+        ).catch(function (err) {
+            console.log(err)
+        })
+    }
+
+    function loadNewIndividualData(studentId) {
+        var subjcode = document.getElementById('idListSubj').dataset.selected
+        if (subjcode == '-1') {
+            Message.createNew('No subject Selected', '', 3)
+            return
+        }
+        var year = document.getElementById('selYear').value
+        Server.request('GET', '/api/assessment/report/individual?studentId=' + studentId + '&subjCode=' + subjcode + '&year=' + year, null, true).then(
+            function (result) {
+                result = JSON.parse(result)
+                console.log(result)
+                let converted = []
+                result.forEach(res => {
+                    converted.push([res.date, res.percent * 100, 1])
+                })
+                let newData = newSeries(null, result[0].studentId + '<br>' + result[0].name, converted)
+                lineChartOption.series.push(newData)
+                redrawChart()
+                loadedDataDone()
+
+            }
+        ).catch(function (err) {
+            console.log(err)
+            try {
+                err = JSON.parse(err)
+                if (err.error == "no data") {
+                    Swal.fire({
+                        type: 'warning',
+                        title: 'No record meets the criteria'
+                    })
+                }
+            } catch {
+
+            }
+        })
+    }
+
+    //STUDENT END
+
+    //school
+
+ 
+    //address
 </script>

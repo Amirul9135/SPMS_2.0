@@ -526,7 +526,7 @@ router.get('/QAanalysis',
         })
     })
 
-router.get('/report/area', Auth.userType([2, 3]), function (req, res) {
+router.get('/report/area', Auth.userType([3]), function (req, res) {
     if (!req.query.areaId) {
         return res.status(400).send({ validationError: { areaId: 'invalid' } })
     }

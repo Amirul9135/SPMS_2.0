@@ -215,7 +215,9 @@ router.post('/login',
         var newAcc = new Account({
             "straccountId": req.body["accountId"]
         });
+        console.log('login')
         newAcc.login().then(async function (result) {
+            console.log('login')
             var accId = req.body["accountId"];
             var ismatch = await bcrypt.compare(req.body.password, result.password)
             if (ismatch) {//later use bcrypt compare
@@ -237,7 +239,9 @@ router.post('/login',
                     }
                 }
                 if (result.userType == 2) {
+                    console.log('error here')
                     payload.user.schoolId = result.schoolId
+                    payload.user.schoolName = result.abbrv
                 }
                 console.log(payload)
                 jwt.sign(payload,
@@ -262,6 +266,7 @@ router.post('/login',
                 return res.status(401).send("invalid credentials");
             }
         }).catch(function (err) {
+            console.log(err)
             return res.status(500).send(err)
         })
 
@@ -316,6 +321,7 @@ router.post('/password', [
 router.get('/verify',
     Auth.userType(),
     function (req, res) {
+        console.log(req.user)
         return res.status(200).send(req.user)
     })
 

@@ -7,8 +7,8 @@
         background-color: rgba(255, 40, 40, 0.2) !important;
     }
 </style>
-
 <div class="side-app" onload="setup()">
+    <button data-toggle="modal" data-target="#modal_stdclass">test</button>
 
     <!-- header -->
     <div class="row">
@@ -89,6 +89,9 @@
                 </div>
 
                 <div class="card-body">
+                    <div class="form-label">
+                        <i class="fa fa-info-circle">&nbsp;&nbsp;Click on the row to edit student class</i>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover text-nowrap mb-0" id="StudTable">
                             <thead class="bg-primary">
@@ -254,6 +257,74 @@
     </div>
 </div>
 <!-- MODAL CLOSED -->
+<!--Modal class change-->
+<div class="modal fade" id="modal_stdclass" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content modal-md">
+            <div class="modal-header bg-info">
+                <h5 class="modal-title text-white" id="exampleModalLabel"><b>Add Student to Another Class</b></h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label class="form-label">Student Name</label>
+                            <input class="form-control" disabled type="text" id="CCstudName">
+
+                        </div>
+
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label class="form-label">Student Identification No.</label>
+                            <input class="form-control" disabled type="text" id="CCstudId">
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label mt-0">School</label>
+                            <div class="select-search">
+                                <input id="ccSchool" type="text" autocomplete="off" class="form-control"
+                                    data-list="lstCcSchool" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                    onblur="SSFocus(event)" onplay="CCschoolChange(event)">
+                                <ul onclick="SSItemClick(event)" id="lstCcSchool" data-selected="-1">
+                                    <% schoolList.forEach(s=>{ %>
+                                        <li id="<%=s.schoolId%>" title="<%=s.fullName%>">
+                                            <%=s.abbrv%>
+                                        </li>
+                                        <% }) %>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="form-label mt-0">Class</label>
+                            <div class="select-search">
+                                <input id="ccClass" type="text" autocomplete="off" disabled class="form-control"
+                                    data-list="lstCcClass" onkeyup="SSKeyHandler(event)" onfocus="SSFocus(event)"
+                                    onblur="SSFocus(event)">
+                                <ul onclick="SSItemClick(event)" id="lstCcClass" data-selected="-1">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer text-white" style="justify-content: center;">
+                <a class="btn btn-success mt-1" button onclick="addToNewSchool()">Apply Changes</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     //initialize
@@ -356,8 +427,74 @@
         })
     }
 
+    function promptSchoolChange(e) {
+        if (e.target.tagName == "TD") {
+            console.log(e.target)
+            let nameic = e.target.parentElement.children[0].innerHTML.trim()
+            nameic = nameic.split('<br><span>')
+            document.getElementById('CCstudName').value = nameic[0]
+            document.getElementById('CCstudId').value = nameic[1].replace('</span>', '')
+            $('#modal_stdclass').modal('show')
+
+        }
+    }
+
+    function addToNewSchool() {
+        let nclass = document.getElementById('lstCcClass').dataset.selected
+        if (document.getElementById('LstFClass').dataset.selected == nclass) {
+            Swal.fire({
+                type: 'error',
+                title: 'Student is already in this class'
+            })
+            return
+        }
+
+        Server.request("POST", "/api/class/registerStudent", {
+            "classId": nclass,
+            "studentId": document.getElementById('CCstudId').value
+        }, true).then(function (value) {
+            Swal.fire({
+                type: 'success',
+                title: 'Student added into class'
+            })
+            $('#modal_stdclass').modal('hide')
+        }).catch(async function (value) {
+            Swal.fire({
+                type: 'error',
+                title: 'Unable to register student into class',
+                text: '',
+                showCancelButton: true
+            })
+
+        })
+
+    }
+
+    function CCschoolChange(e) {
+
+        Server.request('GET', '/api/school/classList?schId=' + e.target.dataset.selected, null, true).then(function (result) {
+            result = JSON.parse(result)
+            console.log(result)
+            if (result.length == 0) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'No class in selected school'
+                })
+                document.getElementById('ccClass').disabled = true
+                return
+            }
+            var strhtml = ""
+            result.forEach(cls => {
+                strhtml += '<li id="' + cls.classId + '">' + cls.className + '</li>'
+            })
+            document.getElementById('lstCcClass').innerHTML = strhtml
+            document.getElementById('ccClass').disabled = false
+        }).catch(function (err) {
+            console.log(err)
+            Message.createNew("Error", "Failed to load class list in selected school", 3)
+        })
+    }
     function fSchoolChange(e) {
-        console.log(e.target.dataset.selected)
         Server.request('GET', '/api/school/classList?schId=' + e.target.dataset.selected, null, true).then(function (result) {
             result = JSON.parse(result)
             console.log(result)
@@ -418,6 +555,7 @@
                     tmpRow.classList.add('disabled_acc')
                     tmpRow.title = "This account was disabled on " + new Date(student.disabled).toLocaleDateString('en-GB')
                 }
+                tmpRow.onclick = promptSchoolChange
             })
             tableStud.draw();
             console.log(data)
@@ -554,8 +692,8 @@
 
         var action = await Swal.fire({
             type: 'question',
-            title: 'Delete Student?',
-            text: 'This student will be removed from the system',
+            title: 'Dsiable Student Account?',
+            text: 'This student will no longer be able to log in',
             showCancelButton: true
         })
         if (action.dismiss) {
