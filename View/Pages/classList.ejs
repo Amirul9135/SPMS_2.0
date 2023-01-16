@@ -10,7 +10,7 @@
     <!-- header -->
     <div class="row">
         <div class="col-md-10 col-xl-10">
-            <h1 class="page-title mb-6" style="font-size: 30px;">Class</h1>
+            <h1 class="page-title mb-6" style="font-size: 30px;" id="ttlScName">Class</h1>
         </div>
 
         <div class="col-md-2 col-xl-2 text-right">
@@ -110,6 +110,7 @@
         ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
         document.getElementById("ejsData").remove()
         school = JSON.parse(ejsData.school)
+        document.getElementById('ttlScName').innerHTML = school.fullName;
         console.log(school)
         dtbClassList = new DataTable('#dtbClassList', {
             "columnDefs": [{
