@@ -89,7 +89,7 @@
                                     <th width="30%" class="text-white">Class</th>
                                     <!--<th width="20%" class="text-center text-white">Sekolah</th>-->
                                     <!--<th width="12%" class="text-center text-white">Tarikh Daftar</th>-->
-                                    <th width="5%" class="text-center text-white"></th>
+                                    <th width="5%" class="text-center text-white">Disable</th>
                                 </tr>
                             </thead>
                             <tbody class="mycustom_tbd">
@@ -289,7 +289,13 @@
 <script>
     var tableTeach;
     function setup() {
-        tableTeach = new DataTable("#TeachTable")
+        tableTeach = new DataTable("#TeachTable", {
+            "columnDefs": [{
+                "targets": [3],
+                "className": "text-center"
+            }]
+
+        })
     }
 
     function openCreateNewModal() {

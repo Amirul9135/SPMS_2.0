@@ -34,9 +34,12 @@ module.exports = function (ws, req) {
                             if (ws.studentstats != 3) {
                                 ws.studentstats = 0
                             }
-                            global.students[ws.assessment.toString()] = global.students[ws.assessment.toString()].filter(socket => { socket.user.id != ws.user.id })
-                            if (global.students[ws.assessment.toString()].length == 0) {
-                                delete global.students[ws.assessment.toString()]
+                            if (global.students[ws.assessment.toString()]) {
+
+                                global.students[ws.assessment.toString()] = global.students[ws.assessment.toString()].filter(socket => { socket.user.id != ws.user.id })
+                                if (global.students[ws.assessment.toString()].length == 0) {
+                                    delete global.students[ws.assessment.toString()]
+                                }
                             }
                             broadcastMe(ws)
                             console.log(ws.studentstats)

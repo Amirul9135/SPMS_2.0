@@ -242,7 +242,7 @@
                                                         </th>
                                                         <th width="15%" class="text-center text-white">Contact</th>
 
-                                                        <th width="5%" class="text-center text-white"></th>
+                                                        <th width="5%" class="text-center text-white">Remove</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="mycustom_tbd">
@@ -281,7 +281,7 @@
                                                             Mark
                                                         </th>
                                                         <th width="10%" class="text-center text-white">Count</th>
-                                                        <th width="5%" class="text-center text-white"></th>
+                                                        <th width="5%" class="text-center text-white">Edit/Remove</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="mycustom_tbd">
@@ -305,7 +305,7 @@
                                                         <th width="25%" class="text-white">Id</th>
                                                         <th width="45%" class="text-center text-white">Name</th>
                                                         <th width="20%" class="text-center text-white">Contact</th>
-                                                        <th width="10%" class="text-center text-white"></th>
+                                                        <th width="10%" class="text-center text-white">Remove</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="mycustom_tbd">
@@ -763,7 +763,8 @@
         }
         dtbASQuestion = new DataTable('#tbASQuestion', {
             "columnDefs": [
-                { "targets": [0, 2], "className": "overflow_elipsis" }
+                { "targets": [0, 2], "className": "overflow_elipsis" },
+                { "targets": [5], "className": 'text-center' }
             ]
         })
         tableQuestionSet = new DataTable('#tbQuestionSet', {

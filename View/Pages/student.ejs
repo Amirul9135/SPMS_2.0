@@ -98,7 +98,7 @@
                                     <th width="50%" class="text-white">Student Name</th>
                                     <th width="20%" class="text-center text-white">School</th>
                                     <th width="20%" class="text-center text-white">Class</th>
-                                    <th width="10%" class="text-center text-white"></th>
+                                    <th width="10%" class="text-center text-white">Disable</th>
                                 </tr>
                             </thead>
                             <tbody class="mycustom_tbd">
@@ -329,7 +329,13 @@
     //initialize
     var tableStud;
     function setup() {
-        tableStud = new DataTable("#StudTable")
+        tableStud = new DataTable("#StudTable", {
+
+            "columnDefs": [{
+                "targets": [3],
+                "className": "text-center"
+            }]
+        })
     }
 
     function registerModal() {
@@ -387,7 +393,11 @@
 
         Server.request("POST", "/api/account/register", data, true).then(function (value) {
             console.log(value)
-            Message.createNew("Success", "s", 0);
+
+            Swal.fire({
+                type: 'success',
+                title: 'Registered'
+            })
             document.getElementById("txtname").value = "";
             document.getElementById("txtstudentId").value = "";
             document.getElementById("txtpassword").value = "";
@@ -406,9 +416,8 @@
             }).catch(async function (value) {
                 Swal.fire({
                     type: 'error',
-                    title: 'Unable to register student into class',
-                    text: '',
-                    showCancelButton: true
+                    title: 'Unable to register student into class'
+
                 })
 
             })
@@ -653,7 +662,7 @@
 
         Server.request("POST", "/api/account/update", data, true).then(
             function (value) {
-                Message.createNew("Success", value, 0);
+                //  Message.createNew("Success", value, 0);
             }).catch(function (value) {
                 value = JSON.parse(value);
                 if (value.hasOwnProperty("validationError")) {
