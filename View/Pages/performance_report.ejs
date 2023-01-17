@@ -25,7 +25,7 @@
     <button class="btnPrint btn btn-pill btn-outline-danger" type="button" onclick="printReport(event)">
         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp; Save PDF
     </button>-->
-    <div id="ejsData"></div>
+    <div id="ejsData" data-usertype="<%= user.type %>"></div>
     <div class="row"> 
         <div class="card"  >
             <div class="card-header bg-info text-white">
@@ -400,10 +400,15 @@
     var dtbDatas;
     var map
     var initialCoord = new L.LatLng(4.123425, 102.240730)
-    var tbFindStudent;
+    var tbFindStudent; 
+    var ejsData;
 
     //ALL
     function setup() {
+        
+        ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
+        document.getElementById("ejsData").remove()
+        console.log(ejsData)
         LineChart = echarts.init(document.getElementById('LineChart'))
         dtbDatas = new DataTable("#dtbDatas");
 
@@ -513,6 +518,7 @@
             }
             dtbRows.push(irow)
         })
+        console.log(dtbRows)
         //average
         dtbRows.forEach(ro => {
             ro[0] = new Date(ro[0]).toLocaleDateString('en-GB', { timeZone: "Asia/Kuala_Lumpur" })
@@ -525,7 +531,13 @@
 
             }
             avg = (avg / (ro.length - 1)).toFixed(1)
-            ro.push(avg + "%<br>" + tcount + " student" + ((tcount > 1) ? 's' : ''))
+            if(ejsData.usertype == '1'){
+
+                ro.push(avg + "%" )
+            }else{
+
+                ro.push(avg + "%<br>" + tcount + " student" + ((tcount > 1) ? 's' : ''))
+            }
 
         })
         dtb.children[0].innerHTML = strHead
