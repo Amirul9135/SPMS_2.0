@@ -110,7 +110,18 @@ router.get('/',
         }
         console.log(qstatus)
         //console.log(req.user)
-        if (req.user.type == 2 || req.user.type == 3) {//staff
+        if (req.user.type == 3) {
+            let onlyMe = true
+            if (req.query.adminAll) {
+                onlyMe = (req.query.adminAll == 'true')
+            }
+            Assessment.findByStaff({ staffId: req.user.id, status: qstatus }, onlyMe).then(function (result) {
+                return res.status(200).send(result)
+            }).catch(function (err) {
+                return res.status(500).send(err)
+            })
+        }
+        else if (req.user.type == 2) {//staff
             Assessment.findByStaff({ staffId: req.user.id, status: qstatus }).then(function (result) {
                 return res.status(200).send(result)
             }).catch(function (err) {

@@ -21,7 +21,9 @@ const Class = require('../Model/entity/Class');
 
 //home page
 router.get('/home', Auth.userType(), function (req, res) {
-    return res.sendFile(ViewDir + "\\home.html");
+    return res.render("home.ejs", {
+        user: req.user
+    });
 })
 
 
@@ -164,11 +166,14 @@ router.get('/assessment', Auth.userType(), async function (req, res) {
         {
             ansType: answerType,
             subjects: subjects,
-            schoolList: schoolList
+            schoolList: schoolList,
+            user: req.user
         })
 })
 router.get('/pastAssessment', Auth.userType(), async function (req, res) {
-    return res.render("assessment_Past.ejs")
+    return res.render("assessment_Past.ejs", {
+        user: req.user
+    })
 })
 
 router.get('/assessment_monitor', Auth.userType([2, 3]), async function (req, res) {

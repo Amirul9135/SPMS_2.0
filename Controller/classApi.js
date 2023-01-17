@@ -13,9 +13,9 @@ router.post('/register', Auth.userType([2, 3]), function (req, res) {
     newcls.setStrAccountId(req.body.accountId);
 
     newcls.register().then(function (value) { //.then means resolve (no error)
-        res.send("Success");
+        return res.send("Success");
     }).catch(function (value) { //.catch means promise is rejected (got some errors)
-        res.status(400).send(value);
+        return res.status(400).send(value);
     });
 });
 
@@ -27,9 +27,9 @@ router.post('/update', Auth.userType([2, 3]), function (req, res) {
 
     var update = updatecls.update();
     update.then(function (value) {//berjaya
-        res.status(200).send();
+        return res.status(200).send();
     }).catch(function (value) {//no change atau error
-        res.status(400).send(value);
+        return res.status(400).send(value);
     });
 });
 
@@ -39,9 +39,9 @@ router.post('/delete', Auth.userType([2, 3]), function (req, res) {
 
     var del = delcls.delete();
     del.then(function (value) {//berjaya 
-        res.status(200).send();
+        return res.status(200).send();
     }).catch(function (value) {//no change atau error 
-        res.status(400).send(value);
+        return res.status(400).send(value);
     });
 });
 
@@ -103,9 +103,9 @@ router.post('/registerStudent', Auth.userType([2, 3]), function (req, res) {
     newStud.setStrStudentId(req.body.studentId);
 
     newStud.register().then(function (value) { //.then means resolve (no error)
-        res.send("Success");
+        return res.send("Success");
     }).catch(function (value) { //.catch means promise is rejected (got some errors)
-        res.status(400).send(value);
+        return res.status(400).send(value);
     });
 });
 
@@ -116,9 +116,9 @@ router.post('/deleteStudent', Auth.userType([2, 3]), function (req, res) {
 
     var del = delStud.deleteStudent();
     del.then(function (value) {//berjaya 
-        res.status(200).send();
+        return res.status(200).send();
     }).catch(function (value) {//no change atau error 
-        res.status(400).send(value);
+        return res.status(400).send(value);
     });
 });
 
@@ -128,9 +128,9 @@ router.post('/deleteStudentList', Auth.userType([2, 3]), function (req, res) {
 
     var del = delStud.deleteStudentList();
     del.then(function (value) {//berjaya 
-        res.status(200).send();
+        return res.status(200).send();
     }).catch(function (value) {//no change atau error 
-        res.status(400).send(value);
+        return res.status(400).send(value);
     });
 });
 

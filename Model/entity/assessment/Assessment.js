@@ -184,13 +184,19 @@ module.exports = class Assessment {
         })
     }
 
-    static findByStaff(keys) {//filter by date start end kalau end untuk filter yg dah abes.. so ambil yg >= curdate.. curdate amek dari controller
+    static findByStaff(keys, onlyMe = true) {//filter by date start end kalau end untuk filter yg dah abes.. so ambil yg >= curdate.. curdate amek dari controller
         //id ni dari teacher wajib ada, no reason nk tgk smua
         //staffId : val 
         //status: ongoing/upcoming/past
-        var strSql = "SELECT a.* FROM assessment a JOIN assessment_staff ast ON a.assessmentId=ast.assessmentId"
-        strSql += " WHERE ast.staffId=" + db.escape(keys["staffId"])
+        var strSql = "SELECT a.*,s.title AS subjTitle  FROM assessment a JOIN assessment_staff ast ON a.assessmentId=ast.assessmentId JOIN subject s ON s.subjectCode=a.subject "
+        if (onlyMe) {
+
+            strSql += " WHERE ast.staffId=" + db.escape(keys["staffId"])
+        }
         if (keys.hasOwnProperty("status")) {
+            if (!onlyMe) {
+                strSql += " WHERE 1=1 "
+            }
             var dateTIme = utils.getDateTimeNow()
             if (keys.status == "ongoing") {
                 strSql += " AND open<=" + db.escape(dateTIme) + " AND close>" + db.escape(dateTIme)
@@ -219,7 +225,7 @@ module.exports = class Assessment {
         //id ni dari teacher wajib ada, no reason nk tgk smua
         //staffId : val 
         //status: ongoing/upcoming/past
-        var strSql = "SELECT a.* FROM assessment a JOIN assessment_students ast ON a.assessmentId=ast.assessmentId"
+        var strSql = "SELECT a.*,s.title AS subjTitle FROM assessment a JOIN assessment_students ast ON a.assessmentId=ast.assessmentId JOIN subject s ON s.subjectCode=a.subject  "
         strSql += " WHERE ast.studentId=" + db.escape(keys["studentId"])
         if (keys.hasOwnProperty("status")) {
             var dateTIme = utils.getDateTimeNow()

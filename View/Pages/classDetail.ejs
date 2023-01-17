@@ -292,7 +292,7 @@
         var action = await Swal.fire({
             type: 'question',
             title: 'Confirm Delete?',
-            text: 'This student will be removed from the system and cannot add this student in same class anymore ',
+            text: 'This student will be removed form the system',
             showCancelButton: true
         })
         if (action.dismiss) {
@@ -309,7 +309,7 @@
             var action = await Swal.fire({
                 type: 'success',
                 title: 'Deleted Successfully!',
-                text: 'You need to wait one day to add this student!',
+                text: '',
                 showCancelButton: false
             })
 

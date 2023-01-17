@@ -44,19 +44,23 @@
         <div class="card-body">
           <div class="table-responsive">
 
-            <table class="table table-bordered table-hover text-nowrap mb-0" id="dtbOnAssessment">
-              <thead class="bg-primary">
-                <tr>
-                  <th width="30%" class="text-white">Assessment Title</th>
-                  <th width="15%" class=" text-white">
-                    Subject
-                  </th>
-                  <th width="40%" class="text-center text-white">Date & Time</th>
-                </tr>
-              </thead>
-              <tbody class="mycustom_tbd">
-              </tbody>
-            </table>
+            <% if(user.type==3){ %>
+              <input type="checkbox" id="chkAdmin" onchange="loadOngoingAssessment()"> Show All
+              <% } %>
+                <br>
+                <table class="table table-bordered table-hover text-nowrap mb-0" id="dtbOnAssessment">
+                  <thead class="bg-primary">
+                    <tr>
+                      <th width="30%" class="text-white">Assessment Title</th>
+                      <th width="15%" class=" text-white">
+                        Subject
+                      </th>
+                      <th width="40%" class="text-center text-white">Date & Time</th>
+                    </tr>
+                  </thead>
+                  <tbody class="mycustom_tbd">
+                  </tbody>
+                </table>
           </div>
         </div>
       </div>
@@ -73,14 +77,21 @@
   }
 
   function loadOngoingAssessment() {
-    Server.request("GET", "/api/assessment/?status=ongoing", null, true).then(function (result) {
+
+    let strAdd = ""
+    if (document.getElementById('chkAdmin')) {
+      strAdd = "&adminAll=" + ((document.getElementById('chkAdmin').checked) ? 'false' : 'true')
+      console.log(strAdd)
+    }
+    Server.request("GET", "/api/assessment/?status=ongoing" + strAdd, null, true).then(function (result) {
       result = JSON.parse(result)
+      console.log(result)
       dtbOnAssessment.clear();
       var tmpRow;
       result.forEach(assm => {
         tmpRow = dtbOnAssessment.row.add([
           assm.title,
-          assm.subject,
+          assm.subjTitle + '<br><span class="text-muted">' + assm.subject + '</span>',
           '<i class="fa fa-calendar text-info"></i> ' + new Date(assm.open).toLocaleDateString("en-GB") + '  <i class="fa fa-clock-o text-info"></i> ' + new Date(assm.open).toLocaleTimeString() + '<br>'
           + '<i class="fa fa-calendar text-danger"></i> ' + new Date(assm.close).toLocaleDateString("en-GB") + '  <i class="fa fa-clock-o text-danger"></i> ' + new Date(assm.close).toLocaleTimeString() + '<br>'
         ]).node()

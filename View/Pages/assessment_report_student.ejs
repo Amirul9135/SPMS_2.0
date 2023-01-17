@@ -317,7 +317,7 @@
         console.log(totalMark)
         var percentage = totalMark / parseFloat(ejsData.totalmark) * 100
         console.log(totalTime)
-        document.getElementById('txtMark').value = totalMark + "/" + ejsData.totalmark + " [" + percentage + "%]"
+        document.getElementById('txtMark').value = totalMark + "/" + ejsData.totalmark + " [" + percentage.toFixed(2) + "%]"
 
         if (ejsData.grading) {
 
