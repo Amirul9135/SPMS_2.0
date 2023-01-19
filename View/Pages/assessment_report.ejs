@@ -429,6 +429,7 @@
 
 
         ejsData = JSON.parse(JSON.stringify(document.getElementById("ejsData").dataset))
+        console.log(ejsData)
         document.getElementById("ejsData").remove()
 
         if (ejsData.grading) {
@@ -549,20 +550,26 @@
         ]
         PChartAttendanceOpt.title.subtext = "Total of " + summaryData.length + " Participants"
         PChartAttendance.setOption(PChartAttendanceOpt);
-
+        console.log('att ok')
     }
 
     function loadSummaryData() {
         Server.request('GET', '/api/assessment/summary?id=' + assessmentId, null, true).then(function (result) {
+            console.log(result)
             result = JSON.parse(result)
+            console.log(result)
             result.forEach(student => {
+                console.log(student.totalMark)
+                console.log(ejsData.totalMark)
                 student.percent = student.totalMark / ejsData.totalmark * 100
                 student.timeTaken = new Date(student.endAttempt).getTime() - new Date(student.startAttempt).getTime()
             })
             summaryData = result
+            console.log('ok')
             loadAttendance()
             loadMarks()
         }).catch(async function (err) {
+            console.log(err)
             var msg = ""
             try {
                 err = JSON.parse(err)
@@ -593,7 +600,10 @@
             delete g.label
         })
         var totalAllStud = 0;
+        console.log('mark')
+        console.log(summaryData)
         summaryData.forEach(s => {
+            console.log(s)
             tbTotalMark.row.add([
                 s.name + "<br>" + s.studentId,
                 '<span class="text-muted">' + s.abbrv + "</span><br>" + s.className,
@@ -608,6 +618,8 @@
                 }
             })
         })
+
+        console.log('mark')
         totalAllStud = totalAllStud / summaryData.length
 
         PChartTotalMarkOpt.title.subtext = "Full Mark : " + ejsData.totalmark + '\nAverage Mark : ' + totalAllStud
@@ -615,6 +627,7 @@
         gdata = gdata.filter(item => item.value !== 0) //yang ada value je
         PChartTotalMarkOpt.series[0].data = gdata
         PChartTotalMark.setOption(PChartTotalMarkOpt)
+        console.log('mark')
     }
 
     async function loadQAanalysis() {
@@ -845,6 +858,7 @@
 
     function Grade(mark) {
         for (var i = 0; i < grading.length; i++) {
+            console.log(mark)
             if (mark >= grading[i].start && mark <= grading[i].end)
                 return { index: i, label: grading[i].label }
         }

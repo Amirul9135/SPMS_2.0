@@ -664,12 +664,18 @@ module.exports = class Assessment {
 
     static getSummary(asId) {
         return new Promise(function (resolve, reject) {
+            /*var strSql = "SELECT a.accountId AS studentId, a.name,c.className,MAX(cs.endDate),sc.abbrv,ast.startAttempt,ast.endAttempt,COALESCE(ast.totalMark,0) AS totalMark, ast.time FROM (SELECT ast.studentId, ast.startAttempt, ast.endAttempt,SUM(aq.mark) AS totalMark, SUM(aq.time) AS time  FROM assessment_students ast LEFT JOIN assigned_question aq ON ast.assessmentId = aq.assessmentId WHERE ast.assessmentId = "
+                + db.escape(asId) + " GROUP BY ast.studentId) ast LEFT JOIN account a ON ast.studentId=a.accountId LEFT JOIN class_student cs ON ast.studentId = cs.studentId LEFT JOIN class c ON c.classId=cs.classId LEFT JOIN school sc ON c.schoolId=sc.schoolId GROUP BY ast.studentId;"
+            *
             var strSql = "SELECT a.name,c.className,MAX(cs.endDate),sc.abbrv,ast.* FROM student s JOIN account a ON s.studentId=a.accountId JOIN class_student cs ON s.studentId = cs.studentId JOIN class c ON c.classId=cs.classId JOIN school sc ON c.schoolId=sc.schoolId JOIN (SELECT ast.startAttempt, ast.endAttempt,t.* FROM (SELECT studentId, startAttempt, endAttempt FROM assessment_students "
-                + " WHERE assessmentId=" + db.escape(asId) + ") ast JOIN (SELECT studentId, SUM(mark) AS totalMark, SUM(time) AS time FROM assigned_question WHERE assessmentId=" + db.escape(asId)
-                + " GROUP BY studentId) t ON ast.studentId=t.studentId ) ast ON s.studentId=ast.studentId GROUP BY s.studentId"
+                + " WHERE assessmentId=" + db.escape(asId) + ") ast LEFT JOIN (SELECT studentId, SUM(mark) AS totalMark, SUM(time) AS time FROM assigned_question WHERE assessmentId=" + db.escape(asId)
+                + " GROUP BY studentId) t ON ast.studentId=t.studentId ) ast ON s.studentId=ast.studentId GROUP BY s.studentId"*/
+            var strSql = "SELECT a.name, ast.studentId, ast.startAttempt, ast.endAttempt, COALESCE(SUM(aq.mark),0) AS totalMark, SUM(aq.time) AS time,csh.abbrv,csh.className  FROM assessment_students ast JOIN account a ON a.accountId=ast.studentId LEFT JOIN assigned_question aq ON ast.assessmentId = aq.assessmentId AND ast.studentId=aq.studentId JOIN (SELECT cs.studentId, c.className,s.abbrv FROM class_student cs  JOIN class c  ON cs.classId =c.classId JOIN school s ON c.schoolId = s.schoolId "
+                + " GROUP BY cs.studentId HAVING MAX(cs.endDate)) csh ON ast.studentId=csh.studentId WHERE ast.assessmentId = " + db.escape(asId) + " GROUP BY ast.studentId;"
 
             db.query(strSql, function (err, result) {
                 if (err) {
+                    console.log(err)
                     reject(err.message)
                 }
                 else {
