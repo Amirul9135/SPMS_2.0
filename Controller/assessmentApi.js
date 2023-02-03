@@ -5,6 +5,7 @@ const Validator = require("./Middleware/Validator")
 const Auth = require("./Middleware/Authenticate");
 const QuestionSet = require('../Model/entity/question/QuestionSet');
 const AssessmentController = require("./assessmentController")
+const QuestionAnswer = require("../Model/entity/question/QuestionAnswer")
 const utils = require("./Utils");
 
 
@@ -113,9 +114,11 @@ router.get('/',
         if (req.user.type == 3) {
             let onlyMe = true
             if (req.query.adminAll) {
+                console.log(req.query.adminAll);
                 onlyMe = (req.query.adminAll == 'true')
             }
             Assessment.findByStaff({ staffId: req.user.id, status: qstatus }, onlyMe).then(function (result) {
+                console.log(result)
                 return res.status(200).send(result)
             }).catch(function (err) {
                 return res.status(500).send(err)
@@ -355,9 +358,21 @@ router.delete('/student', [
     })
 })
 
+router.get('/sumMark', Auth.userType([1]),
+    function (req, res) {
+        if (!req.query.asid) {
+            return res.status(400).send();
+        }
+        Assessment.getSumMarks(req.query.asid, req.user.id).then(function (result) {
+            return res.status(200).send(result)
+        }).catch(function (err) {
+            return res.status(500).send({ error: err })
+        })
+    })
 
 
 router.post('/startAttempt', [
+    function (req, res, next) { console.log(req.body); next() },
     Auth.userType([1]),
     Validator.checkNumber('assessmentId', { min: 0 }),
     Validator.validate()
@@ -365,6 +380,8 @@ router.post('/startAttempt', [
     console.log('s')
     var as = new AssessmentController(req.body.assessmentId, req.user.id)
     var stats = await as.checkStatus();
+    console.log('status')
+    console.log(stats)
     if (stats == -1) {
         return res.status(401).send({ error: 'closed' })
     }
@@ -384,6 +401,83 @@ router.post('/startAttempt', [
         return res.status(401).send()
     }
 })
+
+
+//mobile
+router.get('/paper', Auth.userType([1]),
+
+    async function (req, res) {
+        if (!req.query.asId) {
+            return res.status(400).send()
+        }
+        var As = new Assessment()
+        As.assessmentId = req.query.asId;
+        As = await As.load().catch(function (err) {
+            return res.status(400).send({ error: err })
+        })
+        var ASC = new AssessmentController(req.query.asId, req.user.id);
+        var stats = await ASC.checkStatus();
+        if (stats == -1) {
+            return res.status(401).send({ error: 'closed' })
+        }
+        else if (stats == 1) {
+            return res.status(401).send({ error: 'assessment not started yet' })
+        }
+        var participate = await ASC.checkIsParticipant()
+        if (!participate) {
+            return res.status(401).send()
+        }
+        var time = await Assessment.AttemptTime(req.query.asId, req.user.id).catch(function (err) {
+            console.log(err)
+        })
+        var dtnow = new Date()
+        var dtEnd = new Date(time.endAttempt)
+        if (!time.startAttempt) {
+            return res.status(401).send({ error: "no attempt started yet" })
+        }
+        if (dtnow.getTime() >= dtEnd.getTime()) {
+            return res.status(401).send({ error: "Attempt Time ended" })
+        }
+        time.realEnd = time.endAttempt
+        time.startAttempt = new Date(time.startAttempt).toLocaleString()
+        time.endAttempt = new Date(time.endAttempt).toLocaleString()
+        // time.startAttempt = tstart.toLocaleDateString() + " " + tstart.toLocaleTimeString()
+        //time.endAttempt = tend.toLocaleDateString() + " " + tend.toLocaleTimeString() 
+        var assignedQuestion = await Assessment.getAssignedQuestionDetails(req.query.asId, req.user.id).catch(function (err) {
+            console.log(err)
+        })
+        if (assignedQuestion.length == 0) {
+            return res.status(401).send({ error: "no question assigned, please try again" })
+        }
+        var mcqIds = []
+        assignedQuestion.forEach(q => {
+            if (q.questionType == 0) {
+                mcqIds.push(q.questionId)
+            }
+        });
+
+        var answers = []
+        answers = await QuestionAnswer.fetchAnswerChoice(mcqIds).catch(function (err) { console.log(err) })
+        if (answers) {
+            answers.forEach(ans => {
+                assignedQuestion.forEach(asg => {
+                    if (ans.questionId == asg.questionId) {
+                        delete ans.questionId
+                        if (!asg.hasOwnProperty('answer')) {
+                            asg.answer = []
+                        }
+                        asg.answer.push(ans)
+                    }
+                })
+            })
+        }
+        console.log('send paper')
+        return res.status(200).send({
+            student: req.user,
+            atTime: time,
+            questions: assignedQuestion
+        });
+    })
 
 
 router.post('/submit', [

@@ -7,10 +7,11 @@ class Authenticate {
     userType(userTypeArr = null) {//user type integer in form of array 
         //validate previous checks from the req object and return response 
         return function (req, res, next) {
-
+            console.log(req.header)
             if (!req.header('cookie')) {
                 return res.status(401).send("not logged in");
             }
+            console.log(req.header('cookie').includes('token='));
             if (req.header('cookie').includes('token=') && req.header('jwtT') && req.header('jwtP')) {
                 var fullToken = config.get("jwtHead") + "." + req.header('jwtP') + "." + req.header('cookie').replace('token=', '')
                     + req.header('jwtT');

@@ -53,6 +53,8 @@ module.exports = class Address {
                             resolve()
                         }
                     })
+
+                conn.release()
             })
         })
 

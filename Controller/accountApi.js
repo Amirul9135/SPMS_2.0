@@ -207,15 +207,17 @@ router.get('/allStaff', Auth.userType([3]), function (req, res) {
 
 router.post('/login',
     [
+        (req, res, next) => { console.log('masuk'); console.log(req); next() },
         Validator.checkString("accountId", { min: 6 }, "name must be at least 6 character"),
         Validator.checkString("password", { min: 6 }, "password must be at least 6 character"),
         Validator.validate()
     ]
     , function (req, res) {
+        console.log('login attempt')
+        console.log(req.body)
         var newAcc = new Account({
             "straccountId": req.body["accountId"]
         });
-        console.log('login')
         newAcc.login().then(async function (result) {
             console.log('login')
             var accId = req.body["accountId"];
@@ -250,6 +252,9 @@ router.post('/login',
                         if (err) throw err
                         var fragment = token.toString().split('.');
                         var mid = Math.floor(fragment[2].length / 2);
+                        console.log(fragment[2].substr(0, mid))
+                        console.log(fragment[2].substr(mid))
+                        console.log(fragment[1])
                         return res.cookie("token",
                             fragment[2].substr(0, mid),
                             {
@@ -321,6 +326,7 @@ router.post('/password', [
 router.get('/verify',
     Auth.userType(),
     function (req, res) {
+        console.log('verify');
         console.log(req.user)
         return res.status(200).send(req.user)
     })

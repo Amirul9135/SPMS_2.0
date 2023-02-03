@@ -812,6 +812,28 @@ module.exports = class Assessment {
 
     }
 
+
+    static getSumMarks(asid, studId) {
+        return new Promise(function (resolve, reject) {
+            console.log(asid);
+            db.query("SELECT COALESCE(SUM(aq.mark),0) AS totalMark, COALESCE(SUM(aq.fullMark),0) AS fullMark,ass.grading FROM assigned_question aq JOIN assessment ass ON aq.assessmentId=ass.assessmentId WHERE aq.assessmentId="
+                + db.escape(asid) + " AND aq.studentId = " + db.escape(studId)
+                , function (err, result) {
+                    if (err) {
+                        reject(err.message)
+                    }
+                    else {
+                        result = JSON.parse(JSON.stringify(result))[0]
+                        if (result["grading"]) {
+                            result.grading = JSON.parse(result.grading);
+                        }
+                        console.log(result)
+                        resolve(result)
+                    }
+                })
+        })
+    }
+
     static individualReport(studentId, subjectCode, year) {
         let sDt, eDt;
         sDt = year + '-01-01'
