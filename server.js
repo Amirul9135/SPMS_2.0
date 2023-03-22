@@ -31,7 +31,7 @@ app.use('/res/',
         res.setHeader('Cache-Control', `max-age=31536000, no-cache`);
         next();
     }
-    , express.static('View/Res'));
+    , express.static(path.join('View', 'Res')));
 
 
 app.get('/login', function (req, res) {
@@ -39,7 +39,7 @@ app.get('/login', function (req, res) {
 })
 
 app.get('/favicon.ico', function (req, res) {
-    return res.sendFile(__dirname + '\\View\\Res\\assets\\images\\brand\\favicon.ico')
+    return res.sendFile(path.join(__dirname + 'View', 'Res', 'assets', 'images', 'brand', 'favicon.ico'))
 })
 
 app.get('/*', function (req, res) {
@@ -49,7 +49,7 @@ app.get('/*', function (req, res) {
     }
     else {
         console.log("index sent");
-        return res.status(202).sendFile(path.join(__dirname, '/View/index.html'));
+        return res.status(202).sendFile(path.join(__dirname, 'View', 'index.html'));
     }
 })
 
