@@ -35,7 +35,7 @@ app.use('/res/',
 
 
 app.get('/login', function (req, res) {
-    return res.sendFile(__dirname + '\\View\\login.html');
+    return res.sendFile(path.join(__dirname, 'View', 'login.html'));
 })
 
 app.get('/favicon.ico', function (req, res) {
