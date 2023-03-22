@@ -28,10 +28,12 @@ app.use('/api/assessment', require('./Controller/assessmentApi'))
 
 app.use('/res/',
     function (req, res, next) {
+        console.log('testname');
+        console.log(path.resolve(__dirname, 'View', 'Res'))
         res.setHeader('Cache-Control', `max-age=31536000, no-cache`);
         next();
     }
-    , express.static(path.resolve('View', 'Res')));
+    , express.static(path.resolve(__dirname, 'View', 'Res')));
 
 
 app.get('/login', function (req, res) {
