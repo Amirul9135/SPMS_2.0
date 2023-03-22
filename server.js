@@ -48,7 +48,7 @@ app.get('/*', function (req, res) {
     }
     else {
         console.log("index sent");
-        return res.status(202).sendFile(__dirname + '\\view\\index.html');
+        return res.status(202).sendFile(__dirname + '\\View\\index.html');
     }
 })
 
