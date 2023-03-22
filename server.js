@@ -46,7 +46,9 @@ app.get('/favicon.ico', function (req, res) {
 app.get('/*', function (req, res) {
     if (/\.{1}/.test(req.originalUrl)) {
         //any path ada . means file la so kalau masuk sini not found 404 
+        console.log('sni ke');
         return res.status(404).send();
+
     }
     else {
         console.log("index sent");
