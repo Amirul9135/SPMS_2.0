@@ -31,7 +31,7 @@ app.use('/res/',
         res.setHeader('Cache-Control', `max-age=31536000, no-cache`);
         next();
     }
-    , express.static(path.join('View', 'Res')));
+    , express.static(path.join(__dirname, 'View', 'Res')));
 
 
 app.get('/login', function (req, res) {
