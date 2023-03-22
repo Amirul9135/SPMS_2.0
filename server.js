@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const app = express();
 
 app.use(express.json({ extended: false }));
@@ -48,7 +49,7 @@ app.get('/*', function (req, res) {
     }
     else {
         console.log("index sent");
-        return res.status(202).sendFile(__dirname + '\\View\\index.html');
+        return res.status(202).sendFile(path.join(__dirname, '\\View\\index.html'));
     }
 })
 
