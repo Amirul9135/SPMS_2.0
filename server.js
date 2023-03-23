@@ -29,9 +29,10 @@ app.use('/api/assessment', require('./Controller/assessmentApi'))
 app.use('/res/',
     function (req, res, next) {
         res.setHeader('Cache-Control', `max-age=31536000, no-cache`);
+        console.log("static");
         next();
     }
-    , express.static(path.resolve(__dirname, 'View', 'Res')));
+    , express.static(path.resolve('View', 'Res')));
 
 
 app.get('/login', function (req, res) {
