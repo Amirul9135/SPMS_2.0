@@ -28,8 +28,6 @@ app.use('/api/assessment', require('./Controller/assessmentApi'))
 
 app.use('/res/',
     function (req, res, next) {
-        console.log('testname');
-        console.log(path.resolve(__dirname, 'View', 'Res'))
         res.setHeader('Cache-Control', `max-age=31536000, no-cache`);
         next();
     }
@@ -41,14 +39,12 @@ app.get('/login', function (req, res) {
 })
 
 app.get('/favicon.ico', function (req, res) {
-    console.log(path.join(__dirname + 'View', 'Res', 'assets', 'images', 'brand', 'favicon.ico'))
     return res.sendFile(path.join(__dirname + 'View', 'Res', 'assets', 'images', 'brand', 'favicon.ico'))
 })
 
 app.get('/*', function (req, res) {
     if (/\.{1}/.test(req.originalUrl)) {
-        //any path ada . means file la so kalau masuk sini not found 404 
-        console.log('sni ke');
+        //any path ada . means file la so kalau masuk sini not found 404  
         return res.status(404).send();
 
     }
